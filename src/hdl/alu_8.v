@@ -1,0 +1,45 @@
+`timescale 1ns/1ps
+
+module alu_8
+  (output wire [7:0] out,
+   input wire [7:0]  a,
+   input wire [7:0]  b,
+   input wire [3:0]  opcode);
+
+   parameter ADD     = 4'b0000;
+   parameter SUB     = 4'b0001;
+   parameter AND     = 4'b0010;
+   parameter OR      = 4'b0011;
+   parameter XOR     = 4'b0100;
+   parameter COMPARE = 4'b0101;
+   parameter SLL     = 4'b0110;
+   parameter SRL     = 4'b0111;
+   parameter SLA     = 4'b1000;
+   parameter SRA     = 4'b1001;
+   parameter ROR     = 4'b1010;
+   parameter INC     = 4'b1011;
+   parameter DEC     = 4'b1100;
+   parameter SET     = 4'b1101;
+   parameter RESET   = 4'b1110;
+   parameter TEST    = 4'b1111;
+
+
+   assign out = (opcode == ADD) ? a + b :
+                (opcode == SUB) ? a - b :
+                (opcode == AND) ? a & b :
+                (opcode == OR) ? a | b :
+                (opcode == XOR) ? a ^ b :
+                (opcode == COMPARE) ? 0 :
+                (opcode == SLL) ? a << b :
+                (opcode == SRL) ? a >> b :
+                (opcode == SLA) ? a <<< b :
+                (opcode == SRA) ? a >>> b :
+                (opcode == ROR) ? (a << b) | (a >> ($size(a) - {{(32 - $size(b)){1'b0}},b})) : /* check with the instruction if this is correct */
+                (opcode == INC) ? a + 1 : /* TODO: Check with instruction specification for correctness of this */
+                (opcode == DEC) ? a - 1 : /* TODO: Check with instruction */
+                /* TODO: Determine what the following operations do */
+                (opcode == SET) ? 0 :
+                (opcode == RESET) ? 0 :
+                (opcode == TEST) ? 0 : 0;
+
+endmodule

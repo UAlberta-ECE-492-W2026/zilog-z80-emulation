@@ -21,7 +21,18 @@ module alu_8_tb();
       opcode = 0;
       #1 $display(dout);
 
+      // testing subtraction
       #50 opcode = 1;
+
+      // testing and
+      #50 opcode = 2;
+      a = 'hD;
+
+      // testing or
+      #50 a = 'b11001011;
+      b = 8'b00101011;
+      opcode = 3;
+      
    end
 
    alu_8 dut(.out(dout), .a(a), .b(b), .opcode(opcode));

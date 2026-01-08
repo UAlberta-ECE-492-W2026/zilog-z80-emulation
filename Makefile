@@ -7,8 +7,8 @@
 
 .PHONY: clean
 
-obj_dir/Valu_8_tb: ./src/hdl/alu_8.v ./src/sim/alu_8_tb.v
-	verilator --binary -j 0 -Wall -cc ./src/hdl/alu_8.v ./src/sim/alu_8_tb.v --top-module alu_8_tb --trace-vcd --timing
+obj_dir/Valu_8_tb: ./src/hdl/alu_8.sv ./src/sim/alu_8_tb.sv
+	verilator --binary -j 0 -Wall -cc ./src/hdl/alu_8.sv ./src/sim/alu_8_tb.sv --top-module alu_8_tb --trace-vcd --timing
 	mkdir -p ./out/sim/
 
 run_alu_8_tb: obj_dir/Valu_8_tb

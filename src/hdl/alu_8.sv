@@ -6,29 +6,30 @@ module alu_8
   (output wire [7:0] out,
    input wire [7:0]  a,
    input wire [7:0]  b,
-   input wire [3:0]  opcode);
+   input wire [4:0]  opcode);
 
 
-   parameter a_size = $size(a);
-   parameter b_size = $size(b);
+   parameter a_size  = $size(a);
+   parameter b_size  = $size(b);
 
-   parameter ADD     = 4'b0000;
-   parameter SUB     = 4'b0001;
-   parameter AND     = 4'b0010;
-   parameter OR      = 4'b0011;
-   parameter XOR     = 4'b0100;
-   parameter COMPARE = 4'b0101;
-   parameter SLL     = 4'b0110;
-   parameter SRL     = 4'b0111;
-   parameter SLA     = 4'b1000;
-   parameter SRA     = 4'b1001;
-   parameter ROR     = 4'b1010;
+   parameter ADD     = 'b0000;
+   parameter SUB     = 'b0001;
+   parameter AND     = 'b0010;
+   parameter OR      = 'b0011;
+   parameter XOR     = 'b0100;
+   parameter COMPARE = 'b0101;
+   parameter SLL     = 'b0110;
+   parameter SRL     = 'b0111;
+   parameter SLA     = 'b1000;
+   parameter SRA     = 'b1001;
+   parameter ROL     = 'b1010;
    // TODO: Add right rotation
-   parameter INC     = 4'b1011;
-   parameter DEC     = 4'b1100;
-   // parameter SET     = 4'b1101;
-   // parameter RESET   = 4'b1110;
-   // parameter TEST    = 4'b1111;
+   parameter ROR     = 'b1011;
+   parameter INC     = 'b1100;
+   parameter DEC     = 'b1101;
+   // parameter SET     = 'b1110;
+   // parameter RESET   = 'b1111;
+   // parameter TEST    = 'b10000;
 
    wire signed [7:0] signed_a;
    wire signed [7:0] signed_b;
@@ -56,8 +57,9 @@ module alu_8
         /* There is a chance that the following does not synthesize */
         /* TODO: need to make sure that this follows what the instruction
          requires. */
-        ROR: out_var = (a << (b % a_size[7:0]))
+        ROL: out_var = (a << (b % a_size[7:0]))
           | (a >> (a_size - {{(32 - b_size){1'b0}},(b % a_size[7:0])}));
+        ROR: out_var = 0;
         INC: out_var = a + 1;
         DEC: out_var = a - 1;
         default: out_var = 0;

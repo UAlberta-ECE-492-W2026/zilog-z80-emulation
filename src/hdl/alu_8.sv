@@ -1,6 +1,7 @@
 `timescale 1ns/1ps
 
-
+//! This module implements the 8-bit ALU that was defined in the Zilog Z80
+//! specification
 module alu_8
   (output wire [7:0] out,
    input wire [7:0]  a,
@@ -56,13 +57,11 @@ module alu_8
          requires. */
         ROR: out_var = (a << (b % a_size[7:0]))
           | (a >> (a_size - {{(32 - b_size){1'b0}},(b % a_size[7:0])}));
-        /* TODO: Check with instruction specification for correctness
-         of the following two instructions */
         INC: out_var = a + 1;
         DEC: out_var = a - 1;
         default: out_var = 0;
         endcase
-   end
+   end // always_comb
 
 
 endmodule

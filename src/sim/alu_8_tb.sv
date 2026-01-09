@@ -59,6 +59,8 @@ module alu_8_tb();
       testvectors[18] = '{8'b11001010, 3, 4'b1010, 8'b01010110};
       testvectors[19] = '{8'b10000000, 10, 4'b1010, 8'b10};
 
+      // testing inc
+
       // testing set. Currently tied to 0
       testvectors[20] = '{7, 7, 13, 0};
       // testing reset

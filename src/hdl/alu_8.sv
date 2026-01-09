@@ -23,6 +23,7 @@ module alu_8
    parameter SLA     = 4'b1000;
    parameter SRA     = 4'b1001;
    parameter ROR     = 4'b1010;
+   // TODO: Add right rotation
    parameter INC     = 4'b1011;
    parameter DEC     = 4'b1100;
    // parameter SET     = 4'b1101;

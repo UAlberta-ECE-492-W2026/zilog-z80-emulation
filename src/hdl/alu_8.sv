@@ -23,20 +23,31 @@ module alu_8
    // parameter RESET   = 4'b1110;
    // parameter TEST    = 4'b1111;
 
+   wire signed [7:0] signed_a;
+   wire signed [7:0] signed_b;
+
+   assign signed_a = a;
+   assign signed_b = b;
+
 
    assign out = (opcode == ADD) ? a + b :
                 (opcode == SUB) ? a - b :
                 (opcode == AND) ? a & b :
                 (opcode == OR) ? a | b :
                 (opcode == XOR) ? a ^ b :
+                 /* TODO: Check with instruction specification for what type
+                  of comparison is being done here */
                 (opcode == COMPARE) ? 0 :
                 (opcode == SLL) ? a << b :
                 (opcode == SRL) ? a >> b :
                 (opcode == SLA) ? a <<< b :
-                (opcode == SRA) ? a >>> b :
+                (opcode == SRA) ? signed_a >>> signed_b :
                 (opcode == ROR) ? (a << b) | (a >> ($size(a) - {{(32 - $size(b)){1'b0}},b})) : /* check with the instruction if this is correct */
-                (opcode == INC) ? a + 1 : /* TODO: Check with instruction specification for correctness of this */
-                (opcode == DEC) ? a - 1 : /* TODO: Check with instruction */
+                 /* TODO: Check with instruction specification for correctness
+                  of this */
+                (opcode == INC) ? a + 1 :
+                /* TODO: Check with instruction */
+                (opcode == DEC) ? a - 1 :
                 0; // the other opcodes are currently tied to zero
 
 endmodule

@@ -22,19 +22,20 @@ module alu_8_tb();
 
    test_vector testvectors[number_of_tests];
 
-   initial begin
+   initial begin: file_setup
       $dumpfile("out/sim/alu_8_tb.vcd");
       $dumpvars();
    end
 
-   initial begin
+   initial begin: test_definition
       // a, b, opcode, expected output
       testvectors[0] = '{7, 7, 0, 14};
       testvectors[1] = '{7, 7, 1, 0};
       testvectors[2] = '{'hD, 7, 2, 5};
       testvectors[3] = '{'b11001011, 8'b00101011, 3, 8'b11101011}; // Testing OR operation
-      testvectors[4] = '{7, 7, 4, 14};
-      testvectors[5] = '{7, 7, 5, 14};
+      //  testing XOR
+      testvectors[4] = '{7, 7, 4, 0};
+      testvectors[5] = '{8'hFF, 8'b10001010, 4, 8'b01110101};
       testvectors[6] = '{7, 7, 6, 14};
       testvectors[7] = '{7, 7, 7, 14};
       testvectors[8] = '{7, 7, 8, 14};

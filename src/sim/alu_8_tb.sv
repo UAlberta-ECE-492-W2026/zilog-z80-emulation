@@ -27,7 +27,7 @@ module alu_8_tb();
    end
 
    initial begin: test_definition
-      testvectors = new [23];
+      testvectors = new [25];
       // a, b, opcode, expected output
       testvectors[0] = '{7, 7, 0, 14};
       testvectors[1] = '{7, 7, 1, 0};
@@ -55,18 +55,22 @@ module alu_8_tb();
       testvectors[16] = '{8'b11001010, 8, 'b1001, 8'hFF};
       testvectors[17] = '{8'b01001010, 8, 'b1001, 8'h00};
 
-      // testing rotate
+      // testing rotate left
       testvectors[18] = '{8'b11001010, 3, 'b1010, 8'b01010110};
       testvectors[19] = '{8'b10000000, 10, 'b1010, 8'b10};
+
+      // testing rotate right
+      testvectors[20] = '{8'b11001010, 3, 'b1011, 8'b01011001};
+      testvectors[21] = '{8'b10000000, 10, 'b1011, 8'b00100000};
 
       // testing inc
 
       // testing set. Currently tied to 0
-      testvectors[20] = '{7, 7, 14, 0};
+      testvectors[22] = '{7, 7, 14, 0};
       // testing reset
-      testvectors[21] = '{7, 7, 15, 0};
+      testvectors[23] = '{7, 7, 15, 0};
       // testing test. Current output is tied to 0
-      testvectors[22] = '{7, 7, 16, 0};
+      testvectors[24] = '{7, 7, 16, 0};
    end
 
 

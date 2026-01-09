@@ -12,6 +12,8 @@ module alu_8
    parameter a_size  = $size(a);
    parameter b_size  = $size(b);
 
+
+   /* the following are the opcodes for the ALU */
    parameter ADD     = 'b0000;
    parameter SUB     = 'b0001;
    parameter AND     = 'b0010;
@@ -55,11 +57,10 @@ module alu_8
         SLA: out_var = a <<< b;
         SRA: out_var = signed_a >>> signed_b;
         /* There is a chance that the following does not synthesize */
-        /* TODO: need to make sure that this follows what the instruction
-         requires. */
         ROL: out_var = (a << (b % a_size[7:0]))
           | (a >> (a_size - {{(32 - b_size){1'b0}},(b % a_size[7:0])}));
-        ROR: out_var = 0;
+        ROR: out_var = (a >> (b % a_size[7:0]))
+          | (a << (a_size - {{(32 - b_size){1'b0}},(b % a_size[7:0])}));
         INC: out_var = a + 1;
         DEC: out_var = a - 1;
         default: out_var = 0;

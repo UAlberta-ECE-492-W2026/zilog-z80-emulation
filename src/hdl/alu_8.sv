@@ -1,10 +1,15 @@
 `timescale 1ns/1ps
 
+
 module alu_8
   (output wire [7:0] out,
    input wire [7:0]  a,
    input wire [7:0]  b,
    input wire [3:0]  opcode);
+
+
+   parameter a_size = $size(a);
+   parameter b_size = $size(b);
 
    parameter ADD     = 4'b0000;
    parameter SUB     = 4'b0001;
@@ -46,7 +51,11 @@ module alu_8
         SRL: out_var = a >> b;
         SLA: out_var = a <<< b;
         SRA: out_var = signed_a >>> signed_b;
-        ROR: out_var = (a << b) | (a >> ($size(a) - {{(32 - $size(b)){1'b0}},b}));
+        /* There is a chance that the following does not synthesize */
+        /* TODO: need to make sure that this follows what the instruction
+         requires. */
+        ROR: out_var = (a << (b % a_size[7:0]))
+          | (a >> (a_size - {{(32 - b_size){1'b0}},(b % a_size[7:0])}));
         /* TODO: Check with instruction specification for correctness
          of the following two instructions */
         INC: out_var = a + 1;

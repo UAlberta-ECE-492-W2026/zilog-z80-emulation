@@ -25,29 +25,35 @@ module alu_8
 
    wire signed [7:0] signed_a;
    wire signed [7:0] signed_b;
+   reg [7:0]         out_var;
+
 
    assign signed_a = a;
    assign signed_b = b;
+   assign out = out_var;
 
+   always_comb begin
+      case (opcode)
+        ADD: out_var = a + b;
+        SUB: out_var = a - b;
+        AND: out_var = a & b;
+        OR: out_var = a | b;
+        XOR: out_var = a ^ b;
+        /* TODO: Check with instruction specification for what type
+         of comparison is being done here */
+        COMPARE: out_var = 0;
+        SLL: out_var = a << b;
+        SRL: out_var = a >> b;
+        SLA: out_var = a <<< b;
+        SRA: out_var = signed_a >>> signed_b;
+        ROR: out_var = (a << b) | (a >> ($size(a) - {{(32 - $size(b)){1'b0}},b}));
+        /* TODO: Check with instruction specification for correctness
+         of the following two instructions */
+        INC: out_var = a + 1;
+        DEC: out_var = a - 1;
+        default: out_var = 0;
+        endcase
+   end
 
-   assign out = (opcode == ADD) ? a + b :
-                (opcode == SUB) ? a - b :
-                (opcode == AND) ? a & b :
-                (opcode == OR) ? a | b :
-                (opcode == XOR) ? a ^ b :
-                 /* TODO: Check with instruction specification for what type
-                  of comparison is being done here */
-                (opcode == COMPARE) ? 0 :
-                (opcode == SLL) ? a << b :
-                (opcode == SRL) ? a >> b :
-                (opcode == SLA) ? a <<< b :
-                (opcode == SRA) ? signed_a >>> signed_b :
-                (opcode == ROR) ? (a << b) | (a >> ($size(a) - {{(32 - $size(b)){1'b0}},b})) : /* check with the instruction if this is correct */
-                 /* TODO: Check with instruction specification for correctness
-                  of this */
-                (opcode == INC) ? a + 1 :
-                /* TODO: Check with instruction */
-                (opcode == DEC) ? a - 1 :
-                0; // the other opcodes are currently tied to zero
 
 endmodule

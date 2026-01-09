@@ -19,9 +19,9 @@ module alu_8
    parameter ROR     = 4'b1010;
    parameter INC     = 4'b1011;
    parameter DEC     = 4'b1100;
-   parameter SET     = 4'b1101;
-   parameter RESET   = 4'b1110;
-   parameter TEST    = 4'b1111;
+   // parameter SET     = 4'b1101;
+   // parameter RESET   = 4'b1110;
+   // parameter TEST    = 4'b1111;
 
 
    assign out = (opcode == ADD) ? a + b :
@@ -37,9 +37,6 @@ module alu_8
                 (opcode == ROR) ? (a << b) | (a >> ($size(a) - {{(32 - $size(b)){1'b0}},b})) : /* check with the instruction if this is correct */
                 (opcode == INC) ? a + 1 : /* TODO: Check with instruction specification for correctness of this */
                 (opcode == DEC) ? a - 1 : /* TODO: Check with instruction */
-                /* TODO: Determine what the following operations do */
-                (opcode == SET) ? 0 :
-                (opcode == RESET) ? 0 :
-                (opcode == TEST) ? 0 : 0;
+                0; // the other opcodes are currently tied to zero
 
 endmodule

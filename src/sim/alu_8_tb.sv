@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
-task display_input_output_expected(input reg [7:0] a, b, reg [4:0] opcode, reg [7:0] dout, expected);
-   $write("8'h%h | 8'h%h | 4'h%h | 8'h%h | 8'h%h", a, b, opcode, dout, expected);
+task display_input_output_expected(input reg [7:0] a, b, reg [4:0] opcode, reg [7:0] dout, expected, reg [7:0] status_flag);
+   $write("8'h%h | 8'h%h | 4'h%h | 8'h%h | 8'h%h | 8'b%b", a, b, opcode, dout, expected, status_flag);
 endtask // display_input_output_expected
 
 
@@ -11,6 +11,7 @@ module alu_8_tb();
    reg [4:0] opcode;
    wire [7:0] dout;
    reg [7:0] expected;
+   wire [7:0] status_flag;
 
    typedef struct {
       reg [7:0] a;
@@ -27,7 +28,7 @@ module alu_8_tb();
    end
 
    initial begin: test_definition
-      testvectors = new [25];
+      testvectors = new [26];
       // a, b, opcode, expected output
       testvectors[0] = '{7, 7, 0, 14};
       testvectors[1] = '{7, 7, 1, 0};
@@ -71,11 +72,14 @@ module alu_8_tb();
       testvectors[23] = '{7, 7, 15, 0};
       // testing test. Current output is tied to 0
       testvectors[24] = '{7, 7, 16, 0};
+
+      testvectors[25] = '{8'hff, 8'h01, 0, 0};
+
    end
 
 
    initial begin
-      $display("    a |     b |   op |  dout | expected");
+      $display("    a |     b |   op |  dout | expected dout | status flag |");
       for (int i = 0; i < $size(testvectors); ++i) begin
          #10;
          a = testvectors[i].a;
@@ -89,11 +93,11 @@ module alu_8_tb();
    end // initial begin
 
    always begin
-      #11 display_input_output_expected(a, b, opcode, dout, expected);
+      #11 display_input_output_expected(a, b, opcode, dout, expected, status_flag);
       if (dout == expected) $display("    | PASS");
       else $display("    | FAIL");
    end
 
-   alu_8 dut(.out(dout), .a(a), .b(b), .opcode(opcode));
+   alu_8 dut(.out(dout), .a(a), .b(b), .opcode(opcode), .status_flag(status_flag));
 
 endmodule

@@ -28,7 +28,7 @@ module alu_8_tb();
    end
 
    initial begin: test_definition
-      testvectors = new [26];
+      testvectors = new [35];
       // a, b, opcode, expected output
       testvectors[0] = '{7, 7, 0, 14};
       testvectors[1] = '{7, 7, 1, 0};
@@ -73,7 +73,25 @@ module alu_8_tb();
       // testing test. Current output is tied to 0
       testvectors[24] = '{7, 7, 16, 0};
 
+      // testing the carry bit using addition
       testvectors[25] = '{8'hff, 8'h01, 0, 0};
+
+      // testing the carry bit using sub
+      testvectors[26] = '{8'hfe, 8'hff, 1, 8'hff};
+      testvectors[27] = '{8'b1101, 8'b10000, 1, 8'b11111101};
+      testvectors[28] = '{8'hff, 8'hfe, 1, 8'h01};
+
+      // testing the overflow bit using add
+      testvectors[29] = '{8'hff, 8'h80, 0, 8'h7f};
+      testvectors[30] = '{8'h70, 8'h47, 0, 8'hb7};
+
+      // testing the overflow bit using sub
+      testvectors[31] = '{8'h80, 8'h01, 1, 8'h7f};
+      testvectors[32] = '{8'h0, 8'hff, 1, 8'h1};
+
+      // testing for parity checking on logical shift left
+      testvectors[33] = '{8'h2, 0, 6, 2};
+      testvectors[34] = '{8'h3, 0, 6, 3};
 
    end
 

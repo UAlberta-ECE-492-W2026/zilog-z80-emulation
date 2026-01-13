@@ -5,7 +5,8 @@
 //! Symbol Field Name
 //! C Carry Flag
 //! N Add/Subtract
-//! P/V Parity/Overflow Flag
+//! P/V Parity/Overflow Flag -> signed overflow and parity on shifts and
+//!   rotates. 1 for even, 0 for odd
 //! H Half Carry Flag
 //! Z Zero Flag
 //! S Sign Flag
@@ -43,12 +44,16 @@ module alu_8
 
    wire signed [7:0] signed_a;
    wire signed [7:0] signed_b;
+   reg [8:0]         tmp;
    reg [7:0]         out_var;
    reg               c_var;
-
+   reg               n_var;
+   reg               pv_var;
 
    assign status_flag[0] = c_var;
-   assign status_flag[7:1] = 0;
+   assign status_flag[1] = n_var;
+   assign status_flag[2] = pv_var;
+   assign status_flag[7:3] = 0;
 
    assign signed_a = a;
    assign signed_b = b;
@@ -57,9 +62,23 @@ module alu_8
 
    always_comb begin
       c_var = 0;
+      n_var = 0;
+      pv_var = 0;
+
       case (opcode)
-        ADD: out_var = a + b;
-        SUB: out_var = a - b;
+        ADD: begin
+           tmp = a + b;
+           out_var = tmp[7:0];
+           c_var = tmp[8];
+           pv_var = (a[7] & b[7] & !tmp[7]) | (!a[7] & !b[7] & tmp[7]);
+        end
+        SUB: begin
+           tmp = a - b;
+           out_var = tmp[7:0];
+           c_var = tmp[8];
+           n_var = 1;
+           pv_var = (!a[7] & b[7] & tmp[7]) | (a[7] & !b[7] & !tmp[7]);
+        end
         AND: begin
            out_var = a & b;
         end
@@ -72,15 +91,33 @@ module alu_8
         /* TODO: Check with instruction specification for what type
          of comparison is being done here */
         COMPARE: out_var = 0;
-        SLL: out_var = a << b;
-        SRL: out_var = a >> b;
-        SLA: out_var = a <<< b;
-        SRA: out_var = signed_a >>> signed_b;
+        SLL: begin
+           out_var = a << b;
+           pv_var = ~(^out_var);
+        end
+        SRL: begin
+           out_var = a >> b;
+           pv_var = ~(^out_var);
+        end
+        SLA: begin
+           out_var = a <<< b;
+           pv_var = ~(^out_var);
+        end
+        SRA: begin
+           out_var = signed_a >>> signed_b;
+           pv_var = ~(^out_var);
+        end
         /* There is a chance that the following does not synthesize */
-        ROL: out_var = (a << (b % a_size[7:0]))
-          | (a >> (a_size - {{(32 - b_size){1'b0}},(b % a_size[7:0])}));
-        ROR: out_var = (a >> (b % a_size[7:0]))
-          | (a << (a_size - {{(32 - b_size){1'b0}},(b % a_size[7:0])}));
+        ROL: begin // need to implement the pv flag bit for this
+           out_var = (a << (b % a_size[7:0]))
+             | (a >> (a_size - {{(32 - b_size){1'b0}},(b % a_size[7:0])}));
+           pv_var = ~(^out_var);
+        end
+        ROR: begin
+           out_var = (a >> (b % a_size[7:0]))
+             | (a << (a_size - {{(32 - b_size){1'b0}},(b % a_size[7:0])}));
+           pv_var = ~(^out_var);
+        end
         INC: out_var = a + 1;
         DEC: out_var = a - 1;
         default: out_var = 0;

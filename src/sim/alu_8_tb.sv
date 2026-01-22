@@ -1,0 +1,121 @@
+`timescale 1ns/1ps
+
+task display_input_output_expected(input reg [7:0] a, b, reg [4:0] opcode, reg [7:0] dout, expected, reg [7:0] status_flag);
+   $write("8'h%h | 8'h%h | 4'h%h | 8'h%h | 8'h%h | 8'b%b", a, b, opcode, dout, expected, status_flag);
+endtask // display_input_output_expected
+
+
+module alu_8_tb();
+
+   reg [7:0] a, b;
+   reg [4:0] opcode;
+   wire [7:0] dout;
+   reg [7:0] expected;
+   wire [7:0] status_flag;
+
+   typedef struct {
+      reg [7:0] a;
+      reg[7:0] b;
+      reg [4:0] opcode;
+      reg [7:0] expected;
+   } test_vector;
+
+   test_vector testvectors[];
+
+   initial begin: file_setup
+      $dumpfile("out/sim/alu_8_tb.vcd");
+      $dumpvars();
+   end
+
+   initial begin: test_definition
+      testvectors = new [35];
+      // a, b, opcode, expected output
+      testvectors[0] = '{7, 7, 0, 14};
+      testvectors[1] = '{7, 7, 1, 0};
+      testvectors[2] = '{'hD, 7, 2, 5};
+      // testing OR
+      testvectors[3] = '{'b11001011, 8'b00101011, 3, 8'b11101011};
+      //  testing XOR
+      testvectors[4] = '{7, 7, 4, 0};
+      testvectors[5] = '{8'hFF, 8'b10001010, 4, 8'b01110101};
+      // testing sll
+      testvectors[6] = '{8'b00000111, 3, 6, 8'b00111000};
+      testvectors[7] = '{8'b00001111, 6, 6, 8'b11000000};
+      testvectors[8] = '{8'b00001111, 9, 6, 8'b00000000};
+      // testing srl
+      testvectors[9] = '{8'b11001010, 3, 7, 8'b00011001};
+      testvectors[10] = '{8'b11001010, 8, 7, 0};
+      // testing sla
+      testvectors[11] = '{8'b00000111, 3, 8, 8'b00111000};
+      testvectors[12] = '{8'b00001111, 6, 8, 8'b11000000};
+      testvectors[13] = '{8'b00001111, 9, 8, 8'b00000000};
+
+      // testing sra
+      testvectors[14] = '{8'b11001010, 3, 'b1001, 8'b11111001};
+      testvectors[15] = '{8'b01001010, 3, 'b1001, 8'b00001001};
+      testvectors[16] = '{8'b11001010, 8, 'b1001, 8'hFF};
+      testvectors[17] = '{8'b01001010, 8, 'b1001, 8'h00};
+
+      // testing rotate left
+      testvectors[18] = '{8'b11001010, 3, 'b1010, 8'b01010110};
+      testvectors[19] = '{8'b10000000, 10, 'b1010, 8'b10};
+
+      // testing rotate right
+      testvectors[20] = '{8'b11001010, 3, 'b1011, 8'b01011001};
+      testvectors[21] = '{8'b10000000, 10, 'b1011, 8'b00100000};
+
+      // testing inc
+
+      // testing set. Currently tied to 0
+      testvectors[22] = '{7, 7, 14, 0};
+      // testing reset
+      testvectors[23] = '{7, 7, 15, 0};
+      // testing test. Current output is tied to 0
+      testvectors[24] = '{7, 7, 16, 0};
+
+      // testing the carry bit using addition
+      testvectors[25] = '{8'hff, 8'h01, 0, 0};
+
+      // testing the carry bit using sub
+      testvectors[26] = '{8'hfe, 8'hff, 1, 8'hff};
+      testvectors[27] = '{8'b1101, 8'b10000, 1, 8'b11111101};
+      testvectors[28] = '{8'hff, 8'hfe, 1, 8'h01};
+
+      // testing the overflow bit using add
+      testvectors[29] = '{8'hff, 8'h80, 0, 8'h7f};
+      testvectors[30] = '{8'h70, 8'h47, 0, 8'hb7};
+
+      // testing the overflow bit using sub
+      testvectors[31] = '{8'h80, 8'h01, 1, 8'h7f};
+      testvectors[32] = '{8'h0, 8'hff, 1, 8'h1};
+
+      // testing for parity checking on logical shift left
+      testvectors[33] = '{8'h2, 0, 6, 2};
+      testvectors[34] = '{8'h3, 0, 6, 3};
+
+   end
+
+
+   initial begin
+      $display("    a |     b |   op |  dout | expected dout | status flag |");
+      for (int i = 0; i < $size(testvectors); ++i) begin
+         #10;
+         a = testvectors[i].a;
+         b = testvectors[i].b;
+         opcode = testvectors[i].opcode;
+         expected = testvectors[i].expected;
+         #1;
+      end
+
+      #10 $finish;
+   end // initial begin
+
+   always begin
+      #11 display_input_output_expected(a, b, opcode, dout, expected, status_flag);
+      if (dout == expected) $display("    | PASS");
+      else $display("    | FAIL");
+   end
+
+   alu_8 dut(.out(dout), .a(a), .b(b), .opcode(opcode), .status_flag(status_flag));
+
+endmodule

@@ -117,6 +117,6 @@ module alu_8_tb();
       else $display("    | FAIL");
    end
 
-   alu_8 dut(.out(dout), .a(a), .b(b), .opcode(opcode), .status_flag(status_flag));
+   alu_8 #(.alu_width(8)) dut(.out(dout), .a(a), .b(b), .opcode(opcode), .status_flag(status_flag));
 
 endmodule

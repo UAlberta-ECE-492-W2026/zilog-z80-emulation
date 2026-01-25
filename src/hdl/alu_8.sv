@@ -13,12 +13,15 @@
 //! X Not Used
 //! status flag field
 //! 7: s 6: z 5: x 4: h 3: x 2: p/v 1: n 0: c
-module alu_8
-  (output wire [7:0] out,
+module  alu_8
+  #(parameter integer alu_width=8)
+  (output wire [alu_width-1:0] out,
    output wire [7:0] status_flag,
-   input wire [7:0]  a,
-   input wire [7:0]  b,
+   input wire [alu_width-1:0]  a,
+   input wire [alu_width-1:0]  b,
    input wire [4:0]  opcode);
+
+   parameter upper_bit=alu_width-1;
 
    parameter a_size  = $size(a);
    parameter b_size  = $size(b);
@@ -42,10 +45,10 @@ module alu_8
    // parameter RESET   = 'b1111;
    // parameter TEST    = 'b10000;
 
-   wire signed [7:0] signed_a;
-   wire signed [7:0] signed_b;
+   wire signed [upper_bit:0] signed_a;
+   wire signed [upper_bit:0] signed_b;
    reg [8:0]         tmp;
-   reg [7:0]         out_var;
+   reg [upper_bit:0]         out_var;
    reg               c_var;
    reg               n_var;
    reg               pv_var;

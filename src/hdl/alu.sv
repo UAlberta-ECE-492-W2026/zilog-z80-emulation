@@ -45,6 +45,11 @@ module  alu
    // parameter RESET   = 'b1111;
    // parameter TEST    = 'b10000;
 
+   /* status opcodes */
+   parameter NUMERIC = 'b0000;
+   parameter SHIFT = 'b1;
+
+
    wire signed [upper_bit:0] signed_a;
    wire signed [upper_bit:0] signed_b;
    reg [upper_bit + 1:0]                  tmp; // output value buffer
@@ -52,6 +57,11 @@ module  alu
    reg               c_var; // carry bit variable
    reg               n_var;
    reg               pv_var;
+   reg               z_var;
+   reg               h_var;
+   reg               s_var;
+   reg [3:0]         status_opcode;
+   reg               status_sign;
 
    /* function that does parity bit logic */
    function reg parity(reg first_op, second_op, result);
@@ -60,10 +70,14 @@ module  alu
    endfunction // parity
 
 
-   assign status_flag[0] = c_var;
-   assign status_flag[1] = n_var;
+   assign status_flag[7] = s_var;
+   assign status_flag[6] = z_var;
+   assign status_flag[5] = 0;
+   assign status_flag[4] = h_var;
+   assign status_flag[3] = 0;
    assign status_flag[2] = pv_var;
-   assign status_flag[7:3] = 0;
+   assign status_flag[1] = n_var;
+   assign status_flag[0] = c_var;
 
    assign signed_a = a;
    assign signed_b = b;
@@ -71,24 +85,16 @@ module  alu
 
 
    always_comb begin
-      c_var = 0;
-      n_var = 0;
-      pv_var = 0;
-
+      status_opcode = NUMERIC;
       case (opcode)
         ADD: begin
            tmp = a + b;
            out_var = tmp[upper_bit:0];
-           c_var = tmp[upper_bit + 1];
-           pv_var = parity(a[upper_bit], b[upper_bit], tmp[upper_bit]);
-
         end
         SUB: begin
            tmp = a - b;
            out_var = tmp[upper_bit:0];
-           c_var = tmp[upper_bit + 1];
-           n_var = 1;
-           pv_var = parity(a[upper_bit], b[upper_bit], tmp[upper_bit]);
+           status_sign = 1;
         end
         AND: begin
            out_var = a & b;
@@ -103,47 +109,57 @@ module  alu
          of comparison is being done here */
         COMPARE: out_var = 0;
         SLL: begin
+           status_opcode = SHIFT;
            out_var = a << b;
-           pv_var = ~(^out_var);
         end
         SRL: begin
+           status_opcode = SHIFT;
            out_var = a >> b;
-           pv_var = ~(^out_var);
         end
         SLA: begin
+           status_opcode = SHIFT;
            out_var = a <<< b;
-           pv_var = ~(^out_var);
         end
         SRA: begin
+           status_opcode = SHIFT;
            out_var = signed_a >>> signed_b;
-           pv_var = ~(^out_var);
         end
         /* There is a chance that the following does not synthesize */
         ROL: begin // need to implement the pv flag bit for this
+           status_opcode = SHIFT;
            out_var = (a << (b % a_size[upper_bit:0]))
              | (a >> (a_size - {{(32 - b_size){1'b0}},(b % a_size[upper_bit:0])}));
-           pv_var = ~(^out_var);
         end
         ROR: begin
+           status_opcode = SHIFT;
            out_var = (a >> (b % a_size[upper_bit:0]))
              | (a << (a_size - {{(32 - b_size){1'b0}},(b % a_size[upper_bit:0])}));
-           pv_var = ~(^out_var);
         end
         INC:begin
            tmp = a + 1;
            out_var = tmp[upper_bit:0];
-           c_var = tmp[upper_bit+1];
-           pv_var = parity(a[upper_bit], 0, tmp[upper_bit]);
         end
         DEC: begin
            tmp = a - 1;
            out_var = tmp[upper_bit:0];
-           c_var = tmp[upper_bit+1];
-           pv_var = parity(a[upper_bit], 0, tmp[upper_bit]);
+           status_sign=1;
         end
         default: out_var = 0;
         endcase
    end // always_comb
 
+   alu_status #(.alu_width(alu_width))
+   status_system (.c(c_var),
+                  .n(n_var),
+                  .pv(pv_var),
+                  .h(h_var),
+                  .s(s_var),
+                  .z(z_var),
+                  .a(a),
+                  .b(b),
+                  .op_result(out_var),
+                  .uppermost_out_bit(tmp[alu_width]),
+                  .opcode(status_opcode),
+                  .op_sign(status_sign));
 
 endmodule

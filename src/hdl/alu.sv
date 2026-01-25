@@ -129,8 +129,18 @@ module  alu
              | (a << (a_size - {{(32 - b_size){1'b0}},(b % a_size[upper_bit:0])}));
            pv_var = ~(^out_var);
         end
-        INC: out_var = a + 1;
-        DEC: out_var = a - 1;
+        INC:begin
+           tmp = a + 1;
+           out_var = tmp[upper_bit:0];
+           c_var = tmp[upper_bit+1];
+           pv_var = parity(a[upper_bit], 0, tmp[upper_bit]);
+        end
+        DEC: begin
+           tmp = a - 1;
+           out_var = tmp[upper_bit:0];
+           c_var = tmp[upper_bit+1];
+           pv_var = parity(a[upper_bit], 0, tmp[upper_bit]);
+        end
         default: out_var = 0;
         endcase
    end // always_comb

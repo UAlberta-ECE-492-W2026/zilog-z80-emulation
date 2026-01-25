@@ -1,10 +1,11 @@
 `timescale 1ns/1ps
 
+/* verilator lint_off UNUSEDSignal */
 task display_input_output_expected(input reg [7:0] a, b, reg [4:0] opcode, reg [7:0] dout, expected, reg [7:0] status_flag);
    $write("8'h%h | 8'h%h | 4'h%h | 8'h%h | 8'h%h | 8'b%b", a, b, opcode, dout, expected, status_flag);
 endtask // display_input_output_expected
 
-
+/* verilator lint_on UNUSEDSignal */
 module alu_8_tb();
 
    reg [7:0] a, b;

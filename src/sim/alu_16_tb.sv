@@ -60,6 +60,20 @@ endtask // display_input_output_expected
       // Add
       testvectors[0] = '{7, 7, 0, 14};
       testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, 0, 16'hacce});
+      // SUB
+      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, 1, 16'haacc});
+      testvectors = push_vector(testvectors, '{16'habcd, 16'habcd, 1, 16'h0});
+      testvectors = push_vector(testvectors, '{16'habcd, 16'habce, 1, 16'hffff});
+      testvectors = push_vector(testvectors, '{16'habcd, 16'habcc, 1, 16'h1});
+
+
+      // INC
+      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, 'b1100, 16'habce});
+      testvectors = push_vector(testvectors, '{16'hffff, 16'h0101, 'b1100, 16'h0000});
+
+      // DEC
+      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, 'b1101, 16'habcc});
+      testvectors = push_vector(testvectors, '{16'h0000, 16'h0101, 'b1101, 16'hffff});
 
    end
 

@@ -47,11 +47,18 @@ module  alu
 
    wire signed [upper_bit:0] signed_a;
    wire signed [upper_bit:0] signed_b;
-   reg [8:0]         tmp;
+   reg [upper_bit + 1:0]                  tmp; // output value buffer
    reg [upper_bit:0]         out_var;
-   reg               c_var;
+   reg               c_var; // carry bit variable
    reg               n_var;
    reg               pv_var;
+
+   /* function that does parity bit logic */
+   function reg parity(reg first_op, second_op, result);
+      return (first_op & second_op & !result)
+        | (!first_op & !second_op & result);
+   endfunction // parity
+
 
    assign status_flag[0] = c_var;
    assign status_flag[1] = n_var;
@@ -71,16 +78,17 @@ module  alu
       case (opcode)
         ADD: begin
            tmp = a + b;
-           out_var = tmp[7:0];
-           c_var = tmp[8];
-           pv_var = (a[7] & b[7] & !tmp[7]) | (!a[7] & !b[7] & tmp[7]);
+           out_var = tmp[upper_bit:0];
+           c_var = tmp[upper_bit + 1];
+           pv_var = parity(a[upper_bit], b[upper_bit], tmp[upper_bit]);
+
         end
         SUB: begin
            tmp = a - b;
-           out_var = tmp[7:0];
-           c_var = tmp[8];
+           out_var = tmp[upper_bit:0];
+           c_var = tmp[upper_bit + 1];
            n_var = 1;
-           pv_var = (!a[7] & b[7] & tmp[7]) | (a[7] & !b[7] & !tmp[7]);
+           pv_var = parity(a[upper_bit], b[upper_bit], tmp[upper_bit]);
         end
         AND: begin
            out_var = a & b;
@@ -112,13 +120,13 @@ module  alu
         end
         /* There is a chance that the following does not synthesize */
         ROL: begin // need to implement the pv flag bit for this
-           out_var = (a << (b % a_size[7:0]))
-             | (a >> (a_size - {{(32 - b_size){1'b0}},(b % a_size[7:0])}));
+           out_var = (a << (b % a_size[upper_bit:0]))
+             | (a >> (a_size - {{(32 - b_size){1'b0}},(b % a_size[upper_bit:0])}));
            pv_var = ~(^out_var);
         end
         ROR: begin
-           out_var = (a >> (b % a_size[7:0]))
-             | (a << (a_size - {{(32 - b_size){1'b0}},(b % a_size[7:0])}));
+           out_var = (a >> (b % a_size[upper_bit:0]))
+             | (a << (a_size - {{(32 - b_size){1'b0}},(b % a_size[upper_bit:0])}));
            pv_var = ~(^out_var);
         end
         INC: out_var = a + 1;

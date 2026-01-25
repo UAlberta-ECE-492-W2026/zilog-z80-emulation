@@ -16,10 +16,10 @@ obj_dir/Valu_16_tb: ./src/hdl/alu.sv ./src/sim/alu_16_tb.sv
 	mkdir -p ./out/sim/
 
 run_alu_8_tb: obj_dir/Valu_8_tb
-	./obj_dir/Valu_8_tb
+	./$<
 
 run_alu_16_tb: obj_dir/Valu_16_tb
-	./obj_dir/Valu_8_tb
+	./$<
 
 clean:
 	rm -rf ./obj_dir/

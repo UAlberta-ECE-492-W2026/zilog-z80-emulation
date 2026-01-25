@@ -13,7 +13,7 @@
 //! X Not Used
 //! status flag field
 //! 7: s 6: z 5: x 4: h 3: x 2: p/v 1: n 0: c
-module  alu_8
+module  alu
   #(parameter integer alu_width=8)
   (output wire [alu_width-1:0] out,
    output wire [7:0] status_flag,

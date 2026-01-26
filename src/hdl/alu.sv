@@ -54,12 +54,12 @@ module  alu
    wire signed [upper_bit:0] signed_b;
    reg [upper_bit + 1:0]                  tmp; // output value buffer
    reg [upper_bit:0]         out_var;
-   reg               c_var; // carry bit variable
-   reg               n_var;
-   reg               pv_var;
-   reg               z_var;
-   reg               h_var;
-   reg               s_var;
+   wire               c_var; // carry bit variable
+   wire               n_var;
+   wire               pv_var;
+   wire               z_var;
+   wire               h_var;
+   wire               s_var;
    reg [3:0]         status_opcode;
    reg               status_sign;
 

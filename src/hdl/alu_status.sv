@@ -36,6 +36,8 @@ module  alu_status #(
    	/* the following are the opcodes for the ALU status system */
    	parameter NUMERIC = 'b0000;
    	parameter SHIFT = 'b1;
+   parameter COMPARE = 'b10;
+
 
 
    	/* function that does overflow_check bit logic */
@@ -80,6 +82,8 @@ module  alu_status #(
         	SHIFT: begin
           		pv_var = ~(^op_result); // this is a parity check
 			end
+          COMPARE: begin
+            end
         	default: begin
            	end
         endcase

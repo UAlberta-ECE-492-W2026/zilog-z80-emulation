@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-
+`include "alu_op.sv"
 
 /* verilator lint_on UNUSEDSignal */
 module alu_16_tb();
@@ -8,21 +8,23 @@ module alu_16_tb();
    parameter upper_bit = data_width -1;
 
    reg [upper_bit:0] a, b;
-   reg [4:0] opcode;
+   alu_op opcode;
    wire [upper_bit:0] dout;
    reg [upper_bit:0] expected;
    wire [7:0] status_flag;
+   wire       enable_alu;
+
 
    /* verilator lint_off UNUSEDSignal */
-task display_input_output_expected(input reg [upper_bit:0] input_a, input_b, reg [4:0] target_opcode, reg [upper_bit:0] data_out, expected_value, reg [7:0] output_status_flag);
-   $write("'h%h | 'h%h | 4'h%h | 'h%h | 'h%h | 8'b%b", input_a, input_b, target_opcode, data_out, expected_value, output_status_flag);
+task display_input_output_expected(input reg [upper_bit:0] input_a, input_b, alu_op target_opcode, reg [upper_bit:0] data_out, expected_value, reg [7:0] output_status_flag);
+   $write("'h%h | 'h%h | %s | 'h%h | 'h%h | 8'b%b", input_a, input_b, target_opcode.name, data_out, expected_value, output_status_flag);
 endtask // display_input_output_expected
 
 
    typedef struct {
       reg [upper_bit:0] a;
       reg[upper_bit:0] b;
-      reg [4:0] opcode;
+      alu_op opcode;
       reg [upper_bit:0] expected;
    } test_vector;
 
@@ -40,7 +42,9 @@ endtask // display_input_output_expected
 	  test_vectors ret_array = new [v.size() + 1] (v);
       ret_array[v.size()] = test;
       return ret_array;
-   endfunction
+   endfunction // push_vector
+
+   assign enable_alu = 1;
 
 
    /* This is the operations that must be supported in 16 bits mode. The
@@ -58,22 +62,22 @@ endtask // display_input_output_expected
       testvectors = new [1];
       // a, b, opcode, expected output
       // Add
-      testvectors[0] = '{7, 7, 0, 14};
-      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, 0, 16'hacce});
+      testvectors[0] = '{7, 7, ADD, 14};
+      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, ADD, 16'hacce});
       // SUB
-      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, 1, 16'haacc});
-      testvectors = push_vector(testvectors, '{16'habcd, 16'habcd, 1, 16'h0});
-      testvectors = push_vector(testvectors, '{16'habcd, 16'habce, 1, 16'hffff});
-      testvectors = push_vector(testvectors, '{16'habcd, 16'habcc, 1, 16'h1});
+      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, SUB, 16'haacc});
+      testvectors = push_vector(testvectors, '{16'habcd, 16'habcd, SUB, 16'h0});
+      testvectors = push_vector(testvectors, '{16'habcd, 16'habce, SUB, 16'hffff});
+      testvectors = push_vector(testvectors, '{16'habcd, 16'habcc, SUB, 16'h1});
 
 
       // INC
-      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, 'b1100, 16'habce});
-      testvectors = push_vector(testvectors, '{16'hffff, 16'h0101, 'b1100, 16'h0000});
+      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, INC, 16'habce});
+      testvectors = push_vector(testvectors, '{16'hffff, 16'h0101, INC, 16'h0000});
 
       // DEC
-      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, 'b1101, 16'habcc});
-      testvectors = push_vector(testvectors, '{16'h0000, 16'h0101, 'b1101, 16'hffff});
+      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, DEC, 16'habcc});
+      testvectors = push_vector(testvectors, '{16'h0000, 16'h0101, DEC, 16'hffff});
 
    end
 
@@ -98,6 +102,6 @@ endtask // display_input_output_expected
       else $display("    | FAIL");
    end
 
-   alu #(.alu_width(16)) dut(.out(dout), .a(a), .b(b), .opcode(opcode), .status_flag(status_flag));
+   alu #(.alu_width(16)) dut(.out(dout), .a(a), .b(b), .opcode(opcode), .status_flag(status_flag), .enable(enable_alu));
 
 endmodule

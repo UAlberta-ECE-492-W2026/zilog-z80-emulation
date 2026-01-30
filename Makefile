@@ -7,12 +7,19 @@
 
 .PHONY: clean
 
-obj_dir/Valu_8_tb: ./src/hdl/alu_8.sv ./src/sim/alu_8_tb.sv
-	verilator --binary -j 0 -Wall -cc ./src/hdl/alu_8.sv ./src/sim/alu_8_tb.sv --top-module alu_8_tb --trace-vcd --timing
-	mkdir -p ./out/sim/
+obj_dir/Valu_8_tb: ./src/hdl/alu_status.sv ./src/hdl/alu.sv ./src/sim/alu_8_tb.sv ./src/enum/alu_op.sv
+	verilator --binary -j 0 -Wall -cc $^ --top-module alu_8_tb --timing +incdir+./src/enum
+
+obj_dir/Valu_16_tb: ./src/enum/alu_op.sv ./src/hdl/alu_status.sv ./src/hdl/alu.sv ./src/sim/alu_16_tb.sv
+	verilator --binary -j 0 -Wall -cc $^ --top-module alu_16_tb --trace-vcd --timing +incdir+./src/enum
 
 run_alu_8_tb: obj_dir/Valu_8_tb
-	./obj_dir/Valu_8_tb
+	mkdir -p ./out/sim/
+	./$<
+
+run_alu_16_tb: obj_dir/Valu_16_tb
+	mkdir -p ./out/sim/
+	./$<
 
 clean:
 	rm -rf ./obj_dir/

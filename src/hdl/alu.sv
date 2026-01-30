@@ -97,6 +97,9 @@ module  alu #(
            		out_var = a ^ b;
         	end
         	COMPARE: begin
+               /* The compare operation does not output to accumulator, it
+                just affects the status bits.
+                 */
 				out_var = 0;
 			end
         	SLL: begin

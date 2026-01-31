@@ -32,8 +32,8 @@ module  alu #(
     parameter b_size  = $size(b);
 
     /* status opcodes */
-    parameter NUMERIC = 'b0000;
-    parameter SHIFT = 'b1;
+    parameter NUMERIC_OP = 'b0000;
+    parameter SHIFT_OP = 'b1;
 
 
     wire signed [upper_bit:0] signed_a;
@@ -46,7 +46,7 @@ module  alu #(
     wire               z_var;
     wire               h_var;
     wire               s_var;
-    reg [3:0]          status_opcode;
+    reg [1:0]          status_opcode;
     reg                status_sign;
 
     /* function that does parity bit logic */
@@ -73,7 +73,7 @@ module  alu #(
 
 
     always_comb begin
-        status_opcode = NUMERIC;
+        status_opcode = NUMERIC_OP;
 		tmp = 0; // default set to 0 to prevent generation of a latch
 		status_sign = 0; 
 
@@ -87,6 +87,15 @@ module  alu #(
            		out_var = tmp[upper_bit:0];
            		status_sign = 1;
         	end
+        	COMPARE: begin
+               /* The compare operation does not output to accumulator, it
+                just affects the status bits. The spec of the Z80 allows the
+                COMPARE operation to be implemented as the subtraction op.
+                 */
+           		tmp = a - b;
+           		out_var = tmp[upper_bit:0];
+           		status_sign = 1;
+			end
         	AND: begin
            		out_var = a & b;
         	end
@@ -96,36 +105,30 @@ module  alu #(
         	XOR: begin
            		out_var = a ^ b;
         	end
-        	COMPARE: begin
-               /* The compare operation does not output to accumulator, it
-                just affects the status bits.
-                 */
-				out_var = 0;
-			end
         	SLL: begin
-           		status_opcode = SHIFT;
+           		status_opcode = SHIFT_OP;
            		out_var = a << b;
         	end
         	SRL: begin
-           		status_opcode = SHIFT;
+           		status_opcode = SHIFT_OP;
            		out_var = a >> b;
         	end
         	SLA: begin
-           		status_opcode = SHIFT;
+           		status_opcode = SHIFT_OP;
            		out_var = a <<< b;
         	end
         	SRA: begin
-           		status_opcode = SHIFT;
+           		status_opcode = SHIFT_OP;
            		out_var = signed_a >>> signed_b;
         	end
         	/* There is a chance that the following does not synthesize */
         	ROL: begin // need to implement the pv flag bit for this
-           		status_opcode = SHIFT;
+           		status_opcode = SHIFT_OP;
            		out_var = (a << (b % a_size[upper_bit:0]))
             		| (a >> (a_size - {{(32 - b_size){1'b0}},(b % a_size[upper_bit:0])}));
 			end
         	ROR: begin
-           		status_opcode = SHIFT;
+           		status_opcode = SHIFT_OP;
            		out_var = (a >> (b % a_size[upper_bit:0]))
             		| (a << (a_size - {{(32 - b_size){1'b0}},(b % a_size[upper_bit:0])}));
         	end

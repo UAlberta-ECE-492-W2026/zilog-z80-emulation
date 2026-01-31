@@ -17,16 +17,16 @@ module  alu_status #(
 	parameter integer alu_width=8
 )(
 	output wire                c,
-   	output wire                n,
-   	output wire                pv,
-   	output wire                h,
-   	output wire                s,
-   	output wire                z,
-   	input wire [alu_width-1:0] a,
-   	input wire [alu_width-1:0] b,
-   	input wire [alu_width-1:0] op_result,
-   	input wire                 uppermost_out_bit,
-   	input wire [1:0]           opcode,
+    output wire                n,
+    output wire                pv,
+    output wire                h,
+    output wire                s,
+    output wire                z,
+    input wire [alu_width-1:0] a,
+    input wire [alu_width-1:0] b,
+    input wire [alu_width-1:0] op_result,
+    input wire [alu_width:0] result_buffer,
+    input wire [1:0] opcode,
    	// op_sign == 1 : negative
    	// op_sign == 0 : positive
    	input wire                 op_sign);
@@ -52,13 +52,19 @@ module  alu_status #(
    	reg pv_var;
    	reg s_var;
    	reg z_var;
+   reg      n_var;
+   wire     uppermost_buffer_bit;
+   wire     lowest_buffer_bit;
 
    	assign z = z_var; // bit is very multi-functional
    	assign c = c_var;
-   	assign n = op_sign;
+   	assign n = n_var;
    	assign pv = pv_var;
    	assign h = half_buffer[4];
    	assign s = s_var;
+
+   assign uppermost_buffer_bit = result_buffer[alu_width];
+   assign lowest_buffer_bit = result_buffer[0];
 
    	always_comb begin
       	c_var = 0;
@@ -66,10 +72,13 @@ module  alu_status #(
       	half_buffer = 0;
       	s_var = 0;
       	z_var = 0;
+           n_var = 0;
+
 
       	case (opcode)
         	NUMERIC_OP: begin
-           		c_var = uppermost_out_bit;
+               n_var = op_sign;
+           		c_var = uppermost_buffer_bit;
            		pv_var = overflow_check(op_sign,
                                             a[upper_bit],
                                             b[upper_bit],
@@ -84,6 +93,8 @@ module  alu_status #(
         	end
         	SHIFT_OP: begin
           		pv_var = ~(^op_result); // this is a parity check
+               c_var = (op_sign == 0) ? uppermost_buffer_bit
+                       : lowest_buffer_bit;
 			end
         	default: begin
            	end

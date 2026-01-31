@@ -26,7 +26,7 @@ module  alu_status #(
    	input wire [alu_width-1:0] b,
    	input wire [alu_width-1:0] op_result,
    	input wire                 uppermost_out_bit,
-   	input wire [3:0]           opcode,
+   	input wire [1:0]           opcode,
    	// op_sign == 1 : negative
    	// op_sign == 0 : positive
    	input wire                 op_sign);
@@ -36,14 +36,14 @@ module  alu_status #(
    	/* the following are the opcodes for the ALU status system */
    	parameter NUMERIC_OP = 'b0000;
    	parameter SHIFT_OP = 'b1;
-   parameter COMPARE_OP = 'b10;
-
-
 
    	/* function that does overflow_check bit logic */
-   	function reg overflow_check(reg first_op, second_op, result);
-      	return (first_op & second_op & !result)
-        | 	(!first_op & !second_op & result);
+   	function reg overflow_check(reg sign_bit, first_op, second_op, result);
+      	return (sign_bit == 0)
+          ? (first_op & second_op & !result)
+            | (!first_op & !second_op & result)
+              : (first_op & !second_op & !result)
+                | (!first_op & second_op & result);
    	endfunction // overflow_check
 
    	/* verilator lint_off UNUSEDSIGNAL */
@@ -70,7 +70,10 @@ module  alu_status #(
       	case (opcode)
         	NUMERIC_OP: begin
            		c_var = uppermost_out_bit;
-           		pv_var = overflow_check(a[upper_bit], b[upper_bit], op_result[upper_bit]);
+           		pv_var = overflow_check(op_sign,
+                                            a[upper_bit],
+                                            b[upper_bit],
+                                            op_result[upper_bit]);
            		s_var = op_result[upper_bit];
            		z_var = (op_result == 0? 1 : 0);
            		if (op_sign == 1) begin
@@ -82,13 +85,6 @@ module  alu_status #(
         	SHIFT_OP: begin
           		pv_var = ~(^op_result); // this is a parity check
 			end
-          /* During compare instructions, the zero flag is set if the value in
-           the accumulator is equal to the value in the memory stored in the
-           address pointed to by register HL. If not equal, then the zero flag
-           is cleared. */
-          COMPARE_OP: begin
-             z_var = a == b ? 1 : 0;
-            end
         	default: begin
            	end
         endcase

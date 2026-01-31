@@ -17,7 +17,7 @@ module alu_8_status_tb();
 
    /* verilator lint_off UNUSEDSignal */
 task display_input_output_expected(input reg [upper_bit:0] input_a, input_b, alu_op target_opcode, reg [upper_bit:0] data_out, expected_value, reg [7:0] output_status_flag);
-   $write("'h%h | 'h%h | %s | 'h%h | 'h%h | 8'b%b", input_a, input_b, target_opcode.name, data_out, expected_value, output_status_flag);
+   $write("'h%h | 'h%h | %s | 'h%h | 8'b%b | 8'b%b", input_a, input_b, target_opcode.name, data_out , output_status_flag, expected_value);
 endtask // display_input_output_expected
 
 
@@ -33,7 +33,7 @@ endtask // display_input_output_expected
    test_vectors testvectors;
 
    initial begin: file_setup
-      $dumpfile("out/sim/alu_16_tb.vcd");
+      $dumpfile("out/sim/alu_8_status_tb.vcd");
       $dumpvars();
    end
 
@@ -62,28 +62,29 @@ endtask // display_input_output_expected
       testvectors = new [1];
       // a, b, opcode, expected output
       // Add
-      testvectors[0] = '{7, 7, ADD, 14};
-      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, ADD, 16'hacce});
+      testvectors[0] = '{7, 7, ADD, 8'b0};
+      testvectors = push_vector(testvectors, '{1, 8'hff, ADD, 8'b01010001});
+      // testing  that the zero flag is not asserted when the result not zero
+      testvectors = push_vector(testvectors, '{2, 8'hff, ADD, 8'b00010001});
+      testvectors = push_vector(testvectors, '{8'h7f, 8'h7f, ADD, 8'b10010100});
       // SUB
-      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, SUB, 16'haacc});
-      testvectors = push_vector(testvectors, '{16'habcd, 16'habcd, SUB, 16'h0});
-      testvectors = push_vector(testvectors, '{16'habcd, 16'habce, SUB, 16'hffff});
-      testvectors = push_vector(testvectors, '{16'habcd, 16'habcc, SUB, 16'h1});
+      /* testing subtraction of the same value. Should set zero flag, and
+       the negative flag. */
+      testvectors = push_vector(testvectors, '{8'h7f, 8'h7f, SUB, 8'b01000010});
+      /* testing subtraction of postive and a negative value. Should result in
+       a large value. So large that it overflows back to negative. There is a
+       borrow out, the negative sign bit, and the subtraction bit is used. */
+      testvectors = push_vector(testvectors, '{8'h7f, 8'h80, SUB, 8'b10000111});
+      testvectors = push_vector(testvectors, '{8'h7e, 8'h7f, SUB, 8'b10010011});
 
-
-      // INC
-      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, INC, 16'habce});
-      testvectors = push_vector(testvectors, '{16'hffff, 16'h0101, INC, 16'h0000});
-
-      // DEC
-      testvectors = push_vector(testvectors, '{16'habcd, 16'h0101, DEC, 16'habcc});
-      testvectors = push_vector(testvectors, '{16'h0000, 16'h0101, DEC, 16'hffff});
-
+      // COMPARE
+      testvectors = push_vector(testvectors, '{7, 7, COMPARE, 8'b01000010});
+      testvectors = push_vector(testvectors, '{7, 8, COMPARE, 8'b10010011});
    end
 
 
    initial begin
-      $display("    a |     b |   op |  dout | expected dout | status flag |");
+      $display("    a |     b |   op |  dout | real status | expected status |");
       for (int i = 0; i < testvectors.size(); ++i) begin
          #10;
          a = testvectors[i].a;
@@ -98,10 +99,16 @@ endtask // display_input_output_expected
 
    always begin
       #11 display_input_output_expected(a, b, opcode, dout, expected, status_flag);
-      if (dout == expected) $display("    | PASS");
+      if (status_flag == expected) $display("    | PASS");
       else $display("    | FAIL");
    end
 
-   alu #(.alu_width(16)) dut(.out(dout), .a(a), .b(b), .opcode(opcode), .status_flag(status_flag), .enable(enable_alu));
+   alu #(.alu_width(data_width)) dut(
+                                     .out(dout),
+                                     .a(a),
+                                     .b(b),
+                                     .opcode(opcode),
+                                     .status_flag(status_flag),
+                                     .enable(enable_alu));
 
 endmodule

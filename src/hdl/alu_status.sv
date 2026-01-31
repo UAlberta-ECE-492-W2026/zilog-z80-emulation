@@ -34,9 +34,9 @@ module  alu_status #(
    	parameter upper_bit=alu_width-1;
 
    	/* the following are the opcodes for the ALU status system */
-   	parameter NUMERIC = 'b0000;
-   	parameter SHIFT = 'b1;
-   parameter COMPARE = 'b10;
+   	parameter NUMERIC_OP = 'b0000;
+   	parameter SHIFT_OP = 'b1;
+   parameter COMPARE_OP = 'b10;
 
 
 
@@ -68,7 +68,7 @@ module  alu_status #(
       	z_var = 0;
 
       	case (opcode)
-        	NUMERIC: begin
+        	NUMERIC_OP: begin
            		c_var = uppermost_out_bit;
            		pv_var = overflow_check(a[upper_bit], b[upper_bit], op_result[upper_bit]);
            		s_var = op_result[upper_bit];
@@ -79,10 +79,15 @@ module  alu_status #(
              		half_buffer = a[3:0] + b[3:0];
 				end
         	end
-        	SHIFT: begin
+        	SHIFT_OP: begin
           		pv_var = ~(^op_result); // this is a parity check
 			end
-          COMPARE: begin
+          /* During compare instructions, the zero flag is set if the value in
+           the accumulator is equal to the value in the memory stored in the
+           address pointed to by register HL. If not equal, then the zero flag
+           is cleared. */
+          COMPARE_OP: begin
+             z_var = a == b ? 1 : 0;
             end
         	default: begin
            	end

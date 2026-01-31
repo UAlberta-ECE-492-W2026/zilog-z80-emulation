@@ -28,8 +28,8 @@ module  alu #(
 
     parameter upper_bit=alu_width-1;
 
-    parameter a_size  = $size(a);
-    parameter b_size  = $size(b);
+    parameter a_size  = alu_width;
+    parameter b_size  = alu_width;
 
     /* status opcodes */
     parameter NUMERIC_OP = 'b0000;
@@ -75,7 +75,7 @@ module  alu #(
     always_comb begin
         status_opcode = NUMERIC_OP;
 		tmp = 0; // default set to 0 to prevent generation of a latch
-		status_sign = 0; 
+		status_sign = 0;
 
         case (opcode)
         	ADD: begin
@@ -107,19 +107,25 @@ module  alu #(
         	end
         	SLL: begin
            		status_opcode = SHIFT_OP;
-           		out_var = a << b;
+               tmp= {1'b0, a} << b;
+               out_var = tmp[upper_bit:0];
         	end
         	SRL: begin
            		status_opcode = SHIFT_OP;
-           		out_var = a >> b;
+               status_sign = 1;
+               tmp = {a, 1'b0} >> b;
+           		out_var = tmp[upper_bit+1:1];
         	end
         	SLA: begin
            		status_opcode = SHIFT_OP;
-           		out_var = a <<< b;
+               tmp = signed'({1'b0, a}) <<< b;
+               out_var = tmp[upper_bit:0];
         	end
         	SRA: begin
            		status_opcode = SHIFT_OP;
-           		out_var = signed_a >>> signed_b;
+               status_sign = 1;
+               tmp = signed'({signed_a, 1'b0}) >>> signed_b;
+           		out_var = tmp[upper_bit+1:1];
         	end
         	/* There is a chance that the following does not synthesize */
         	ROL: begin // need to implement the pv flag bit for this
@@ -149,16 +155,16 @@ module  alu #(
 
    	alu_status #(.alu_width(alu_width))
    	status_system (.c(c_var),
-                  .n(n_var),
-                  .pv(pv_var),
-                  .h(h_var),
-                  .s(s_var),
-                  .z(z_var),
-                  .a(a),
-                  .b(b),
-                  .op_result(out_var),
-                  .uppermost_out_bit(tmp[alu_width]),
-                  .opcode(status_opcode),
-                  .op_sign(status_sign));
+                       .n(n_var),
+                       .pv(pv_var),
+                       .h(h_var),
+                       .s(s_var),
+                       .z(z_var),
+                       .a(a),
+                       .b(b),
+                       .op_result(out_var),
+                       .result_buffer(tmp),
+                       .opcode(status_opcode),
+                       .op_sign(status_sign));
 
 endmodule

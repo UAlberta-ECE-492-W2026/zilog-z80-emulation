@@ -78,8 +78,24 @@ endtask // display_input_output_expected
       testvectors = push_vector(testvectors, '{8'h7e, 8'h7f, SUB, 8'b10010011});
 
       // COMPARE
+      /* Comparison match test. The zero flag is 1 */
       testvectors = push_vector(testvectors, '{7, 7, COMPARE, 8'b01000010});
+      /* Comparison miss test. The zero flag is 0 */
       testvectors = push_vector(testvectors, '{7, 8, COMPARE, 8'b10010011});
+
+      // Shift test
+      testvectors = push_vector(testvectors, '{8'h2, 0, SLL, 8'b00000000});
+      testvectors = push_vector(testvectors, '{8'h3, 0, SLL, 8'b00000100});
+      testvectors = push_vector(testvectors, '{8'h83, 1, SLL, 8'b00000101});
+      testvectors = push_vector(testvectors, '{8'h2, 0, SLA, 8'b00000000});
+      testvectors = push_vector(testvectors, '{8'h3, 0, SLA, 8'b00000100});
+      testvectors = push_vector(testvectors, '{8'h81, 1, SLA, 8'b00000001});
+      testvectors = push_vector(testvectors, '{8'h2, 0, SRL, 8'b00000000});
+      testvectors = push_vector(testvectors, '{8'h3, 0, SRL, 8'b00000100});
+      testvectors = push_vector(testvectors, '{8'h83, 1, SRL, 8'b00000101});
+      testvectors = push_vector(testvectors, '{8'h2, 0, SRA, 8'b00000000});
+      testvectors = push_vector(testvectors, '{8'h3, 0, SRA, 8'b00000100});
+      testvectors = push_vector(testvectors, '{8'h81, 1, SRA, 8'b00000101});
    end
 
 

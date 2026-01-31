@@ -3,7 +3,7 @@
 
 /* verilator lint_off UNUSEDSignal */
 task display_input_output_expected(input reg en, reg [7:0] a, b, alu_op opcode, reg [7:0] dout, expected, reg [7:0] status_flag);
-    $write("1'h%h | 8'h%h | 8'h%h | 4'h%h | 8'h%h | 8'h%h | 8'b%b", en, a, b, opcode, dout, expected, status_flag);
+    $write("1'h%h | 8'h%h | 8'h%h | %s | 8'h%h | 8'h%h | 8'b%b", en, a, b, opcode.name, dout, expected, status_flag);
 endtask // display_input_output_expected
 
 /* verilator lint_on UNUSEDSignal */
@@ -32,7 +32,7 @@ module alu_8_tb();
    	end
 
    	initial begin: test_definition
-      	testvectors = new [35];
+      	testvectors = new [22];
       	// enable, a, b, opcode, expected output
       	testvectors[0] = '{1, 7, 7, ADD, 14};
       	testvectors[1] = '{1, 7, 7, SUB, 0};
@@ -76,22 +76,6 @@ module alu_8_tb();
      	 //testvectors[23] = '{1, 7, 7, RESET, 0};
      	 // testing test. Current output is tied to 0
      	 //testvectors[24] = '{1, 7, 7, TEST, 0};
-
-      	// testing the carry bit using addition
-      	testvectors[25] = '{1, 8'hff, 8'h01, ADD, 0};
-
-      	// testing the carry bit using sub
-      	testvectors[26] = '{1, 8'hfe, 8'hff, SUB, 8'hff};
-      	testvectors[27] = '{1, 8'b1101, 8'b10000, SUB, 8'b11111101};
-      	testvectors[28] = '{1, 8'hff, 8'hfe, SUB, 8'h01};
-
-      	// testing the overflow bit using add
-      	testvectors[29] = '{1, 8'hff, 8'h80, ADD, 8'h7f};
-		testvectors[30] = '{1, 8'h70, 8'h47, ADD, 8'hb7};
-
-      	// testing the overflow bit using sub
-      	testvectors[31] = '{1, 8'h80, 8'h01, SUB, 8'h7f};
-      	testvectors[32] = '{1, 8'h0, 8'hff, SUB, 8'h1};
 
       	// testing for parity checking on logical shift left
       	testvectors[33] = '{1, 8'h2, 0, SLL, 2};

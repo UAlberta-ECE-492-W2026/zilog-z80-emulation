@@ -96,6 +96,11 @@ endtask // display_input_output_expected
       testvectors = push_vector(testvectors, '{8'h2, 0, SRA, 8'b00000000});
       testvectors = push_vector(testvectors, '{8'h3, 0, SRA, 8'b00000100});
       testvectors = push_vector(testvectors, '{8'h81, 1, SRA, 8'b00000101});
+
+      // Logical operations
+      testvectors = push_vector(testvectors, '{8'h81, 1, AND, 8'b00000000});
+      testvectors = push_vector(testvectors, '{8'h81, 1, OR, 8'b10000000});
+      testvectors = push_vector(testvectors, '{8'h81, 1, XOR, 8'b10000000});
    end
 
 

@@ -1,6 +1,12 @@
 # zilog-z80-emulation
 FPGA emulation of the Zilog Z80
 
+## Additional Documentation
+
+For more information about the project, visit the `./doc` directory.
+
+- [Package Organization](doc/package-organization.md)
+
 ## Running Simulations
 
 To verify the design, simulations are used. 
@@ -21,11 +27,15 @@ From there, run make from the root directory of the project with a valid target.
 
 ### Simulations
 
-For simulation purposes, the required programs are `make`, `verilator`, and `gcc`.
+For simulation purposes, the required programs are `make`, `verilator`, and `gcc`. Additionally, to view the resulting simulation waveform, a waveform viewer is required. The recommended open source waveform viewer is [GTKWave](https://github.com/gtkwave/gtkwave).
 
 #### Arch linux
 
 ``` sh
 pacman -S make verilator gcc
+```
+
+``` sh
+pacman -S gtkwave
 ```
 

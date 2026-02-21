@@ -1,0 +1,3 @@
+[submodule "zilog-z80-emulation-software"]
+	path = zilog-z80-emulation-software
+	url = git@github.com:UAlberta-ECE-492-W2026/zilog-z80-emulation-software.git

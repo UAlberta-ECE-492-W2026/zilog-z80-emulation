@@ -1,11 +1,12 @@
 `timescale 1ns/1ps
+`include "uop.sv"
 
 /** Module for the controller of the datapath controller architecture.
  */
 module controller (output wire [3:0] aluop,
                    output wire wb_signal,
 
-                   input wire [3:0]  uop,
+                   input uop  micro_op,
                    input wire        reset, /* active high reset */
                    input wire        clk
    );
@@ -43,7 +44,16 @@ module controller (output wire [3:0] aluop,
       if (reset) next_state = RESET_STATE;
       else begin
          case (current_state)
-           FETCH_STATE: next_state = DECODE_STATE;
+           FETCH_STATE: begin
+              next_state = DECODE_STATE;
+              case (micro_op)
+                NOP:
+                  next_state = FETCH_STATE;
+                default:
+                  next_state = DECODE_STATE;
+              endcase; // case (micro_op)
+
+           end
            DECODE_STATE: next_state = EXECUTE_STATE;
            EXECUTE_STATE: next_state = WRITE_BACK_STATE;
            WRITE_BACK_STATE: next_state = FETCH_STATE;

@@ -14,7 +14,7 @@ module decode #(
     output wire [7:0] imm_0,
     output wire [15:0] imm_1,
     output wire use_16b_alu,
-    output wire [6:0] update_flags
+    output wire [5:0] update_flags
 );
     // this helps make it a bit easier to read and compare to the specification
     wire [7:0] op_0; //first byte
@@ -64,6 +64,28 @@ module decode #(
         endcase
     endfunction
 
+    // translate the other other kind of 16b register codes ('pp' in spec) to reg_name
+    function reg_name reg_from_pp (reg[1:0] pp);
+        case(pp)
+            2'b00: reg_from_pp = BC;
+            2'b01: reg_from_pp = DE;
+            2'b10: reg_from_pp = IX;
+            2'b11: reg_from_pp = SP;
+            default: reg_from_pp = NONE;
+        endcase
+    endfunction
+
+    // translate the other other other kind of 16b register codes ('rr' in spec) to reg_name
+    function reg_name reg_from_rr (reg[1:0] rr);
+        case(rr)
+            2'b00: reg_from_rr = BC;
+            2'b01: reg_from_rr = DE;
+            2'b10: reg_from_rr = IX;
+            2'b11: reg_from_rr = SP;
+            default: reg_from_rr = NONE;
+        endcase
+    endfunction
+
     // Decoder programming standards:
     //    if one register is used reg_a is used
     //    if an instruction writes to a register it writes to reg_a. similarly if it writes to (R) then R is also reg_a
@@ -80,7 +102,7 @@ module decode #(
         imm_0 = 8'h00;
         imm_1 = 16'h0000;
         use_16b_alu = 0;
-        update_flags = 7'b0000000;
+        update_flags = 6'b000000;
 
         // 8 bit Load
         if (op_0[7:6] == 2'b01) begin //LD r, r'
@@ -161,12 +183,12 @@ module decode #(
             output_op = LD_R_R;
             reg_a = A;
             reg_b = I;
-            update_flags = 7'b111110;
+            update_flags = 6'b111110;
         end else if (op_0 == 8'hED && op_1 == 8'h5F) begin // LD A, R
             output_op = LD_R_R;
             reg_a = A;
             reg_b = R;
-            update_flags = 7'b111110;
+            update_flags = 6'b111110;
         end else if (op_0 == 8'hED && op_1 == 8'h47) begin // LD I, A
             output_op = LD_R_R;
             reg_a = I;
@@ -285,322 +307,322 @@ module decode #(
         end else if (op_0 == 8'hED && op_1 == 8'hA0) begin // LDI
             output_op = LD_block;
             imm_0 = 8'h01; // for LD_block imm_0 is added to DE and HL
-            update_flags = 7'b001110;
+            update_flags = 6'b001110;
         end else if (op_0 == 8'hED && op_1 == 8'hB0) begin // LDIR
             output_op = LD_block;
             imm_0 = 8'h01; 
             imm_1 = 16'hFFFE; // -2. Add to PC.
-            update_flags = 7'b001110;
+            update_flags = 6'b001110;
         end else if (op_0 == 8'hED && op_1 == 8'hA8) begin // LDD
             output_op = LD_block;
             imm_0 = 8'hFF; // -1. make sure to sign extend
-            update_flags = 7'b001110;
+            update_flags = 6'b001110;
         end else if (op_0 == 8'hED && op_1 == 8'hB8) begin // LDDR
             output_op = LD_block;
             imm_0 = 8'hFF; // -1. make sure to sign extend
             imm_1 = 16'hFFFE; // -2. Add to PC.
-            update_flags = 7'b001110;
+            update_flags = 6'b001110;
         end else if (op_0 == 8'hED && op_1 == 8'hA1) begin // CPI
             output_op = CP_block;
             imm_0 = 8'h01; // for CP_block imm_0 is added to HL
-            update_flags = 7'b111110;
+            update_flags = 6'b111110;
         end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPIR
             output_op = CP_block;
             imm_0 = 8'h01; // for CP_block imm_0 is added to HL
             imm_1 = 16'hFFFE; // -2. Add to PC.
-            update_flags = 7'b111110;
+            update_flags = 6'b111110;
         end else if (op_0 == 8'hED && op_1 == 8'hA9) begin // CPD
             output_op = CP_block;
             imm_0 = 8'hFF; // -1 add to HL
-            update_flags = 7'b111110;
+            update_flags = 6'b111110;
         end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPDR
             output_op = CP_block;
             imm_0 = 8'hFF; // -1 add to HL
             imm_1 = 16'hFFFE; // -2. Add to PC.
-            update_flags = 7'b111110;
+            update_flags = 6'b111110;
 
         // 8b Arithmetic
         end else if (op_0[7:3] == 5'b10000) begin // ADD A, r
             output_op = ADD_R_R;
             reg_a = A;
             reg_b = reg_from_r(op_0[2:0]);
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hC6) begin // ADD A, n
             output_op = ADD_R_nn;
             reg_a = A;
             imm_1 = {8'h00, op_1}; // zero extend shouldn't matter since we use the 8b alu
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'h86) begin // ADD A, (HL)
             output_op = ADD_R_mRd;
             reg_a = A;
             reg_b = HL;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hDD && op_1 == 8'h86) begin // ADD A, (IX + d)
             output_op = ADD_R_mRd;
             reg_a = A;
             reg_b = IX;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hFD && op_1 == 8'h86) begin // ADD A, (IY + d)
             output_op = ADD_R_mRd;
             reg_a = A;
             reg_b = IY;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
 
         end else if (op_0[7:3] == 5'b10001) begin // ADC A, r
             output_op = ADC_R_R;
             reg_a = A;
             reg_b = reg_from_r(op_0[2:0]);
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hCE) begin // ADC A, n
             output_op = ADC_R_nn;
             reg_a = A;
             imm_1 = {8'h00, op_1}; // zero extend shouldn't matter since we use the 8b alu
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'h8E) begin // ADC A, (HL)
             output_op = ADC_R_mRd;
             reg_a = A;
             reg_b = HL;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hDD && op_1 == 8'h8E) begin // ADC A, (IX + d)
             output_op = ADC_R_mRd;
             reg_a = A;
             reg_b = IX;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hFD && op_1 == 8'h8E) begin // ADC A, (IY + d)
             output_op = ADC_R_mRd;
             reg_a = A;
             reg_b = IY;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
 
         end else if (op_0[7:3] == 5'b10010) begin // SUB A, r
             output_op = SUB_R_R;
             reg_a = A;
             reg_b = reg_from_r(op_0[2:0]);
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hD6) begin // SUB A, n
             output_op = SUB_R_nn;
             reg_a = A;
             imm_1 = {8'h00, op_1}; // zero extend shouldn't matter since we use the 8b alu
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'h96) begin // SUB A, (HL)
             output_op = SUB_R_mRd;
             reg_a = A;
             reg_b = HL;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hDD && op_1 == 8'h96) begin // SUB A, (IX + d)
             output_op = SUB_R_mRd;
             reg_a = A;
             reg_b = IX;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hFD && op_1 == 8'h96) begin // SUB A, (IY + d)
             output_op = SUB_R_mRd;
             reg_a = A;
             reg_b = IY;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
 
         end else if (op_0[7:3] == 5'b10011) begin // SBC A, r
             output_op = SBC_R_R;
             reg_a = A;
             reg_b = reg_from_r(op_0[2:0]);
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hDE) begin // SBC A, n
             output_op = SBC_R_nn;
             reg_a = A;
             imm_1 = {8'h00, op_1}; // zero extend shouldn't matter since we use the 8b alu
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'h9E) begin // SBC A, (HL)
             output_op = SBC_R_mRd;
             reg_a = A;
             reg_b = HL;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hDD && op_1 == 8'h9E) begin // SBC A, (IX + d)
             output_op = SBC_R_mRd;
             reg_a = A;
             reg_b = IX;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hFD && op_1 == 8'h9E) begin // SBC A, (IY + d)
             output_op = SBC_R_mRd;
             reg_a = A;
             reg_b = IY;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
 
         end else if (op_0[7:3] == 5'b10100) begin // AND A, r
             output_op = AND_R_R;
             reg_a = A;
             reg_b = reg_from_r(op_0[2:0]);
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hE6) begin // AND A, n
             output_op = AND_R_nn;
             reg_a = A;
             imm_1 = {8'h00, op_1}; // zero extend shouldn't matter since we use the 8b alu
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hA6) begin // AND A, (HL)
             output_op = AND_R_mRd;
             reg_a = A;
             reg_b = HL;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hDD && op_1 == 8'hA6) begin // AND A, (IX + d)
             output_op = AND_R_mRd;
             reg_a = A;
             reg_b = IX;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hFD && op_1 == 8'hA6) begin // AND A, (IY + d)
             output_op = AND_R_mRd;
             reg_a = A;
             reg_b = IY;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         
         end else if (op_0[7:3] == 5'b10110) begin // OR A, r
             output_op = OR_R_R;
             reg_a = A;
             reg_b = reg_from_r(op_0[2:0]);
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hF6) begin // OR A, n
             output_op = OR_R_nn;
             reg_a = A;
             imm_1 = {8'h00, op_1}; // zero extend shouldn't matter since we use the 8b alu
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hB6) begin // OR A, (HL)
             output_op = OR_R_mRd;
             reg_a = A;
             reg_b = HL;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hDD && op_1 == 8'hB6) begin // OR A, (IX + d)
             output_op = OR_R_mRd;
             reg_a = A;
             reg_b = IX;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hFD && op_1 == 8'hB6) begin // OR A, (IY + d)
             output_op = OR_R_mRd;
             reg_a = A;
             reg_b = IY;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
 
         end else if (op_0[7:3] == 5'b10101) begin // XOR A, r
             output_op = XOR_R_R;
             reg_a = A;
             reg_b = reg_from_r(op_0[2:0]);
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hEE) begin // XOR A, n
             output_op = XOR_R_nn;
             reg_a = A;
             imm_1 = {8'h00, op_1}; // zero extend shouldn't matter since we use the 8b alu
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hAE) begin // XOR A, (HL)
             output_op = XOR_R_mRd;
             reg_a = A;
             reg_b = HL;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hDD && op_1 == 8'hAE) begin // XOR A, (IX + d)
             output_op = XOR_R_mRd;
             reg_a = A;
             reg_b = IX;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hFD && op_1 == 8'hAE) begin // XOR A, (IY + d)
             output_op = XOR_R_mRd;
             reg_a = A;
             reg_b = IY;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
 
         end else if (op_0[7:3] == 5'b10111) begin // CP A, r
             output_op = CP_R_R;
             reg_a = A;
             reg_b = reg_from_r(op_0[2:0]);
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hFE) begin // CP A, n
             output_op = CP_R_nn;
             reg_a = A;
             imm_1 = {8'h00, op_1}; // zero extend shouldn't matter since we use the 8b alu
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hBE) begin // CP A, (HL)
             output_op = CP_R_mRd;
             reg_a = A;
             reg_b = HL;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hDD && op_1 == 8'hBE) begin // CP A, (IX + d)
             output_op = CP_R_mRd;
             reg_a = A;
             reg_b = IX;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'hFD && op_1 == 8'hBE) begin // CP A, (IY + d)
             output_op = CP_R_mRd;
             reg_a = A;
             reg_b = IY;
             imm_0 = op_2;
-            update_flags = 7'b1111111;
+            update_flags = 6'b111111;
 
         end else if (op_0[7:6] == 2'b00 && op_0[2:0] == 3'b100) begin // INC r
             output_op = ADD_R_nn;
             reg_a = reg_from_r(op_0[5:3]);
             imm_1 = {16'h0001};
-            update_flags = 7'b1111110;
+            update_flags = 6'b111110;
         end else if (op_0 == 8'h34) begin // INC (HL)
             output_op = INC_mRd;
             reg_a = HL;
-            update_flags = 7'b1111110;
+            update_flags = 6'b111110;
         end else if (op_0 == 8'hDD && op_1 == 8'h34) begin // INC (IX+d)
             output_op = INC_mRd;
             reg_a = IX;
             imm_0 = op_2;
-            update_flags = 7'b1111110;
+            update_flags = 6'b111110;
         end else if (op_0 == 8'hFD && op_1 == 8'h34) begin // INC (IY+d)
             output_op = INC_mRd;
             reg_a = IY;
             imm_0 = op_2;
-            update_flags = 7'b1111110;
+            update_flags = 6'b111110;
 
         end else if (op_0[7:6] == 2'b00 && op_0[2:0] == 3'b101) begin // DEC r
             output_op = SUB_R_nn;
             reg_a = reg_from_r(op_0[5:3]);
             imm_1 = {16'h0001};
-            update_flags = 7'b1111110;
+            update_flags = 6'b111110;
         end else if (op_0 == 8'h35) begin // DEC (HL)
             output_op = DEC_mRd;
             reg_a = HL;
-            update_flags = 7'b1111110;
+            update_flags = 6'b111110;
         end else if (op_0 == 8'hDD && op_1 == 8'h35) begin // DEC (IX+d)
             output_op = DEC_mRd;
             reg_a = IX;
             imm_0 = op_2;
-            update_flags = 7'b1111110;
+            update_flags = 6'b111110;
         end else if (op_0 == 8'hFD && op_1 == 8'h35) begin // DEC (IY+d)
             output_op = DEC_mRd;
             reg_a = IY;
             imm_0 = op_2;
-            update_flags = 7'b1111110;
+            update_flags = 6'b111110;
 
 
         // General-Purpose
         end else if (op_0 == 8'h27) begin // DAA
             output_op = DAA;
-            update_flags = 7'b111101;
+            update_flags = 6'b111101;
         end else if (op_0 == 8'h2F) begin // CPL
             output_op = CPL;
-            update_flags = 7'b001010;
+            update_flags = 6'b001010;
         end else if (op_0 == 8'hED && op_1 == 8'h44) begin // NEG
             output_op = NEG;
-            update_flags = 7'b111111;
+            update_flags = 6'b111111;
         end else if (op_0 == 8'h3F) begin // CCF
             output_op = CCF;
-            update_flags = 7'b001011;
+            update_flags = 6'b001011;
         end else if (op_0 == 8'h37) begin // SCF
             output_op = SCF;
-            update_flags = 7'b001011;
+            update_flags = 6'b001011;
         end else if (op_0 == 8'h00) begin // NOP
             output_op = NOP;
         end else if (op_0 == 8'h76) begin // HALT
@@ -615,6 +637,59 @@ module decode #(
             output_op = IM1;
         end else if (op_0 == 8'hED && op_0 == 8'h5E) begin // IM2
             output_op = IM2;
+
+
+        // 16b math
+        end else if (op_0[7:6] == 2'b00 && op_0[3:0] == 4'b1001) begin // ADD HL, ss
+            output_op = ADD_R_R;
+            reg_a = HL;
+            reg_b = reg_from_dd(op_0[5:4]); // 'ss' is used in the spec, but it acts the same as dd
+            update_flags = 6'b0010101;
+        end else if (op_0 == 8'hED && op_1[7:6] == 2'b01 && op_1[3:0] == 4'b1010) begin // ADC HL, ss
+            output_op = ADC_R_R;
+            reg_a = HL;
+            reg_b = reg_from_dd(op_1[5:4]);
+            update_flags = 6'b111111;
+        end else if (op_0 == 8'hED && op_1[7:6] == 2'b01 && op_1[3:0] == 4'b0010) begin // SBC HL, ss
+            output_op = SBC_R_R;
+            reg_a = HL;
+            reg_b = reg_from_dd(op_1[5:4]);
+            update_flags = 6'b111111;
+        end else if (op_0 == 8'hDD && op_1[7:6] == 2'b00 && op_1[3:0] == 4'b1001) begin // ADD IX, pp
+            output_op = ADD_R_R;
+            reg_a = IX;
+            reg_b = reg_from_pp(op_1[5:4]);
+            update_flags = 6'b001011;
+        end else if (op_0 == 8'hFD && op_1[7:6] == 2'b00 && op_1[3:0] == 4'b1001) begin // ADD IY, rr
+            output_op = SBC_R_R;
+            reg_a = IY;
+            reg_b = reg_from_rr(op_1[5:4]);
+            update_flags = 6'b001011;
+        end else if (op_0[7:6] == 2'b00 && op_0[3:0] == 4'b0011) begin // INC ss
+            output_op = ADD_R_nn;
+            reg_a = reg_from_dd(op_0[5:4]);
+            imm_1 = 16'h01;
+        end else if (op_0 == 8'hDD && op_1 == 8'h23) begin // INC IX
+            output_op = ADD_R_nn;
+            reg_a = IX;
+            imm_1 = 16'h01;
+        end else if (op_0 == 8'hFD && op_1 == 8'h23) begin // INC IY
+            output_op = ADD_R_nn;
+            reg_a = IY;
+            imm_1 = 16'h01;
+        end else if (op_0[7:6] == 2'b00 && op_0[3:0] == 4'b1011) begin // DEC ss
+            output_op = SUB_R_nn;
+            reg_a = reg_from_dd(op_0[5:4]);
+            imm_1 = 16'h01;
+        end else if (op_0 == 8'hDD && op_1 == 8'h2B) begin // DEC IX
+            output_op = SUB_R_nn;
+            reg_a = IX;
+            imm_1 = 16'h01;
+        end else if (op_0 == 8'hFD && op_1 == 8'h2B) begin // DEC IY
+            output_op = SUB_R_nn;
+            reg_a = IY;
+            imm_1 = 16'h01;
+        
 
         // Jump
         end else if (op_0 == 8'hC3) begin // JP nn

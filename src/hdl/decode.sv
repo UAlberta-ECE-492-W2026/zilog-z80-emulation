@@ -586,9 +586,35 @@ module decode #(
 
 
         // General-Purpose
+        end else if (op_0 == 8'h27) begin // DAA
+            output_op = DAA;
+            update_flags = 7'b111101;
+        end else if (op_0 == 8'h2F) begin // CPL
+            output_op = CPL;
+            update_flags = 7'b001010;
+        end else if (op_0 == 8'hED && op_1 == 8'h44) begin // NEG
+            output_op = NEG;
+            update_flags = 7'b111111;
+        end else if (op_0 == 8'h3F) begin // CCF
+            output_op = CCF;
+            update_flags = 7'b001011;
+        end else if (op_0 == 8'h37) begin // SCF
+            output_op = SCF;
+            update_flags = 7'b001011;
         end else if (op_0 == 8'h00) begin // NOP
             output_op = NOP;
-
+        end else if (op_0 == 8'h76) begin // HALT
+            output_op = HALT;
+        end else if (op_0 == 8'hF3) begin // DI
+            output_op = DI;
+        end else if (op_0 == 8'hFB) begin // EI
+            output_op = EI;
+        end else if (op_0 == 8'hED && op_0 == 8'h46) begin // IM 0
+            output_op = IM0;
+        end else if (op_0 == 8'hED && op_0 == 8'h56) begin // IM 1
+            output_op = IM1;
+        end else if (op_0 == 8'hED && op_0 == 8'h5E) begin // IM2
+            output_op = IM2;
 
         // Jump
         end else if (op_0 == 8'hC3) begin // JP nn

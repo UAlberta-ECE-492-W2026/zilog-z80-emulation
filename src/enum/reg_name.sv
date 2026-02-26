@@ -12,6 +12,7 @@ typedef enum [4:0] {
     C,
     E,
     L,
+    AF,
     BC,
     DE,
     HL,

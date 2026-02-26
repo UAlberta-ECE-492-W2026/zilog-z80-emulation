@@ -42,9 +42,9 @@ module decode #(
         endcase
     endfunction
 
-    // transtale 16b register codes ('dd' in spec) to reg_name
-    function reg_name reg_from_dd (reg[1:0] r);
-        case(r)
+    // translate 16b register codes ('dd' in spec) to reg_name
+    function reg_name reg_from_dd (reg[1:0] dd);
+        case(dd)
             2'b00: reg_from_dd = BC;
             2'b01: reg_from_dd = DE;
             2'b10: reg_from_dd = HL;
@@ -53,9 +53,9 @@ module decode #(
         endcase
     endfunction
 
-    // transtale the other kind of 16b register codes ('qq' in spec) to reg_name
-    function reg_name reg_from_qq (reg[1:0] r);
-        case(r)
+    // translate the other kind of 16b register codes ('qq' in spec) to reg_name
+    function reg_name reg_from_qq (reg[1:0] qq);
+        case(qq)
             2'b00: reg_from_qq = BC;
             2'b01: reg_from_qq = DE;
             2'b10: reg_from_qq = HL;
@@ -618,19 +618,41 @@ module decode #(
             imm_0 = 8'b00000000;
             imm_1 = {8'h00, op_1};
         end else if (op_0 == 8'hE9) begin // JP (HL)
-            output_op = JP_mR;
+            output_op = JP_R;
             reg_a = HL;
         end else if (op_0 == 8'hE9) begin // JP (IX)
-            output_op = JP_mR;
+            output_op = JP_R;
             reg_a = IX;
         end else if (op_0 == 8'hE9) begin // JP (IY)
-            output_op = JP_mR;
+            output_op = JP_R;
             reg_a = IY;
         end else if (op_0 == 8'h10) begin // DJNZ, e
             output_op = DJNZ_e;
             reg_a = B;
             imm_0 = 0'HFF; // -1, possibly useful. Just add imm_0 and reg_a
             imm_1 = {8'h00, op_1};
+
+
+        // Call and Return
+        end else if (op_0 == 8'hCD) begin // CALL nn
+            output_op = CALL_nn;
+            imm_1 = {op_2, op_1};
+        end else if (op_0[7:6] == 2'b11 && op_0[2:0] == 3'b100) begin // CALL cc, nn
+            output_op = CALL_cc_nn;
+            imm_0 = {5'b00000, op_0[5:3]};
+            imm_1 = {op_2, op_1};
+        end else if (op_0 == 8'hC9) begin //RET
+            output_op = RET;
+        end else if (op_0[7:6] == 2'b11 && op_0[2:0] == 3'b100) begin //RET cc
+            output_op = RET_cc;
+            imm_0 = {5'b00000, op_0[5:3]};
+        end else if (op_0 == 8'hED && op_1 == 8'h4D) begin // RETI
+            output_op = RETI;
+        end else if (op_0 == 8'hED && op_1 == 8'h45) begin // RETN
+            output_op = RETN;
+        end else if (op_0[7:6] == 2'b11 && op_0[2:0] == 3'b111) begin
+            output_op = RST_p;
+            imm_0 = {op_0[5:3], 5'b00000}; // p is just shifted t
         end
     end
 endmodule

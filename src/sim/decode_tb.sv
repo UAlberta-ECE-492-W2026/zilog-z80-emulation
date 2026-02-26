@@ -1,47 +1,27 @@
 `timescale 1ns/1ps
-<<<<<<< HEAD
 `include "mop.sv"
 `include "reg_name.sv"
-=======
-`include "uop.sv"
->>>>>>> 422760c (minimum tb and build stuff setup)
 
 /* verilator lint_off UNUSEDSignal */
 task display_input_output_expected_decode(
         input reg[31:0] input_op, 
-<<<<<<< HEAD
         mop output_op, 
-=======
-        uop output_op, 
->>>>>>> 422760c (minimum tb and build stuff setup)
         reg_name reg_a, 
         reg_name reg_b, 
         reg[7:0] imm_0, 
         reg[15:0] imm_1, 
         reg use_16b_alu, 
-<<<<<<< HEAD
         reg[5:0] update_flags,
         mop expected_output_op, 
-=======
-        reg[6:0] update_flags,
-        uop expected_output_op, 
->>>>>>> 422760c (minimum tb and build stuff setup)
         reg_name expected_reg_a, 
         reg_name expected_reg_b, 
         reg[7:0] expected_imm_0, 
         reg[15:0] expected_imm_1, 
         reg expected_use_16b_alu, 
-<<<<<<< HEAD
         reg[5:0] expected_update_flags
     );
     $write("32'b%b | %s | %s | %s | 8'h%h | 16'h%h | 1'b%b | 6'b%b\n", input_op, output_op.name, reg_a.name, reg_b.name, imm_0, imm_1, use_16b_alu, update_flags);
     $write(" expected:                           | %s | %s | %s | 8'h%h | 16'h%h | 1'b%b | 6'b%b", expected_output_op.name, expected_reg_a.name, expected_reg_b.name, expected_imm_0, expected_imm_1, expected_use_16b_alu, expected_update_flags);
-=======
-        reg[6:0] expected_update_flags
-    );
-    $write("32'b%b | %s | %s | %s | 8'h%h | 16'h%h | 1'b%b | 7'b%b\n", input_op, output_op.name, reg_a.name, reg_b.name, imm_0, imm_1, use_16b_alu, update_flags);
-    $write(" expected:                           | %s | %s | %s | 8'h%h | 16'h%h | 1'b%b | 7'b%b", expected_output_op.name, expected_reg_a.name, expected_reg_b.name, expected_imm_0, expected_imm_1, expected_use_16b_alu, expected_update_flags);
->>>>>>> 422760c (minimum tb and build stuff setup)
 
 endtask // display_input_output_expected
 
@@ -50,51 +30,29 @@ endtask // display_input_output_expected
 module decode_tb();
     reg[31:0]   input_op;
 
-<<<<<<< HEAD
    	mop         output_op;
-=======
-   	uop         output_op;
->>>>>>> 422760c (minimum tb and build stuff setup)
 	reg_name    reg_a, reg_b;
    	wire [7:0]  imm_0;
    	wire [15:0] imm_1;
    	wire        use_16b_alu;
-<<<<<<< HEAD
     wire [5:0]  update_flags;
 
    	mop         expected_output_op;
-=======
-    wire [6:0]  update_flags;
-
-   	uop         expected_output_op;
->>>>>>> 422760c (minimum tb and build stuff setup)
 	reg_name    expected_reg_a, expected_reg_b;
    	reg [7:0]  expected_imm_0;
    	reg [15:0] expected_imm_1;
    	reg        expected_use_16b_alu;
-<<<<<<< HEAD
     reg [5:0]  expected_update_flags;
 
    	typedef struct {
         reg[31:0]   input_op;
         mop         expected_output_op;
-=======
-    reg [6:0]  expected_update_flags;
-
-   	typedef struct {
-        reg[31:0]   input_op;
-        uop         expected_output_op;
->>>>>>> 422760c (minimum tb and build stuff setup)
         reg_name    expected_reg_a;
         reg_name    expected_reg_b;
         reg [7:0]   expected_imm_0;
         reg [15:0]  expected_imm_1;
         reg         expected_use_16b_alu;
-<<<<<<< HEAD
         reg [5:0]   expected_update_flags;
-=======
-        reg [6:0]   expected_update_flags;
->>>>>>> 422760c (minimum tb and build stuff setup)
    	} test_vector;
 
    	test_vector testvectors[];
@@ -112,11 +70,7 @@ module decode_tb();
 
 
    	initial begin
-<<<<<<< HEAD
       	$display(" input op                            |  mop |  reg_a | reg_b |  imm_0 | imm_1 | use_16b_alu | expected_update_flags ");
-=======
-      	$display(" input op                            |  uop |  reg_a | reg_b |  imm_0 | imm_1 | use_16b_alu | expected_update_flags ");
->>>>>>> 422760c (minimum tb and build stuff setup)
       	for (int i = 0; i < $size(testvectors); ++i) begin
          	#10;
          	input_op                = testvectors[i].input_op;
@@ -169,11 +123,7 @@ module decode_tb();
 
    	decode #() dut(
         .input_op(input_op),
-<<<<<<< HEAD
         .enable(1'b1),
-=======
-        .enable(1'b0),
->>>>>>> 422760c (minimum tb and build stuff setup)
         .output_op(output_op),
         .reg_a(reg_a),
         .reg_b(reg_b),

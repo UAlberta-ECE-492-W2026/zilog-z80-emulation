@@ -648,7 +648,6 @@ module decode #(
         end else if (op_0 == 8'hED && op_0 == 8'h5E) begin // IM2
             output_op = IM2;
 
-
         // 16b math
         end else if (op_0[7:6] == 2'b00 && op_0[3:0] == 4'b1001) begin // ADD HL, ss
             output_op = ADD_R_R;
@@ -1002,7 +1001,6 @@ module decode #(
         end else if (op_0[7:6] == 2'b11 && op_0[2:0] == 3'b111) begin
             output_op = RST_p;
             imm_0 = {op_0[5:3], 5'b00000}; // p is just shifted t
-<<<<<<< HEAD
 
         /* IO group */
         end else if (op_0 == 8'hDB) begin // IN A, (n)
@@ -1045,8 +1043,6 @@ module decode #(
         end else if (op_0 == 8'hED && op_1 == 8'hBB) begin // OTDR
             output_op = OTDR;
             update_flags = 6'b111110;
-=======
->>>>>>> 7cd62bf (call and return)
         end
     end
 endmodule

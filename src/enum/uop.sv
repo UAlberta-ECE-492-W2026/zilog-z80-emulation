@@ -12,6 +12,9 @@
 // to two different registers.
 
 typedef enum [6:0] { 
+// misc
+    INVALID,
+
 // load
     LD_R_R,
     LD_R_nn,

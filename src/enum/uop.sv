@@ -108,7 +108,7 @@ typedef enum [6:0] {
     JP_cc_nn,
     JR_e,
     JR_cc_e,
-    JP_mR,
+    JP_R,
     DJNZ_e,
 
 // Call and Return

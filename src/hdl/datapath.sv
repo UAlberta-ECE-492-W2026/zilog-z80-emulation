@@ -50,7 +50,7 @@ module datapath (
     input  logic [7:0]  flags_in,
 
     // ######################
-    // Memory datapath hooks (optional)
+    // Memory datapath hooks
     // ######################
     input  logic [7:0]  mem_rdata,
 
@@ -65,7 +65,7 @@ module datapath (
 );
 
     // ############################################
-    // Register encoding constants (must match registerfile.sv)
+    // Register encoding constants
     // ############################################
     localparam logic [7:0]  REG_A  = 8'h00;
     localparam logic [7:0]  REG_B  = 8'h01;

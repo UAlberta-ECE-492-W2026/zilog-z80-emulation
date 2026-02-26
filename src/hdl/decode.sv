@@ -22,10 +22,11 @@ module decode #(
     wire [7:0] op_2;
     wire [7:0] op_3;
 
+    // defail to X if disabled. will output uop INVALID
     assign op_0 = enable ? input_op[31:24] : 'X;
-    assign op_1 = input_op[23:16];
-    assign op_2 = input_op[15:8];
-    assign op_3 = input_op[7:0];
+    assign op_1 = enable ? input_op[23:16] : 'X;
+    assign op_2 = enable ? input_op[15:8] : 'X;
+    assign op_3 = enable ? input_op[7:0] : 'X;
 
     // translates general purpose register codes (denoted as 'r' in spec) to internally used reg_name type
     function reg_name reg_from_r (reg[2:0] r);

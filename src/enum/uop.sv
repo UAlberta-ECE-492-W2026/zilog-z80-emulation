@@ -32,14 +32,8 @@ typedef enum [6:0] {
     EX_R_Rp,
     EXX,
     EX_mR_R,
-    LDI,
-    LDIR,
-    LDD,
-    LDDR,
-    CPI,
-    CPIR,
-    CPD,
-    CPDR,
+    LD_block,
+    CP_block,
 
 // Arithmetic
     ADD_R_R,

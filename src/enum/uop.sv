@@ -60,9 +60,7 @@ typedef enum [6:0] {
     CP_R_R,
     CP_R_nn,
     CP_R_mRd,
-    INC_R,
     INC_mRd,
-    DEC_R,
     DEC_mRd,
 
 //General-Purpose Arithmetic and CPU Control

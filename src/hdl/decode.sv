@@ -71,6 +71,7 @@ module decode #(
             2'b10: reg_from_qq = HL;
             2'b11: reg_from_qq = AF;
             default: reg_from_qq = NONE;
+<<<<<<< HEAD
         endcase
     endfunction
 
@@ -93,6 +94,8 @@ module decode #(
             2'b10: reg_from_rr = IX;
             2'b11: reg_from_rr = SP;
             default: reg_from_rr = NONE;
+=======
+>>>>>>> 5ca9b99 (8b math)
         endcase
     endfunction
 

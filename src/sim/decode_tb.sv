@@ -122,7 +122,7 @@ module decode_tb();
 
    	decode #() dut(
         .input_op(input_op),
-        .enable(1'b0),
+        .enable(1'b1),
         .output_op(output_op),
         .reg_a(reg_a),
         .reg_b(reg_b),

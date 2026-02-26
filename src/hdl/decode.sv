@@ -258,6 +258,61 @@ module decode #(
             reg_b = SP;
 
 
+        // Exchange, Block Transfer, and Search
+        end else if (op_0 == 8'hEB) begin // EX DE, HL
+            output_op = EX_R_R;
+            reg_a = DE;
+            reg_b = HL;
+        end else if (op_0 == 8'h08) begin // EX AF, AF′
+            output_op = EX_R_Rp;
+            reg_a = AF;
+        end else if (op_0 == 8'hD9) begin // EXX
+            output_op = EXX;
+        end else if (op_0 == 8'hE3) begin // EX (SP), HL
+            output_op = EX_mR_R;
+            reg_a = SP;
+            reg_b = HL;
+        end else if (op_0 == 8'hDD && op_1 == 8'hE3) begin // EX (SP), IX
+            output_op = EX_mR_R;
+            reg_a = SP;
+            reg_b = IX;
+        end else if (op_0 == 8'hFD && op_1 == 8'hE3) begin // EX (SP), IY
+            output_op = EX_mR_R;
+            reg_a = SP;
+            reg_b = IY;
+        end else if (op_0 == 8'hED && op_1 == 8'hA0) begin // LDI
+            output_op = LD_block;
+            imm_0 = 8'h01; // for LD_block imm_0 is added to DE and HL
+            update_flags = 7'b001110;
+        end else if (op_0 == 8'hED && op_1 == 8'hB0) begin // LDIR
+            output_op = LD_block;
+            imm_0 = 8'h01; 
+            imm_1 = 16'hFFFE; // -2. Add to PC.
+            update_flags = 7'b001110;
+        end else if (op_0 == 8'hED && op_1 == 8'hA8) begin // LDD
+            output_op = LD_block;
+            imm_0 = 8'hFF; // -1. make sure to sign extend
+            update_flags = 7'b001110;
+        end else if (op_0 == 8'hED && op_1 == 8'hB8) begin // LDDR
+            output_op = LD_block;
+            imm_0 = 8'hFF; // -1. make sure to sign extend
+            imm_1 = 16'hFFFE; // -2. Add to PC.
+            update_flags = 7'b001110;
+        end else if (op_0 == 8'hED && op_1 == 8'hA1) begin // CPI
+            output_op = CP_block;
+            imm_0 = 8'h01; // for CP_block imm_0 is added to HL
+        end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPIR
+            output_op = CP_block;
+            imm_0 = 8'h01; // for CP_block imm_0 is added to HL
+            imm_1 = 16'hFFFE; // -2. Add to PC.
+        end else if (op_0 == 8'hED && op_1 == 8'hA9) begin // CPD
+            output_op = CP_block;
+            imm_0 = 8'hFF; // -1 add to HL
+        end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPDR
+            output_op = CP_block;
+            imm_0 = 8'hFF; // -1 add to HL
+            imm_1 = 16'hFFFE; // -2. Add to PC.
+
         // 8b Arithmetic
         end else if (op_0[7:3] == 5'b10000) begin // ADD A, r
             output_op = ADD_R_R;

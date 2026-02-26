@@ -301,17 +301,21 @@ module decode #(
         end else if (op_0 == 8'hED && op_1 == 8'hA1) begin // CPI
             output_op = CP_block;
             imm_0 = 8'h01; // for CP_block imm_0 is added to HL
+            update_flags = 7'b111110;
         end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPIR
             output_op = CP_block;
             imm_0 = 8'h01; // for CP_block imm_0 is added to HL
             imm_1 = 16'hFFFE; // -2. Add to PC.
+            update_flags = 7'b111110;
         end else if (op_0 == 8'hED && op_1 == 8'hA9) begin // CPD
             output_op = CP_block;
             imm_0 = 8'hFF; // -1 add to HL
+            update_flags = 7'b111110;
         end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPDR
             output_op = CP_block;
             imm_0 = 8'hFF; // -1 add to HL
             imm_1 = 16'hFFFE; // -2. Add to PC.
+            update_flags = 7'b111110;
 
         // 8b Arithmetic
         end else if (op_0[7:3] == 5'b10000) begin // ADD A, r

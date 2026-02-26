@@ -71,7 +71,6 @@ module decode #(
             2'b10: reg_from_qq = HL;
             2'b11: reg_from_qq = AF;
             default: reg_from_qq = NONE;
-<<<<<<< HEAD
         endcase
     endfunction
 
@@ -94,8 +93,6 @@ module decode #(
             2'b10: reg_from_rr = IX;
             2'b11: reg_from_rr = SP;
             default: reg_from_rr = NONE;
-=======
->>>>>>> 5ca9b99 (8b math)
         endcase
     endfunction
 
@@ -1005,6 +1002,7 @@ module decode #(
         end else if (op_0[7:6] == 2'b11 && op_0[2:0] == 3'b111) begin
             output_op = RST_p;
             imm_0 = {op_0[5:3], 5'b00000}; // p is just shifted t
+<<<<<<< HEAD
 
         /* IO group */
         end else if (op_0 == 8'hDB) begin // IN A, (n)
@@ -1047,6 +1045,8 @@ module decode #(
         end else if (op_0 == 8'hED && op_1 == 8'hBB) begin // OTDR
             output_op = OTDR;
             update_flags = 6'b111110;
+=======
+>>>>>>> 7cd62bf (call and return)
         end
     end
 endmodule

@@ -1,0 +1,14 @@
+.PHONY: clean
+
+
+obj_dir/Vdecode_tb: ./src/hdl/decode.sv ./src/sim/decode_tb.sv ./src/enum/reg_name.sv ./src/enum/uop.sv
+	verilator --binary -j 0 -Wall -cc $^ --top-module decode_tb --timing +incdir+./src/enum
+
+out/sim:
+	mkdir -p ./out/sim
+
+run_decode: obj_dir/Vdecode_tb out/sim
+	./$<
+
+clean:
+	rm -rf ./obj_dir/ ./out

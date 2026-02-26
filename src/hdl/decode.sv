@@ -42,6 +42,26 @@ module decode #(
         endcase
     endfunction
 
+    // transtale 16b register codes ('dd' in spec) to reg_name
+    function reg_name reg_from_dd (reg[1:0] r);
+        case(r)
+            2'b00: reg_from_dd = BC;
+            2'b01: reg_from_dd = DE;
+            2'b10: reg_from_dd = HL;
+            2'b11: reg_from_dd = SP;
+        endcase
+    endfunction
+
+    // transtale the other kind of 16b register codes ('qq' in spec) to reg_name
+    function reg_name reg_from_qq (reg[1:0] r);
+        case(r)
+            2'b00: reg_from_qq = BC;
+            2'b01: reg_from_qq = DE;
+            2'b10: reg_from_qq = HL;
+            2'b11: reg_from_qq = AF;
+        endcase
+    endfunction
+
     // Decoder programming standards:
     //    if one register is used reg_a is used
     //    if an instruction writes to a register it writes to reg_a. similarly if it writes to (R) then R is also reg_a
@@ -155,6 +175,89 @@ module decode #(
             reg_b = A;
 
 
+        // 16b load
+        end else if (op_0[7:6] == 2'b00 && op_0[3:0] == 4'b0001) begin // LD dd, nn
+            output_op = LD_R_nn;
+            reg_a = reg_from_dd(op_0[5:4]);
+            imm_1 = {op_2, op_1};
+        end else if (op_0 == 8'hDD && op_1 == 8'h21) begin // LD IX, nn
+            output_op = LD_R_nn;
+            reg_a = IX;
+            imm_1 = {op_3, op_2};
+        end else if (op_0 == 8'hDD && op_1 == 8'h21) begin // LD IY, nn
+            output_op = LD_R_nn;
+            reg_a = IY;
+            imm_1 = {op_3, op_2};
+        end else if (op_0 == 8'h2A) begin // LD HL, (nn)
+            output_op = LD_R_mnn;
+            reg_a = HL;
+            imm_1 = {op_2, op_1};
+        end else if (op_0 == 8'hED && op_1[7:6] == 2'b01 && op_1[3:0] == 4'b1011) begin // LD dd, (nn)
+            output_op = LD_R_mnn;
+            reg_a = reg_from_dd(op_1[5:4]);
+            imm_1 = {op_2, op_1};
+        end else if (op_0 == 8'hDD && op_1 == 8'h2A) begin // LD IX, (nn)
+            output_op = LD_R_mnn;
+            reg_a = IX;
+            imm_1 = {op_3, op_2};
+        end else if (op_0 == 8'hFD && op_1 == 8'h2A) begin // LD IY, (nn)
+            output_op = LD_R_mnn;
+            reg_a = IY;
+            imm_1 = {op_3, op_2};
+        end else if (op_0 == 8'h22) begin // LD (nn), HL
+            output_op = LD_mnn_R;
+            reg_a = HL;
+            imm_1 = {op_2, op_1};
+        end else if (op_0 == 8'hED && op_1[7:6] == 2'b01 && op_1[3:0] == 4'b0011) begin // LD (nn), dd
+            output_op = LD_mnn_R;
+            reg_a = reg_from_dd(op_1[5:4]);
+            imm_1 = {op_3, op_2};
+        end else if (op_0 == 8'hDD && op_1 == 8'h22) begin // LD (nn), IX
+            output_op = LD_mnn_R;
+            reg_a = IX;
+            imm_1 = {op_3, op_2};
+        end else if (op_0 == 8'hFD && op_1 == 8'h22) begin // LD (nn), IY
+            output_op = LD_mnn_R;
+            reg_a = IY;
+            imm_1 = {op_3, op_2};
+        end else if (op_0 == 8'hF9) begin // LD SP, HL
+            output_op = LD_R_R;
+            reg_a = SP;
+            reg_b = HL;
+        end else if (op_0 == 8'hDD && op_1 == 8'hF9) begin // LD SP, IX
+            output_op = LD_R_R;
+            reg_a = SP;
+            reg_b = IX;
+        end else if (op_0 == 8'hFD && op_1 == 8'hF9) begin // LD SP, IX
+            output_op = LD_R_R;
+            reg_a = SP;
+            reg_b = IY;
+        end else if (op_0[7:6] == 2'b11 && op_0[3:0] == 4'b0101) begin  // PUSH qq
+            output_op = PUSH_R;
+            reg_a = SP;
+            reg_b = reg_from_qq(op_0[5:4]);
+        end else if (op_0 == 8'hDD && op_1 == 8'hE5) begin // PUSH IX
+            output_op = PUSH_R;
+            reg_a = SP;
+            reg_b = IX;
+        end else if (op_0 == 8'hFD && op_1 == 8'hE5) begin // PUSH IY
+            output_op = PUSH_R;
+            reg_a = SP;
+            reg_b = IY;
+        end else if (op_0[7:6] == 0'b11 && op_0[3:0] == 4'b0001) begin // POP qq
+            output_op = POP_R;
+            reg_a = reg_from_qq(op_0[5:4]);
+            reg_b = SP;
+        end else if (op_0 == 8'hDD && op_1 == 8'hE1) begin // POP IX
+            output_op = POP_R;
+            reg_a = IX;
+            reg_b = SP;
+        end else if (op_0 == 8'hFD && op_1 == 8'hE1) begin // POP IY
+            output_op = POP_R;
+            reg_a = IY;
+            reg_b = SP;
+
+
         // 8b Arithmetic
         end else if (op_0[7:3] == 5'b10000) begin // ADD A, r
             output_op = ADD_R_R;
@@ -178,7 +281,7 @@ module decode #(
             imm_1 = {op_2, op_1};
         end else if (op_0 == 8'h18) begin // JR e
             output_op = JR_e;
-            imm_1 = {8'h00, op_1}; // NOTE: imm1 used for e for consistency with other J instructions that use imm0 for cc
+            imm_1 = {8'h00, op_1}; // NOTE: imm_1 used for e for consistency with other J instructions that use imm_0 for cc
         end else if (op_0 == 8'h38) begin // JR C e
             output_op = JR_cc_e;
             imm_0 = 8'b00000011;

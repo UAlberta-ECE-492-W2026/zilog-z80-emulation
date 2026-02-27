@@ -8,19 +8,26 @@
 
 module horizontal_counter
 (
-input logic clk, //! might need to change with clk divider depending on refresh rate desired
+input logic clk,
+input logic reset, //! synchronous reset for stable startup
 output reg [15:0] horizontal_count_value = 0,
 output reg enable_vertical_counter = 0
 );
 
 always@(posedge clk) begin
-    if (horizontal_count_value < 799) begin
-        horizontal_count_value <= horizontal_count_value + 1; //! increment horizontal counter to next pixel
-        enable_vertical_counter <= 0; //! stay on current vertical line
+    if (reset) begin
+        horizontal_count_value <= 0; //! reset horizontal counter
+        enable_vertical_counter <= 0; //! ensure vertical counter is not triggered
     end
     else begin
-        horizontal_count_value <= 0; //! reset horizontal counter
-        enable_vertical_counter <= 1; //! trigger vertical counter causing next veritical line to draw
+        if (horizontal_count_value < 799) begin
+            horizontal_count_value <= horizontal_count_value + 1; //! increment horizontal counter to next pixel
+            enable_vertical_counter <= 0; //! stay on current vertical line
+        end
+        else begin
+            horizontal_count_value <= 0; //! reset horizontal counter
+            enable_vertical_counter <= 1; //! trigger vertical counter causing next veritical line to draw
+        end
     end
 end
 

@@ -8,18 +8,24 @@
 
 module vertical_counter
 (
-input logic clk, //! might need to change with clk divider depending on refresh rate desired
-output reg [15:0] vertical_count_value = 0,
-output reg enable_vertical_counter = 0
+input logic clk,
+input logic reset, //! synchronous reset for stable startup
+input logic enable_vertical_counter, //! pulse from horizontal counter at end of each line
+output reg [15:0] vertical_count_value = 0
 );
 
 always@(posedge clk) begin
-    if (enable_vertical_counter == 1'b1) begin
-        if (vertical_count_value < 524) begin
-            vertical_count_value <= vertical_count_value + 1; //! incremental vertical count value to next pixel
-        end
-        else begin
-            vertical_count_value <= 0; //! reset vertical count value
+    if (reset) begin
+        vertical_count_value <= 0; //! reset vertical count value
+    end
+    else begin
+        if (enable_vertical_counter == 1'b1) begin
+            if (vertical_count_value < 524) begin
+                vertical_count_value <= vertical_count_value + 1; //! incremental vertical count value to next pixel
+            end
+            else begin
+                vertical_count_value <= 0; //! reset vertical count value
+            end
         end
     end
 end

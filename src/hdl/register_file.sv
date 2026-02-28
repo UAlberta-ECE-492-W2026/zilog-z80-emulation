@@ -2,7 +2,7 @@
 `include "reg_name.sv"
 `include "exx_type.sv"
 
-module registerfile
+module register_file
 (
     input  wire         clk,
     input  wire         reset,
@@ -26,7 +26,10 @@ module registerfile
     input  wire [5:0]   f_reset,
     input  wire [5:0]   f_toggle,
     input  wire         f_w_en, // write enable for flags. note that a reg write to f can still happen if f_w_en = 0
-    output wire [5:0]   f
+    output wire [5:0]   f,
+
+    // PC output
+    output wire[15:0]   pc
 );
     reg [7:0] main_reg_set [0:7]; // In order A F B C D E H L
     reg [7:0] alt_reg_set [0:7]; // Same as above, but alternate bank
@@ -45,9 +48,12 @@ module registerfile
     assign internal_f_reset     = {f_reset[5:4], 1'bX, f_reset[3], 1'bX, f_reset[2:0]};
     assign internal_f_toggle    = {f_toggle[5:4], 1'bX, f_toggle[3], 1'bX, f_toggle[2:0]};
 
-
-    function automatic read_from_reg_file (reg_name R);
-        case(R)
+    assign pc = special_reg_set[4];
+    
+    // reg_sel unused?
+    // verilator lint_off UNUSEDSIGNAL
+    function automatic[15:0] read_from_reg_file (reg_name reg_sel);
+        case(reg_sel)
             ZERO:   read_from_reg_file = 16'h000;
             A:      read_from_reg_file={8'h00, main_reg_set[0]};
             F:      read_from_reg_file={8'h00, main_reg_set[1]};
@@ -61,18 +67,18 @@ module registerfile
             BC:     read_from_reg_file={main_reg_set[2], main_reg_set[3]};
             DE:     read_from_reg_file={main_reg_set[4], main_reg_set[5]};
             HL:     read_from_reg_file={main_reg_set[6], main_reg_set[7]};
-            I:      read_from_reg_file={special_reg_set[0][15:8]}; // I and R are stuck in the same special_reg_set entry
-            R:      read_from_reg_file={special_reg_set[0][7:0]};   
-            IX:     read_from_reg_file={special_reg_set[1]}; 
-            IY:     read_from_reg_file={special_reg_set[2]}; 
-            SP:     read_from_reg_file={special_reg_set[3]}; 
-            PC:     read_from_reg_file={special_reg_set[4]}; 
+            I:      read_from_reg_file={8'h00, special_reg_set[0][15:8]}; // I and R are stuck in the same special_reg_set entry
+            R:      read_from_reg_file={8'h00, special_reg_set[0][7:0]};   
+            IX:     read_from_reg_file=special_reg_set[1]; 
+            IY:     read_from_reg_file=special_reg_set[2]; 
+            SP:     read_from_reg_file=special_reg_set[3]; 
+            PC:     read_from_reg_file=special_reg_set[4]; 
             default:read_from_reg_file = 16'hXXXX;
         endcase
     endfunction
 
-    function automatic write_to_reg_file (reg_name R, reg[15:0] data);
-        case(R)
+    function void write_to_reg_file (reg_name reg_sel, reg[15:0] data);
+        case(reg_sel)
             A:      main_reg_set[0] = data[7:0];
             F:      main_reg_set[1] = data[7:0];
             B:      main_reg_set[2] = data[7:0];
@@ -106,6 +112,7 @@ module registerfile
             default:;
         endcase
     endfunction
+    // verilator lint_on UNUSEDSIGNAL
 
     // async reset. not sure if this is a good idea
     always_ff @(posedge reset or posedge clk) begin
@@ -116,7 +123,7 @@ module registerfile
             special_reg_set <= '{default:16'h0000};
 
         // exchange
-        end else if (! exx == NONE) begin
+        end else if (! (exx == EX_NONE)) begin
             case(exx)
                 EX_DE_HL: begin
                     main_reg_set[4] <= main_reg_set[6]; // D <=> H
@@ -134,6 +141,7 @@ module registerfile
                     main_reg_set <= alt_reg_set;
                     alt_reg_set <= main_reg_set;
                 end
+                default:;
             endcase
         
         // read/write and flag update

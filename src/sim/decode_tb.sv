@@ -1,5 +1,6 @@
 `timescale 1ns/1ps
-`include "uop.sv"
+`include "mop.sv"
+`include "reg_name.sv"
 
 /* verilator lint_off UNUSEDSignal */
 task display_input_output_expected_decode(

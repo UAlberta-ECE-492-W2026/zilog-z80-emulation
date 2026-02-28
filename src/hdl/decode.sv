@@ -3,6 +3,16 @@
 `include "reg_name.sv"
 /* verilator lint_off UNUSEDSIGNAL */
 
+/** Decode module
+
+ update_flag:
+ [5] - S
+ [4] - Z
+ [3] - H
+ [2] - P/V
+ [1] - N
+ [0] - C
+ */
 module decode #(
 
 ) (

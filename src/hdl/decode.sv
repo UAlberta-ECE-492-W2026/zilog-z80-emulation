@@ -1028,6 +1028,52 @@ module decode #(
         end else if (op_0[7:6] == 2'b11 && op_0[2:0] == 3'b111) begin
             output_op = RST_p;
             imm_0 = {op_0[5:3], 5'b00000}; // p is just shifted t
+
+        /* IO group */
+        end else if (op_0 == 8'hDB) begin // IN A, (n)
+           output_op = IN_R_mn;
+           imm_0 = op_1;
+           reg_a = A;
+        end else if (op_0 == 8'hED
+                     && op_1[7:6] == 2'b01
+                     && op_1[2:0] == 3'b000) begin // IN r (C)
+           output_op = IN_R_mR;
+           reg_a = reg_from_r(op_1[5:3]);
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hA2) begin // INI
+           output_op = INI;
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hB2) begin // INIR
+           output_op = INIR;
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hAA) begin // IND
+           output_op = IND;
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hBA) begin // INDR
+           output_op = INDR;
+           update_flags = 6'b111110;
+
+        end else if (op_0 == 8'hD3) begin // OUT (n), A
+           imm_0 = op_1;
+           output_op = OUT_mn_R;
+           reg_a = A;
+        end else if (op_0 == 8'hED
+                     && op_1[7:6] == 2'b01
+                     && op_1[2:0] == 3'b001) begin // OUT (C), r
+           reg_a = reg_from_r(op_1[5:3]);
+           output_op = OUT_mR_R;
+        end else if (op_0 == 8'hED && op_1 == 8'hA3) begin // OUTI
+           output_op = OUTI;
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hB3) begin // OTIR
+           output_op = OTIR;
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hAB) begin // OUTD
+           output_op = OUTD;
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hBB) begin // OTDR
+           output_op = OTDR;
+           update_flags = 6'b111110;
         end
     end
 endmodule

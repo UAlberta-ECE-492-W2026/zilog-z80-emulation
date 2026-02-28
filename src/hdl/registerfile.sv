@@ -1,100 +1,155 @@
 `timescale 1ns/1ps
-
-//! This module implements the 8-bit and 16-bit register file that was defined in the Zilog Z80
+`include "reg_name.sv"
+`include "exx_type.sv"
 
 module registerfile
 (
-input  logic        clk,
-input  logic        reset,
-input  logic        reg8_we,
-input  reg   [7:0]  reg8_dst,
-input  logic [7:0]  reg8_data,
-input  logic        reg16_we,
-input  reg   [15:0] reg16_dst,
-input  logic [15:0] reg16_data,
-input  logic        flags_we,
-input  logic [7:0]  flags,
-output logic [7:0]  A, B, C, D, E, H, L, F,
-output logic [15:0] PC, SP
+    input  wire         clk,
+    input  wire         reset,
+
+    // exchange input
+    input exx_type      exx,
+
+    // register read ports
+    input  reg_name     reg_a_sel,
+    input  reg_name     reg_b_sel,
+    output wire[15:0]   reg_a,
+    output wire[15:0]   reg_b,
+
+    // register write port
+    input  reg_name     reg_w_sel,
+    input  wire [15:0]  reg_w_data,
+    input  wire         reg_w_en,
+
+    // flags
+    input  wire [5:0]   f_set,
+    input  wire [5:0]   f_reset,
+    input  wire [5:0]   f_toggle,
+    input  wire         f_w_en, // write enable for flags. note that a reg write to f can still happen if f_w_en = 0
+    output wire [5:0]   f
 );
+    reg [7:0] main_reg_set [0:7]; // In order A F B C D E H L
+    reg [7:0] alt_reg_set [0:7]; // Same as above, but alternate bank
 
-parameter [7:0] reg_A  = 8'h00;
-parameter [7:0] reg_B  = 8'h01;
-parameter [7:0] reg_C  = 8'h02;
-parameter [7:0] reg_D  = 8'h03;
-parameter [7:0] reg_E  = 8'h04;
-parameter [7:0] reg_H  = 8'h05;
-parameter [7:0] reg_L  = 8'h06;
-parameter [15:0] reg_BC = 16'h07;
-parameter [15:0] reg_DE = 16'h08;
-parameter [15:0] reg_HL = 16'h09;
-parameter [15:0] reg_SP = 16'h10;
+    reg [15:0] special_reg_set [0:4]; // IR IX IY SP PC
 
-function automatic [7:0] read_reg8(input reg [7:0] register);
-    case (register)
-        reg_A: read_reg8 = A;
-        reg_B: read_reg8 = B;
-        reg_C: read_reg8 = C;
-        reg_D: read_reg8 = D;
-        reg_E: read_reg8 = E;
-        reg_H: read_reg8 = H;
-        reg_L: read_reg8 = L;
-        default: read_reg8 = 8'h0;
-    endcase
-endfunction
+    wire [7:0] internal_f_set;
+    wire [7:0] internal_f_reset;
+    wire [7:0] internal_f_toggle;
 
-function automatic [15:0] read_reg16(input reg [15:0] register_register);
-    case (register_register)
-        reg_BC: read_reg16 = {B, C};
-        reg_DE: read_reg16 = {D, E};
-        reg_HL: read_reg16 = {H, L};
-        reg_SP: read_reg16 = SP;
-        default: read_reg16 = 16'h0;
-    endcase
-endfunction
 
-//! Initialization of registers
-always_ff @(posedge clk) begin
-    if (reset) begin
-        A  <= 8'h0;
-        B  <= 8'h0;
-        C  <= 8'h0;
-        D  <= 8'h0;
-        E  <= 8'h0;
-        H  <= 8'h0;
-        L  <= 8'h0;
-        F  <= 8'h0;
-        PC <= 16'h0;
-        SP <= 16'hFFFE;
-    end else begin
+    // the stored version of f is 8 bits with two 'X' (unused) flags. The external value is only the 6 used bits
+    assign f = {main_reg_set[0][7:6], main_reg_set[0][4], main_reg_set[0][2:0]};
 
-        if (reg8_we) begin
-            case (reg8_dst)
-                reg_A: A <= reg8_data;
-                reg_B: B <= reg8_data;
-                reg_C: C <= reg8_data;
-                reg_D: D <= reg8_data;
-                reg_E: E <= reg8_data;
-                reg_H: H <= reg8_data;
-                reg_L: L <= reg8_data;
-                default;
+    assign internal_f_set       = {f_set[5:4], 1'bX, f_set[3], 1'bX, f_set[2:0]};
+    assign internal_f_reset     = {f_reset[5:4], 1'bX, f_reset[3], 1'bX, f_reset[2:0]};
+    assign internal_f_toggle    = {f_toggle[5:4], 1'bX, f_toggle[3], 1'bX, f_toggle[2:0]};
+
+
+    function automatic read_from_reg_file (reg_name R);
+        case(R)
+            ZERO:   read_from_reg_file = 16'h000;
+            A:      read_from_reg_file={8'h00, main_reg_set[0]};
+            F:      read_from_reg_file={8'h00, main_reg_set[1]};
+            B:      read_from_reg_file={8'h00, main_reg_set[2]};
+            C:      read_from_reg_file={8'h00, main_reg_set[3]};
+            D:      read_from_reg_file={8'h00, main_reg_set[4]};
+            E:      read_from_reg_file={8'h00, main_reg_set[5]};
+            H:      read_from_reg_file={8'h00, main_reg_set[6]};
+            L:      read_from_reg_file={8'h00, main_reg_set[7]};
+            AF:     read_from_reg_file={main_reg_set[0], main_reg_set[1]};
+            BC:     read_from_reg_file={main_reg_set[2], main_reg_set[3]};
+            DE:     read_from_reg_file={main_reg_set[4], main_reg_set[5]};
+            HL:     read_from_reg_file={main_reg_set[6], main_reg_set[7]};
+            I:      read_from_reg_file={special_reg_set[0][15:8]}; // I and R are stuck in the same special_reg_set entry
+            R:      read_from_reg_file={special_reg_set[0][7:0]};   
+            IX:     read_from_reg_file={special_reg_set[1]}; 
+            IY:     read_from_reg_file={special_reg_set[2]}; 
+            SP:     read_from_reg_file={special_reg_set[3]}; 
+            PC:     read_from_reg_file={special_reg_set[4]}; 
+            default:read_from_reg_file = 16'hXXXX;
+        endcase
+    endfunction
+
+    function automatic write_to_reg_file (reg_name R, reg[15:0] data);
+        case(R)
+            A:      main_reg_set[0] = data[7:0];
+            F:      main_reg_set[1] = data[7:0];
+            B:      main_reg_set[2] = data[7:0];
+            C:      main_reg_set[3] = data[7:0];
+            D:      main_reg_set[4] = data[7:0];
+            E:      main_reg_set[5] = data[7:0];
+            H:      main_reg_set[6] = data[7:0];
+            L:      main_reg_set[7] = data[7:0];
+            AF: begin
+                    main_reg_set[0] = data[7:0];
+                    main_reg_set[1] = data[15:8];
+            end
+            BC: begin
+                    main_reg_set[2] = data[7:0];
+                    main_reg_set[3] = data[15:8];
+            end
+            DE: begin
+                    main_reg_set[4] = data[7:0];
+                    main_reg_set[5] = data[15:8];
+            end
+            HL: begin
+                    main_reg_set[6] = data[7:0];
+                    main_reg_set[7] = data[15:8];
+            end
+            I:      special_reg_set[0][15:8] = data[7:0];
+            R:      special_reg_set[0][7:0] = data[7:0];   
+            IX:     special_reg_set[1] = data; 
+            IY:     special_reg_set[2] = data; 
+            SP:     special_reg_set[3] = data; 
+            PC:     special_reg_set[4] = data;
+            default:;
+        endcase
+    endfunction
+
+    // async reset. not sure if this is a good idea
+    always_ff @(posedge reset or posedge clk) begin
+        //reset
+        if (reset) begin
+            main_reg_set    <= '{default:8'h00};
+            alt_reg_set     <= '{default:8'h00};
+            special_reg_set <= '{default:16'h0000};
+
+        // exchange
+        end else if (! exx == NONE) begin
+            case(exx)
+                EX_DE_HL: begin
+                    main_reg_set[4] <= main_reg_set[6]; // D <=> H
+                    main_reg_set[6] <= main_reg_set[5];
+                    main_reg_set[5] <= main_reg_set[7]; // E <=> L
+                    main_reg_set[7] <= main_reg_set[5];
+                end
+                EX_AF_AFp: begin
+                    main_reg_set[0] <= alt_reg_set[0]; // A <=> A'
+                    alt_reg_set[0] <= main_reg_set[0];
+                    main_reg_set[1] <= alt_reg_set[1]; // F <=> F'
+                    alt_reg_set[1] <= main_reg_set[1];
+                end
+                EXX: begin
+                    main_reg_set <= alt_reg_set;
+                    alt_reg_set <= main_reg_set;
+                end
             endcase
-        end
+        
+        // read/write and flag update
+        end else begin
+            reg_a <= read_from_reg_file(reg_a_sel);
+            reg_b <= read_from_reg_file(reg_b_sel);
 
-        if (reg16_we) begin
-            case (reg16_dst[15:0])
-                reg_BC: begin B <= reg16_data[15:8]; C <= reg16_data[7:0]; end
-                reg_DE: begin D <= reg16_data[15:8]; E <= reg16_data[7:0]; end
-                reg_HL: begin H <= reg16_data[15:8]; L <= reg16_data[7:0]; end
-                reg_SP: SP <= reg16_data;
-                default;
-            endcase
-        end
+            if (reg_w_en == 1'b1) begin
+                write_to_reg_file(reg_w_sel, reg_w_data);
+            end
 
-        if (flags_we) begin
-            F <= flags;
+            if (f_w_en == 1'b1) begin
+                main_reg_set[1] <= main_reg_set[1] | internal_f_set;
+                main_reg_set[1] <= main_reg_set[1] & ( ~ internal_f_reset);
+                main_reg_set[1] <= main_reg_set[1] ^ internal_f_toggle;
+            end
         end
     end
-end
-
 endmodule

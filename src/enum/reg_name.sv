@@ -21,7 +21,7 @@ typedef enum [4:0] {
     IX,
     IY,
     SP,
-    PC
+    PC // special case
 } reg_name;
 
 `endif

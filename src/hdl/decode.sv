@@ -864,13 +864,106 @@ module decode #(
 
         end else if (op_0 == 8'hED && op_1 == 8'h6F) begin //RLD
            output_op = RLD;
-           update_flag = 6'b111110;
+           update_flags = 6'b111110;
            reg_a = HL;
         end else if (op_0 == 8'hED && op_1 == 8'h67) begin //RRD
            output_op = RRD;
-           update_flag = 6'b111110;
+           update_flags = 6'b111110;
            reg_a = HL;
 
+        /* Bit set, reset, and test
+         We are choosing the output the bit to test to imm_1
+         */
+        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b01 && op_1[2:0] == 3'b110) begin // BIT b, HL
+           /* NOTE: It was assumed that the encoding for 3'b111 denotes bit 7,
+            and not bit 1.
+             */
+           output_op = BIT_b_mRd;
+           update_flags = 6'b011010;
+           reg_a = HL;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b01) begin // BIT b, r
+           output_op = BIT_b_R;
+           update_flags = 6'b011010;
+           reg_a = reg_from_r(op_1[2:0]);
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hDD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b01
+                     && op_3[2:0] == 3'b110) begin // BIT b, IX
+           output_op = BIT_b_mRd;
+           update_flags = 6'b011010;
+           reg_a = IX;
+           imm_0 = op_2;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hFD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b01
+                     && op_3[2:0] == 3'b110) begin // BIT b, IY
+           output_op = BIT_b_mRd;
+           update_flags = 6'b011010;
+           reg_a = IY;
+           imm_0 = op_2;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+
+        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b11 && op_1[2:0] == 3'b110) begin // SET b, HL
+           output_op = SET_b_mRd;
+           update_flags = 6'b0;
+           reg_a = HL;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b11) begin // SET b, r
+           output_op = SET_b_R;
+           update_flags = 6'b0;
+           reg_a = reg_from_r(op_1[2:0]);
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hDD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b11
+                     && op_3[2:0] == 3'b110) begin // SET b, IX
+           output_op = SET_b_mRd;
+           update_flags = 6'b0;
+           reg_a = IX;
+           imm_0 = op_2;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hFD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b11
+                     && op_3[2:0] == 3'b110) begin // SET b, IY
+           output_op = SET_b_mRd;
+           update_flags = 6'b0;
+           reg_a = IY;
+           imm_0 = op_2;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+
+           /* RES b, m */
+        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b10 && op_1[2:0] == 3'b110) begin // RES b, HL
+           output_op = RES_b_mRd;
+           update_flags = 6'b0;
+           reg_a = HL;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b10) begin // RES b, r
+           output_op = RES_b_R;
+           update_flags = 6'b0;
+           reg_a = reg_from_r(op_1[2:0]);
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hDD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b10
+                     && op_3[2:0] == 3'b110) begin // RES b, IX
+           output_op = RES_b_mRd;
+           update_flags = 6'b0;
+           reg_a = IX;
+           imm_0 = op_2;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hFD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b10
+                     && op_3[2:0] == 3'b110) begin // RES b, IY
+           output_op = RES_b_mRd;
+           update_flags = 6'b0;
+           reg_a = IY;
+           imm_0 = op_2;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
 
         // Jump
         end else if (op_0 == 8'hC3) begin // JP nn

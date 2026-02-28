@@ -133,5 +133,5 @@ typedef enum [6:0] {
     OTIR,
     OUTD,
     OTDR // not being able to add a trailing comma here is sad
-} uop;
+} mop;
 `endif

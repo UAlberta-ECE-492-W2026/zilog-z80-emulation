@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "uop.sv"
+`include "mop.sv"
 `include "reg_name.sv"
 /* verilator lint_off UNUSEDSIGNAL */
 
@@ -8,7 +8,7 @@ module decode #(
 ) (
     input wire [31:0] input_op,
     input wire enable,
-    output uop output_op,
+    output mop output_op,
     output reg_name reg_a,
     output reg_name reg_b,
     output wire [7:0] imm_0,
@@ -22,7 +22,7 @@ module decode #(
     wire [7:0] op_2;
     wire [7:0] op_3;
 
-    // defail to X if disabled. will output uop INVALID
+    // defail to X if disabled. will output mop INVALID
     assign op_0 = enable ? input_op[31:24] : 'X;
     assign op_1 = enable ? input_op[23:16] : 'X;
     assign op_2 = enable ? input_op[15:8] : 'X;

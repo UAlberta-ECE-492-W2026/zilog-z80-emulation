@@ -689,7 +689,39 @@ module decode #(
             output_op = SUB_R_nn;
             reg_a = IY;
             imm_1 = 16'h01;
-        
+
+        /* Shift and Rotate *************************************************/
+        end else if (op_0 == 8'h07) begin // RLCA
+           output_op = RLC_R;
+           reg_a = A;
+           update_flags = 6'b001011;
+
+        end else if (op_0 == 8'h17) begin // RLA
+           output_op = RL_R;
+           reg_a = A;
+           update_flags = 6'b001011;
+        end else if (op_0 == 8'h0F) begin // RRCA
+           output_op = RRC_R;
+           reg_a = A;
+           update_flags = 6'b001011;
+        end else if (op_0 == 8'h1F) begin //RRA
+           output_op = RR_R;
+           reg_a = A;
+           update_flags = 6'b001011;
+        end else if (op_0 == 8'hCB) begin
+           update_flags = 6'b111111;
+           /* shared first byte */
+           if (op_1 == 06) begin // RLC HL
+              output_op = RLC_mRd;
+              reg_a = HL;
+           end else begin // RLC r
+              output_op = RLC_R;
+              reg_a = reg_from_r(op_1[2:0]);
+           end
+        end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h06) begin // RLC (IX+d)
+           output_op = RLC_mRd;
+           reg_a = IX;
+
 
         // Jump
         end else if (op_0 == 8'hC3) begin // JP nn

@@ -3,6 +3,16 @@
 `include "reg_name.sv"
 /* verilator lint_off UNUSEDSIGNAL */
 
+/** Decode module
+
+ update_flag:
+ [5] - S
+ [4] - Z
+ [3] - H
+ [2] - P/V
+ [1] - N
+ [0] - C
+ */
 module decode #(
 
 ) (
@@ -689,7 +699,271 @@ module decode #(
             output_op = SUB_R_nn;
             reg_a = IY;
             imm_1 = 16'h01;
-        
+
+        /* Shift and Rotate *************************************************/
+        end else if (op_0 == 8'h07) begin // RLCA
+           output_op = RLC_R;
+           reg_a = A;
+           update_flags = 6'b001011;
+
+        end else if (op_0 == 8'h17) begin // RLA
+           output_op = RL_R;
+           reg_a = A;
+           update_flags = 6'b001011;
+        end else if (op_0 == 8'h0F) begin // RRCA
+           output_op = RRC_R;
+           reg_a = A;
+           update_flags = 6'b001011;
+        end else if (op_0 == 8'h1F) begin //RRA
+           output_op = RR_R;
+           reg_a = A;
+           update_flags = 6'b001011;
+        /* the ordering matters here, since RLC r would match RLC HL when placed in front */
+        end else if (op_0 == 8'hCB && op_1 == 8'h06) begin // RLC HL
+           update_flags = 6'b111111;
+           output_op = RLC_mRd;
+           reg_a = HL;
+        end else if (op_0 == 8'hCB && op_1[7:3] == 5'h0) begin // RLC r
+           update_flags = 6'b111111;
+           output_op = RLC_R;
+           reg_a = reg_from_r(op_1[2:0]);
+        end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h06) begin // RLC (IX+d)
+           update_flags = 6'b111111;
+           output_op = RLC_mRd;
+           imm_0 = op_2;
+           reg_a = IX;
+        end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h06) begin // RLC (IY+d)
+           update_flags = 6'b111111;
+           output_op = RLC_mRd;
+           imm_0 = op_2;
+           reg_a = IY;
+
+        /* RL m */
+        end else if (op_0 == 8'hCB && op_1 == 8'h16) begin // RL HL
+           reg_a = HL;
+           update_flags = 6'b111111;
+           output_op = RL_mRd;
+        end else if (op_0 == 8'hCB && op_1[7:3] == 5'b10) begin // RL r
+           reg_a = reg_from_r(op_1[2:0]);
+           update_flags = 6'b111111;
+           output_op = RL_R;
+        end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h16) begin // RL (IX+d)
+           update_flags = 6'b111111;
+           output_op = RL_mRd;
+           imm_0 = op_2;
+           reg_a = IX;
+        end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h16) begin // RL (IY+d)
+           update_flags = 6'b111111;
+           output_op = RL_mRd;
+           imm_0 = op_2;
+           reg_a = IY;
+
+        /* RRC m */
+        end else if (op_0 == 8'hCB && op_1 == 8'h0E) begin // RRC (HL)
+           output_op = RRC_mRd;
+           reg_a = HL;
+           update_flags = 6'b111111;
+        end else if (op_0 == 8'hCB && op_1[7:3] == 5'h1) begin // RRC r
+           output_op = RRC_R;
+           reg_a = reg_from_r(op_1[2:0]);
+           update_flags = 6'b111111;
+        end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h0E) begin // RRC (IX+d)
+           update_flags = 6'b111111;
+           output_op = RRC_mRd;
+           imm_0 = op_2;
+           reg_a = IX;
+        end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h0E) begin // RRC (IY+d)
+           update_flags = 6'b111111;
+           output_op = RRC_mRd;
+           imm_0 = op_2;
+           reg_a = IY;
+
+        /* RR m */
+        end else if (op_0 == 8'hCB && op_1 == 8'h1E) begin // RR (HL)
+           output_op = RR_mRd;
+           reg_a = HL;
+           update_flags = 6'b111111;
+        end else if (op_0 == 8'hCB && op_1[7:3] == 5'b00011) begin // RR r
+           /* NOTE: There might be a typo with this encoding in the spec. We
+            are now assuming that the top 4 bits of the second operand actually
+            looks like 5'b00011
+             */
+           output_op = RR_R;
+           reg_a = reg_from_r(op_1[2:0]);
+           update_flags = 6'b111111;
+        end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h1E) begin // RR (IX+d)
+           update_flags = 6'b111111;
+           output_op = RR_mRd;
+           imm_0 = op_2;
+           reg_a = IX;
+        end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h1E) begin // RR (IY+d)
+           update_flags = 6'b111111;
+           output_op = RR_mRd;
+           imm_0 = op_2;
+           reg_a = IY;
+           
+        /* SLA m */
+        end else if (op_0 == 8'hCB && op_1 == 8'h26) begin // SLA (HL)
+           output_op = SLA_mRd;
+           reg_a = HL;
+           update_flags = 6'b111111;
+        end else if (op_0 == 8'hCB && op_1[7:3] == 5'b00100) begin // SLA r
+           output_op = SLA_R;
+           reg_a = reg_from_r(op_1[2:0]);
+           update_flags = 6'b111111;
+        end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h26) begin // SLA (IX+d)
+           update_flags = 6'b111111;
+           output_op = SLA_mRd;
+           imm_0 = op_2;
+           reg_a = IX;
+        end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h26) begin // SLA (IY+d)
+           update_flags = 6'b111111;
+           output_op = SLA_mRd;
+           imm_0 = op_2;
+           reg_a = IY;
+
+        /* SRA m */
+        end else if (op_0 == 8'hCB && op_1 == 8'h2E) begin // SRA (HL)
+           output_op = SRA_mRd;
+           reg_a = HL;
+           update_flags = 6'b111111;
+        end else if (op_0 == 8'hCB && op_1[7:3] == 5'b00101) begin // SRA r
+           output_op = SRA_R;
+           reg_a = reg_from_r(op_1[2:0]);
+           update_flags = 6'b111111;
+        end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h2E) begin // SRA (IX+d)
+           update_flags = 6'b111111;
+           output_op = SRA_mRd;
+           imm_0 = op_2;
+           reg_a = IX;
+        end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h2E) begin // SRA (IY+d)
+           update_flags = 6'b111111;
+           output_op = SRA_mRd;
+           imm_0 = op_2;
+           reg_a = IY;
+
+        /* SRL m */
+        end else if (op_0 == 8'hCB && op_1 == 8'h3E) begin // SRL (HL)
+           output_op = SRL_mRd;
+           reg_a = HL;
+           update_flags = 6'b111111;
+        end else if (op_0 == 8'hCB && op_1[7:3] == 5'b00111) begin // SRL r
+           output_op = SRL_R;
+           reg_a = reg_from_r(op_1[2:0]);
+           update_flags = 6'b111111;
+        end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h3E) begin // SRL (IX+d)
+           update_flags = 6'b111111;
+           output_op = SRL_mRd;
+           imm_0 = op_2;
+           reg_a = IX;
+        end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h3E) begin // SRL (IY+d)
+           update_flags = 6'b111111;
+           output_op = SRL_mRd;
+           imm_0 = op_2;
+           reg_a = IY;
+
+        end else if (op_0 == 8'hED && op_1 == 8'h6F) begin //RLD
+           output_op = RLD;
+           update_flags = 6'b111110;
+           reg_a = HL;
+        end else if (op_0 == 8'hED && op_1 == 8'h67) begin //RRD
+           output_op = RRD;
+           update_flags = 6'b111110;
+           reg_a = HL;
+
+        /* Bit set, reset, and test
+         We are choosing the output the bit to test to imm_1
+         */
+        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b01 && op_1[2:0] == 3'b110) begin // BIT b, HL
+           /* NOTE: It was assumed that the encoding for 3'b111 denotes bit 7,
+            and not bit 1.
+             */
+           output_op = BIT_b_mRd;
+           update_flags = 6'b011010;
+           reg_a = HL;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b01) begin // BIT b, r
+           output_op = BIT_b_R;
+           update_flags = 6'b011010;
+           reg_a = reg_from_r(op_1[2:0]);
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hDD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b01
+                     && op_3[2:0] == 3'b110) begin // BIT b, IX
+           output_op = BIT_b_mRd;
+           update_flags = 6'b011010;
+           reg_a = IX;
+           imm_0 = op_2;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hFD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b01
+                     && op_3[2:0] == 3'b110) begin // BIT b, IY
+           output_op = BIT_b_mRd;
+           update_flags = 6'b011010;
+           reg_a = IY;
+           imm_0 = op_2;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+
+        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b11 && op_1[2:0] == 3'b110) begin // SET b, HL
+           output_op = SET_b_mRd;
+           update_flags = 6'b0;
+           reg_a = HL;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b11) begin // SET b, r
+           output_op = SET_b_R;
+           update_flags = 6'b0;
+           reg_a = reg_from_r(op_1[2:0]);
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hDD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b11
+                     && op_3[2:0] == 3'b110) begin // SET b, IX
+           output_op = SET_b_mRd;
+           update_flags = 6'b0;
+           reg_a = IX;
+           imm_0 = op_2;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hFD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b11
+                     && op_3[2:0] == 3'b110) begin // SET b, IY
+           output_op = SET_b_mRd;
+           update_flags = 6'b0;
+           reg_a = IY;
+           imm_0 = op_2;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+
+           /* RES b, m */
+        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b10 && op_1[2:0] == 3'b110) begin // RES b, HL
+           output_op = RES_b_mRd;
+           update_flags = 6'b0;
+           reg_a = HL;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b10) begin // RES b, r
+           output_op = RES_b_R;
+           update_flags = 6'b0;
+           reg_a = reg_from_r(op_1[2:0]);
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hDD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b10
+                     && op_3[2:0] == 3'b110) begin // RES b, IX
+           output_op = RES_b_mRd;
+           update_flags = 6'b0;
+           reg_a = IX;
+           imm_0 = op_2;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
+        end else if (op_0 == 8'hFD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b10
+                     && op_3[2:0] == 3'b110) begin // RES b, IY
+           output_op = RES_b_mRd;
+           update_flags = 6'b0;
+           reg_a = IY;
+           imm_0 = op_2;
+           imm_1 = {{13{1'b0}}, op_1[5:3]};
 
         // Jump
         end else if (op_0 == 8'hC3) begin // JP nn
@@ -754,6 +1028,52 @@ module decode #(
         end else if (op_0[7:6] == 2'b11 && op_0[2:0] == 3'b111) begin
             output_op = RST_p;
             imm_0 = {op_0[5:3], 5'b00000}; // p is just shifted t
+
+        /* IO group */
+        end else if (op_0 == 8'hDB) begin // IN A, (n)
+           output_op = IN_R_mn;
+           imm_0 = op_1;
+           reg_a = A;
+        end else if (op_0 == 8'hED
+                     && op_1[7:6] == 2'b01
+                     && op_1[2:0] == 3'b000) begin // IN r (C)
+           output_op = IN_R_mR;
+           reg_a = reg_from_r(op_1[5:3]);
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hA2) begin // INI
+           output_op = INI;
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hB2) begin // INIR
+           output_op = INIR;
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hAA) begin // IND
+           output_op = IND;
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hBA) begin // INDR
+           output_op = INDR;
+           update_flags = 6'b111110;
+
+        end else if (op_0 == 8'hD3) begin // OUT (n), A
+           imm_0 = op_1;
+           output_op = OUT_mn_R;
+           reg_a = A;
+        end else if (op_0 == 8'hED
+                     && op_1[7:6] == 2'b01
+                     && op_1[2:0] == 3'b001) begin // OUT (C), r
+           reg_a = reg_from_r(op_1[5:3]);
+           output_op = OUT_mR_R;
+        end else if (op_0 == 8'hED && op_1 == 8'hA3) begin // OUTI
+           output_op = OUTI;
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hB3) begin // OTIR
+           output_op = OTIR;
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hAB) begin // OUTD
+           output_op = OUTD;
+           update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hBB) begin // OTDR
+           output_op = OTDR;
+           update_flags = 6'b111110;
         end
     end
 endmodule

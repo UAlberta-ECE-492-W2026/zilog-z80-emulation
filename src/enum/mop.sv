@@ -99,7 +99,7 @@ typedef enum [6:0] {
     BIT_b_R,
     BIT_b_mRd,
     SET_b_R,
-    SET_b_mRb,
+    SET_b_mRd,
     RES_b_R,
     RES_b_mRd,
 

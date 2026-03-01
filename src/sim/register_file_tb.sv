@@ -172,6 +172,8 @@ module register_file_tb();
         testvectors.push_back('{EX_NONE,   DE,        HL,        NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h4455, 16'h6677, 0,         0       }); // check
         testvectors.push_back('{EX_DE_HL,  NONE,      NONE,      NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0000, 16'h0000, 0,         0       }); // swap
         testvectors.push_back('{EX_NONE,   DE,        HL,        NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h6677, 16'h4455, 0,         0       }); // check
+        testvectors.push_back('{EX_DE_HL,  NONE,      NONE,      NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0000, 16'h0000, 0,         0       }); // swap back
+        testvectors.push_back('{EX_NONE,   DE,        HL,        NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h4455, 16'h6677, 0,         0       }); // check
         testvectors.push_back('{EX_NONE,   NONE,      NONE,      A,         16'h5045,   1,        0,         0,         0,        0,      16'h0000, 16'h0000, 0,         0       }); // write A and F
         testvectors.push_back('{EX_NONE,   NONE,      NONE,      F,         16'h2089,   1,        0,         0,         0,        0,      16'h0000, 16'h0000, 6'b100001, 0       });
         testvectors.push_back('{EX_NONE,   A,         F,         NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0045, 16'h0089, 6'b100001, 0       }); // Check
@@ -184,6 +186,18 @@ module register_file_tb();
         testvectors.push_back('{EX_NONE,   A,         F,         NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0045, 16'h0089, 6'b100001, 0       }); // Check
         testvectors.push_back('{EX_AF_AFp, NONE,      NONE,      NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0000, 16'h0000, 6'b101000, 0       }); // swap again
         testvectors.push_back('{EX_NONE,   A,         F,         NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0046, 16'h0090, 6'b101000, 0       }); // Check
+        testvectors.push_back('{EX_AF_AFp, NONE,      NONE,      NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0000, 16'h0000, 6'b100001, 0       }); // swap A F back to original way
+        testvectors.push_back('{EXX,       NONE,      NONE,      NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0000, 16'h0000, 6'b101000, 0       }); // swap all
+        testvectors.push_back('{EX_NONE,   A,         F,         NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0046, 16'h0090, 6'b101000, 0       }); // Check A F
+        testvectors.push_back('{EX_NONE,   DE,        HL,        NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0000, 16'h0000, 6'b101000, 0       }); // Check DE HL
+        testvectors.push_back('{EX_NONE,   NONE,      NONE,      DE,        16'h4456,   1,        0,         0,         0,        0,      16'h0000, 16'h0000, 6'b101000, 0       }); //write DE and HL
+        testvectors.push_back('{EX_NONE,   NONE,      NONE,      HL,        16'h6678,   1,        0,         0,         0,        0,      16'h0000, 16'h0000, 6'b101000, 0       });
+        testvectors.push_back('{EXX,       NONE,      NONE,      NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0000, 16'h0000, 6'b100001, 0       }); // swap all
+        testvectors.push_back('{EX_NONE,   DE,        HL,        NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h4455, 16'h6677, 6'b100001, 0       }); // Check DE HL
+        testvectors.push_back('{EXX,       NONE,      NONE,      NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0000, 16'h0000, 6'b101000, 0       }); // swap all
+        testvectors.push_back('{EX_NONE,   DE,        HL,        NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h4456, 16'h6678, 6'b101000, 0       }); // Check DE HL
+        testvectors.push_back('{EXX,       NONE,      NONE,      NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h0000, 16'h0000, 6'b100001, 0       }); // back to original bank
+        testvectors.push_back('{EX_NONE,   DE,        HL,        NONE,      16'h0000,   0,        0,         0,         0,        0,      16'h4455, 16'h6677, 6'b100001, 0       }); // Check DE HL
 
         reset_reg();
 

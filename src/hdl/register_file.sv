@@ -42,11 +42,11 @@ module register_file
 
 
     // the stored version of f is 8 bits with two 'X' (unused) flags. The external value is only the 6 used bits
-    assign f = {main_reg_set[0][7:6], main_reg_set[0][4], main_reg_set[0][2:0]};
+    assign f = {main_reg_set[1][7:6], main_reg_set[1][4], main_reg_set[1][2:0]};
 
-    assign internal_f_set       = {f_set[5:4], 1'bX, f_set[3], 1'bX, f_set[2:0]};
-    assign internal_f_reset     = {f_reset[5:4], 1'bX, f_reset[3], 1'bX, f_reset[2:0]};
-    assign internal_f_toggle    = {f_toggle[5:4], 1'bX, f_toggle[3], 1'bX, f_toggle[2:0]};
+    assign internal_f_set       = {f_set[5:4], 1'b0, f_set[3], 1'b0, f_set[2:0]};
+    assign internal_f_reset     = {f_reset[5:4], 1'b0, f_reset[3], 1'b0, f_reset[2:0]};
+    assign internal_f_toggle    = {f_toggle[5:4], 1'b0, f_toggle[3], 1'b0, f_toggle[2:0]};
 
     assign pc = special_reg_set[4];
     
@@ -87,21 +87,21 @@ module register_file
             E:      main_reg_set[5] = data[7:0];
             H:      main_reg_set[6] = data[7:0];
             L:      main_reg_set[7] = data[7:0];
-            AF: begin
-                    main_reg_set[0] = data[7:0];
-                    main_reg_set[1] = data[15:8];
+            AF: begin // AF = 0x1234 => A = 0x12 and F = 0x34
+                    main_reg_set[1] = data[7:0];
+                    main_reg_set[0] = data[15:8];
             end
             BC: begin
-                    main_reg_set[2] = data[7:0];
-                    main_reg_set[3] = data[15:8];
+                    main_reg_set[3] = data[7:0];
+                    main_reg_set[2] = data[15:8];
             end
             DE: begin
-                    main_reg_set[4] = data[7:0];
-                    main_reg_set[5] = data[15:8];
+                    main_reg_set[5] = data[7:0];
+                    main_reg_set[4] = data[15:8];
             end
             HL: begin
-                    main_reg_set[6] = data[7:0];
-                    main_reg_set[7] = data[15:8];
+                    main_reg_set[7] = data[7:0];
+                    main_reg_set[6] = data[15:8];
             end
             I:      special_reg_set[0][15:8] = data[7:0];
             R:      special_reg_set[0][7:0] = data[7:0];   
@@ -122,28 +122,6 @@ module register_file
             alt_reg_set     <= '{default:8'h00};
             special_reg_set <= '{default:16'h0000};
 
-        // exchange
-        end else if (! (exx == EX_NONE)) begin
-            case(exx)
-                EX_DE_HL: begin
-                    main_reg_set[4] <= main_reg_set[6]; // D <=> H
-                    main_reg_set[6] <= main_reg_set[5];
-                    main_reg_set[5] <= main_reg_set[7]; // E <=> L
-                    main_reg_set[7] <= main_reg_set[5];
-                end
-                EX_AF_AFp: begin
-                    main_reg_set[0] <= alt_reg_set[0]; // A <=> A'
-                    alt_reg_set[0] <= main_reg_set[0];
-                    main_reg_set[1] <= alt_reg_set[1]; // F <=> F'
-                    alt_reg_set[1] <= main_reg_set[1];
-                end
-                EXX: begin
-                    main_reg_set <= alt_reg_set;
-                    alt_reg_set <= main_reg_set;
-                end
-                default:;
-            endcase
-        
         // read/write and flag update
         end else begin
             reg_a <= read_from_reg_file(reg_a_sel);
@@ -154,10 +132,37 @@ module register_file
             end
 
             if (f_w_en == 1'b1) begin
-                main_reg_set[1] <= main_reg_set[1] | internal_f_set;
-                main_reg_set[1] <= main_reg_set[1] & ( ~ internal_f_reset);
-                main_reg_set[1] <= main_reg_set[1] ^ internal_f_toggle;
+                //$display("doing flag stuff!");
+                //$display("%b %b %b", internal_f_set, internal_f_reset, internal_f_toggle);
+                //$display("%b", main_reg_set[1]);
+                //$display("%b", main_reg_set[1] & ( ~ internal_f_reset));
+                if (! (internal_f_set == 0)) main_reg_set[1] <= main_reg_set[1] | internal_f_set;
+                if (! (internal_f_reset == 0)) main_reg_set[1] <= main_reg_set[1] & ( ~ internal_f_reset);
+                if (! (internal_f_toggle == 0)) main_reg_set[1] <= main_reg_set[1] ^ internal_f_toggle;
             end
+        end
+
+        // exchange
+        if (! (exx == EX_NONE)) begin
+            case(exx)
+                EX_DE_HL: begin
+                    main_reg_set[4] <= main_reg_set[6]; // D <=> H
+                    main_reg_set[6] <= main_reg_set[4];
+                    main_reg_set[5] <= main_reg_set[7]; // E <=> L
+                    main_reg_set[7] <= main_reg_set[5];
+                end
+                EX_AF_AFp: begin
+                    main_reg_set[0] <= alt_reg_set[0]; // A <=> A'
+                    alt_reg_set[0]  <= main_reg_set[0];
+                    main_reg_set[1] <= alt_reg_set[1]; // F <=> F'
+                    alt_reg_set[1]  <= main_reg_set[1];
+                end
+                EXX: begin
+                    main_reg_set <= alt_reg_set;
+                    alt_reg_set <= main_reg_set;
+                end
+                default:;
+            endcase
         end
     end
 endmodule

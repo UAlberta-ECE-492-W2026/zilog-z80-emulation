@@ -294,12 +294,12 @@ module decode #(
 
         // Exchange, Block Transfer, and Search
         end else if (op_0 == 8'hEB) begin // EX DE, HL
-            output_op = EX_R_R;
-            reg_a = DE;
-            reg_b = HL;
+            output_op = EX_DE_HL;
+            //reg_a = DE;
+            //reg_b = HL;
         end else if (op_0 == 8'h08) begin // EX AF, AF′
-            output_op = EX_R_Rp;
-            reg_a = AF;
+            output_op = EX_AF_AFp;
+            //reg_a = AF;
         end else if (op_0 == 8'hD9) begin // EXX
             output_op = EXX;
         end else if (op_0 == 8'hE3) begin // EX (SP), HL

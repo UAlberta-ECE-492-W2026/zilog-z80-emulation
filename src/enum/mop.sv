@@ -28,8 +28,8 @@ typedef enum [6:0] {
     POP_R,
 
 // Exchange, Block Transfer, and Search
-    EX_R_R,
-    EX_R_Rp,
+    EX_DE_HL,
+    EX_AF_AFp,
     EXX,
     EX_mR_R,
     LD_block,

@@ -7,7 +7,8 @@
 
 module font_rom
 (
-    output reg [10:0] data_out, //! 2^11 = 2047
+    input  logic clk,
+    output reg [7:0] data_out,
     input wire [10:0] address
 );
 
@@ -545,5 +546,8 @@ ROM[90*8+6]=8'b01111110;
 ROM[90*8+7]=8'b00000000;
 
    end
+
+always_ff @(posedge clk)
+    data_out <= ROM[address];
 
 endmodule

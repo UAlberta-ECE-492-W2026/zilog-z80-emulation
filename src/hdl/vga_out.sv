@@ -1,8 +1,8 @@
 `timescale 1ns/1ps
-`include "char_ram"
-`include "font_rom"
-`include "horizontal_counter"
-`include "vertical_counter"
+`include "char_ram.sv"
+`include "font_rom.sv"
+`include "horizontal_counter.sv"
+`include "vertical_counter.sv"
 
 //! VGA text driver
 //! This module generates full VGA timing and renders text
@@ -40,14 +40,16 @@ module vga_out
     //! Signals from external modules
 
     logic enable_vertical_counter;           
-    logic [15:0] horizontal_count_value;     
-    logic [15:0] vertical_count_value;    
-    reg [10:0] data_out_rom; //! 2^11 = 2047
+    logic [9:0] horizontal_count_value;     
+    logic [9:0] vertical_count_value;    
+    reg [7:0] data_out_rom;
     reg [7:0] data_out_ram;
-    wire [7:0] address_rom;
-    wire [12:0] address_ram;
-    wire WE_ram;
-    wire [7:0] data_in_ram;
+    logic [10:0] address_rom;
+    logic [12:0] address_ram;
+    logic WE_ram;
+    logic [7:0] data_in_ram;
+    assign WE_ram = 0'b0;
+    assign data_in_ram = 8'd0;
 
 
     horizontal_counter VGA_horizontal (
@@ -65,11 +67,13 @@ module vga_out
     );
 
     font_rom font_rom (
+        .clk(clk),
         .data_out(data_out_rom),
         .address(address_rom)
     );
 
     char_ram char_ram (
+        .clk(clk),
         .data_out(data_out_ram),
         .address(address_ram),
         .WE(WE_ram),
@@ -91,17 +95,6 @@ module vga_out
 
     assign visible = (horizontal_count_value < H_VISIBLE) &&
                      (vertical_count_value   < V_VISIBLE);
-
-    //! Character RAM stores ASCII value for each screen cell
-    //! 80 columns x 60 rows = 4800 cells
-
-    integer i;
-
-    initial begin
-        //! Draws A to the screen in every cell
-        for (i = 0; i < 4800; i = i + 1)
-            char_ram.RW[i] = 8'd65;
-    end
 
     //! Current pixel coordinates from external counters
 
@@ -143,9 +136,9 @@ module vga_out
     logic pixel_on;//!pixel enable signal
     logic [10:0] font_address;
 
-    assign font_address = ({3'b0,ascii} << 3) + {8'b0,py};//! select row inside ascii character
+    assign font_address = (ascii << 3) + py;
 
-    assign address_rom = font_address[7:0];//! send address to font ROM
+    assign address_rom = font_address;//! send address to font ROM
     assign font_row = data_out_rom[7:0];//! bitmap row returned from ROM
 
     assign pixel_on = font_row[7 - px];//! select horizontal pixel inside font

@@ -10,7 +10,7 @@ module horizontal_counter
 (
 input logic clk,
 input logic reset, //! synchronous reset for stable startup
-output reg [15:0] horizontal_count_value = 0,
+output reg [9:0] horizontal_count_value = 0,
 output reg enable_vertical_counter = 0
 );
 

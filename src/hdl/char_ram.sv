@@ -5,19 +5,20 @@
 
 module char_ram
 (
-output reg [7:0] data_out,
-input wire [12:0] address,
-input wire WE,
-input wire [7:0] data_in
+    input  logic clk,
+    output logic [7:0] data_out,
+    input  logic [12:0] address,
+    input  logic WE,
+    input  logic [7:0] data_in
 );
 
-reg[7:0] RW[0:4799];
+logic [7:0] RW[0:4799];
 
-always_comb begin
-    if (WE) begin
+always_ff @(posedge clk) begin
+    if (WE)
         RW[address] <= data_in;
-    end
-    data_out = RW[address];
+
+    data_out <= RW[address];
 end
 
 endmodule

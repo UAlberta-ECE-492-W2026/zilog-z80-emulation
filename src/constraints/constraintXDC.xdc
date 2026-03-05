@@ -4,9 +4,9 @@
 ## - uncomment the lines corresponding to used pins
 ## - rename the used ports (in each line, after get_ports) according to the top level signal names in the project
 
-##Clock signal
-#set_property -dict { PACKAGE_PIN K17   IOSTANDARD LVCMOS33 } [get_ports { sysclk }]; #IO_L12P_T1_MRCC_35 Sch=sysclk
-#create_clock -add -name sys_clk_pin -period 8.00 -waveform {0 4} [get_ports { sysclk }];
+## Clock signal
+set_property -dict { PACKAGE_PIN K17 IOSTANDARD LVCMOS33 } [get_ports {clk}]
+create_clock -name sys_clk -period 40.0 [get_ports {clk}]
 
 
 ##Switches
@@ -110,6 +110,23 @@
 #set_property -dict { PACKAGE_PIN J16   IOSTANDARD LVCMOS33 } [get_ports { ja[6] }]; #IO_L24N_T3_AD15N_35 Sch=JA3_R_N            
 #set_property -dict { PACKAGE_PIN J14   IOSTANDARD LVCMOS33 } [get_ports { ja[7] }]; #IO_L20N_T3_AD6N_35 Sch=JA4_R_N             
  
+
+#PMOD VGA connections
+set_property -dict { PACKAGE_PIN V15 IOSTANDARD LVCMOS33 } [get_ports {red[0]}];   # JC1
+set_property -dict { PACKAGE_PIN W15 IOSTANDARD LVCMOS33 } [get_ports {red[1]}];   # JC2
+set_property -dict { PACKAGE_PIN T11 IOSTANDARD LVCMOS33 } [get_ports {red[2]}];   # JC3
+set_property -dict { PACKAGE_PIN T10 IOSTANDARD LVCMOS33 } [get_ports {red[3]}];   # JC4
+set_property -dict { PACKAGE_PIN W14 IOSTANDARD LVCMOS33 } [get_ports {green[0]}]; # JC7
+set_property -dict { PACKAGE_PIN Y14 IOSTANDARD LVCMOS33 } [get_ports {green[1]}]; # JC8
+set_property -dict { PACKAGE_PIN T12 IOSTANDARD LVCMOS33 } [get_ports {green[2]}]; # JC9
+set_property -dict { PACKAGE_PIN U12 IOSTANDARD LVCMOS33 } [get_ports {green[3]}]; # JC10
+set_property -dict { PACKAGE_PIN T14 IOSTANDARD LVCMOS33 } [get_ports {blue[0]}];  # JD1
+set_property -dict { PACKAGE_PIN T15 IOSTANDARD LVCMOS33 } [get_ports {blue[1]}];  # JD2
+set_property -dict { PACKAGE_PIN P14 IOSTANDARD LVCMOS33 } [get_ports {blue[2]}];  # JD3
+set_property -dict { PACKAGE_PIN R14 IOSTANDARD LVCMOS33 } [get_ports {blue[3]}];  # JD4
+set_property -dict { PACKAGE_PIN U14 IOSTANDARD LVCMOS33 } [get_ports {hsync}];    # JD7
+set_property -dict { PACKAGE_PIN U15 IOSTANDARD LVCMOS33 } [get_ports {vsync}];    # JD8
+
 
 ##Pmod Header JB (Zybo Z7-20 only)
 #set_property -dict { PACKAGE_PIN V8    IOSTANDARD LVCMOS33     } [get_ports { jb[0] }]; #IO_L15P_T2_DQS_13 Sch=jb_p[1]		 

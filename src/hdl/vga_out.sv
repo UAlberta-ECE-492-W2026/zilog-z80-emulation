@@ -1,8 +1,12 @@
 `timescale 1ns/1ps
+`include "char_ram"
+`include "font_rom"
+`include "horizontal_counter"
+`include "vertical_counter"
 
 //! VGA text driver
 //! This module generates full VGA timing and renders text
-//! using an internal character RAM and font ROM.
+//! using the character RAM and font ROM.
 //! Each character cell is 8x8 pixels.
 //! Total grid is 80 columns x 60 rows.
 //! 640x480 @ 60Hz
@@ -33,11 +37,18 @@ module vga_out
     localparam V_BACK    = 33;
     localparam V_TOTAL   = 525;
 
-    //! Signals from external counter modules
+    //! Signals from external modules
 
     logic enable_vertical_counter;           
     logic [15:0] horizontal_count_value;     
-    logic [15:0] vertical_count_value;       
+    logic [15:0] vertical_count_value;    
+    reg [10:0] data_out_rom; //! 2^11 = 2047
+    reg [7:0] data_out_ram;
+    wire [7:0] address_rom;
+    wire [12:0] address_ram;
+    wire WE_ram;
+    wire [7:0] data_in_ram;
+
 
     horizontal_counter VGA_horizontal (
         .clk(clk),
@@ -52,6 +63,19 @@ module vga_out
         .enable_vertical_counter(enable_vertical_counter),
         .vertical_count_value(vertical_count_value)
     );
+
+    font_rom font_rom (
+        .data_out(data_out_rom),
+        .address(address_rom)
+    );
+
+    char_ram char_ram (
+        .data_out(data_out_ram),
+        .address(address_ram),
+        .WE(WE_ram),
+        .data_in(data_in_ram)
+    );
+
 
     //! Sync pulses are active LOW
 
@@ -71,37 +95,12 @@ module vga_out
     //! Character RAM stores ASCII value for each screen cell
     //! 80 columns x 60 rows = 4800 cells
 
-    logic [7:0] char_ram [0:4799];
-
     integer i;
 
     initial begin
         //! Draws A to the screen in every cell
         for (i = 0; i < 4800; i = i + 1)
-            char_ram[i] = 8'd65;
-    end
-
-    //! Font ROM stored as a bitmap with each ASCII character
-    //! 256 characters, 8 rows each, 8 bits per row
-
-    logic [7:0] font_rom [0:2047];
-
-    integer c;
-
-    initial begin
-        //! Clear all font patterns
-        for (c = 0; c < 2048; c = c + 1)
-            font_rom[c] = 8'b00000000;
-
-        //! Letter 'A' (ASCII 65)
-        font_rom[65*8 + 0] = 8'b00011000;
-        font_rom[65*8 + 1] = 8'b00100100;
-        font_rom[65*8 + 2] = 8'b01000010;
-        font_rom[65*8 + 3] = 8'b01111110;
-        font_rom[65*8 + 4] = 8'b01000010;
-        font_rom[65*8 + 5] = 8'b01000010;
-        font_rom[65*8 + 6] = 8'b01000010;
-        font_rom[65*8 + 7] = 8'b00000000;
+            char_ram.RW[i] = 8'd65;
     end
 
     //! Current pixel coordinates from external counters
@@ -135,16 +134,21 @@ module vga_out
     logic [12:0] char_address;
     logic [7:0]  ascii;
 
-    assign char_address = (row << 6) + (row << 4) + col;  //! row*80 + col
+    assign char_address = ({7'b0,row} << 6) + ({7'b0,row} << 4) + {6'b0,col};//! row*80 + col
 
-    assign ascii = visible ? char_ram[char_address] : 8'd0; //! read character only in visible area
+    assign address_ram = char_address;//!send address to character RAM
+    assign ascii = visible ? data_out_ram : 8'd0;//!ASCII returned from RAM
 
-    logic [7:0] font_row;   //! row of ascii character to be printed
-    logic pixel_on;         //! pixel enable signal
+    logic [7:0] font_row;//!row of ascii character to be printed
+    logic pixel_on;//!pixel enable signal
+    logic [10:0] font_address;
 
-    assign font_row = font_rom[ascii*8 + py]; //! select row inside ascii character
+    assign font_address = ({3'b0,ascii} << 3) + {8'b0,py};//! select row inside ascii character
 
-    assign pixel_on = font_row[7 - px]; //! select horizontal pixel inside ascii character pixel representation
+    assign address_rom = font_address[7:0];//! send address to font ROM
+    assign font_row = data_out_rom[7:0];//! bitmap row returned from ROM
+
+    assign pixel_on = font_row[7 - px];//! select horizontal pixel inside font
 
     //! Drive RGB colour outputs
 

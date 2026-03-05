@@ -14,6 +14,11 @@ module char_ram
 
 logic [7:0] RW[0:4799];
 
+initial begin
+    for (int i=0;i<4800;i++)
+        RW[i] = 8'd65;//! writes A to whole screen
+end
+
 always_ff @(posedge clk) begin
     if (WE)
         RW[address] <= data_in;

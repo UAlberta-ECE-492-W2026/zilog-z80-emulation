@@ -24,7 +24,6 @@ module vga_out
 );
 
     //! VGA timing parameters
-
     localparam H_VISIBLE = 640;
     localparam H_FRONT   = 16;
     localparam H_SYNC    = 96;
@@ -38,7 +37,6 @@ module vga_out
     localparam V_TOTAL   = 525;
 
     //! Signals from external modules
-
     logic enable_vertical_counter;           
     logic [9:0] horizontal_count_value;     
     logic [9:0] vertical_count_value;    
@@ -50,7 +48,6 @@ module vga_out
     logic [7:0] data_in_ram;
     assign WE_ram = 0'b0;
     assign data_in_ram = 8'd0;
-
 
     horizontal_counter VGA_horizontal (
         .clk(clk),
@@ -80,9 +77,7 @@ module vga_out
         .data_in(data_in_ram)
     );
 
-
     //! Sync pulses are active LOW
-
     assign hsync = ~((horizontal_count_value >= (H_VISIBLE + H_FRONT)) &&
                      (horizontal_count_value <  (H_VISIBLE + H_FRONT + H_SYNC)));
 
@@ -90,33 +85,25 @@ module vga_out
                      (vertical_count_value <  (V_VISIBLE + V_FRONT + V_SYNC)));
 
     //! Visible region is 640x480
-
     logic visible;
-
     assign visible = (horizontal_count_value < H_VISIBLE) &&
                      (vertical_count_value   < V_VISIBLE);
 
     //! Current pixel coordinates from external counters
-
     logic [9:0] x;
     logic [9:0] y;
-
     assign x = horizontal_count_value[9:0];
     assign y = vertical_count_value[9:0];
 
     //! Dividing by 8 to determine character cell position
-
     logic [6:0] col;   
     logic [5:0] row;   
-
     assign col = x >> 3;
     assign row = y >> 3;
 
     //! the lower 3 bits gives the specific pixel inside current cell
-
     logic [2:0] px;
     logic [2:0] py;
-
     assign px = x[2:0];
     assign py = y[2:0];
 
@@ -127,24 +114,23 @@ module vga_out
     logic [12:0] char_address;
     logic [7:0]  ascii;
 
-    assign char_address = ({7'b0,row} << 6) + ({7'b0,row} << 4) + {6'b0,col};//! row*80 + col
+    assign char_address = ({7'b0,row} << 6) + ({7'b0,row} << 4) + {6'b0,col};  //! row*80 + col
 
-    assign address_ram = char_address;//!send address to character RAM
-    assign ascii = visible ? data_out_ram : 8'd0;//!ASCII returned from RAM
+    assign address_ram = char_address;  //!send address to character RAM
+    assign ascii = visible ? data_out_ram : 8'd0;  //!ASCII returned from RAM
 
-    logic [7:0] font_row;//!row of ascii character to be printed
-    logic pixel_on;//!pixel enable signal
+    logic [7:0] font_row;  //!row of ascii character to be printed
+    logic pixel_on;  //!pixel enable signal
     logic [10:0] font_address;
 
     assign font_address = (ascii << 3) + py;
 
-    assign address_rom = font_address;//! send address to font ROM
-    assign font_row = data_out_rom[7:0];//! bitmap row returned from ROM
+    assign address_rom = font_address;  //! send address to font ROM
+    assign font_row = data_out_rom[7:0];  //! bitmap row returned from ROM
 
-    assign pixel_on = font_row[7 - px];//! select horizontal pixel inside font
+    assign pixel_on = font_row[7 - px];  //! select horizontal pixel inside font
 
     //! Drive RGB colour outputs
-
     always_comb begin
         if (visible && pixel_on) begin
             red   = 4'hF;
@@ -157,5 +143,5 @@ module vga_out
             blue  = 4'h0;
         end
     end
-
+    
 endmodule

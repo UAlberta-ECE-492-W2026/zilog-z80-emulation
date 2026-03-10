@@ -11,7 +11,7 @@ module vertical_counter
 input logic clk,
 input logic reset, //! synchronous reset for stable startup
 input logic enable_vertical_counter, //! pulse from horizontal counter at end of each line
-output reg [9:0] vertical_count_value = 0
+output reg [15:0] vertical_count_value = 0
 );
 
 always@(posedge clk) begin
@@ -20,7 +20,7 @@ always@(posedge clk) begin
     end
     else begin
         if (enable_vertical_counter == 1'b1) begin
-            if (vertical_count_value < 524) begin
+            if (vertical_count_value < 1124) begin
                 vertical_count_value <= vertical_count_value + 1; //! incremental vertical count value to next pixel
             end
             else begin

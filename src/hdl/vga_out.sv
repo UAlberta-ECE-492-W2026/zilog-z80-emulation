@@ -1,4 +1,4 @@
-`timescale 1ns/1ps
+//`timescale 1ns/1ps
 `include "char_ram.sv"
 `include "font_rom.sv"
 `include "horizontal_counter.sv"
@@ -14,7 +14,7 @@
 
 module vga_out
 (
-    input  logic clk,              //! 25 MHz pixel clock required for 640x480 @60Hz
+    input  logic clk,              //! 125 MHz pixel clock from Zybo z-7
     input  logic reset,            //! synchronous reset for counters
     output logic hsync,            //! horizontal sync (active LOW)
     output logic vsync,            //! vertical sync (active LOW)
@@ -23,59 +23,88 @@ module vga_out
     output logic [3:0] blue        //! blue channel (4-bit)
 );
 
-    //! VGA timing parameters
-    localparam H_VISIBLE = 640;
-    localparam H_FRONT   = 16;
-    localparam H_SYNC    = 96;
-    localparam H_BACK    = 48;
-    localparam H_TOTAL   = 800;
+    // Clock divider to drive the external counters to the module
+    logic [2:0] div_count;
+    logic pixel_clk;
 
-    localparam V_VISIBLE = 480;
-    localparam V_FRONT   = 10;
-    localparam V_SYNC    = 2;
-    localparam V_BACK    = 33;
-    localparam V_TOTAL   = 525;
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            div_count <= 0;
+            pixel_clk <= 0;
+        end
+        else begin
+            if (div_count == 4)
+                div_count <= 0;
+            else
+                div_count <= div_count + 1;
+
+            if (div_count == 2 || div_count == 4)
+                pixel_clk <= ~pixel_clk;
+        end
+    end
+
+
+    // TODO: make these not local
+    //! VGA timing parameters
+    localparam H_VISIBLE = 1920;
+    localparam H_FRONT   = 88;
+    localparam H_SYNC    = 44;
+    localparam H_BACK    = 148;
+    localparam H_TOTAL   = 2200;
+
+    localparam V_VISIBLE = 1080;
+    localparam V_FRONT   = 4;
+    localparam V_SYNC    = 5;
+    localparam V_BACK    = 36;
+    localparam V_TOTAL   = 1125;
+    
+    localparam CHAR_ROWS = V_VISIBLE / 8;
+    localparam CHAR_COLL = H_VISIBLE / 8;
 
     //! Signals from external modules
     logic enable_vertical_counter;           
-    logic [9:0] horizontal_count_value;     
-    logic [9:0] vertical_count_value;    
+    logic [15:0] horizontal_count_value;     
+    logic [15:0] vertical_count_value;    
     reg [7:0] data_out_rom;
     reg [7:0] data_out_ram;
     logic [10:0] address_rom;
-    logic [12:0] address_ram;
+    logic [15:0] address_ram;
     logic WE_ram;
     logic [7:0] data_in_ram;
-    assign WE_ram = 0'b0;
+    assign WE_ram = 1'b0;
     assign data_in_ram = 8'd0;
-
+    
     horizontal_counter VGA_horizontal (
-        .clk(clk),
+        .clk(pixel_clk),
         .reset(reset),
         .enable_vertical_counter(enable_vertical_counter),
         .horizontal_count_value(horizontal_count_value)
     );
 
     vertical_counter VGA_vertical (
-        .clk(clk),
+        .clk(pixel_clk),
         .reset(reset),
         .enable_vertical_counter(enable_vertical_counter),
         .vertical_count_value(vertical_count_value)
     );
 
     font_rom font_rom (
-        .clk(clk),
+        .clk(pixel_clk),
         .data_out(data_out_rom),
         .address(address_rom)
     );
 
-    char_ram char_ram (
-        .clk(clk),
+    char_ram  #(
+        .CHAR_ROWS(CHAR_ROWS),
+        .CHAR_COLL(CHAR_COLL)
+    )char_ram (
+        .clk(pixel_clk),
         .data_out(data_out_ram),
         .address(address_ram),
         .WE(WE_ram),
         .data_in(data_in_ram)
     );
+    
 
     //! Sync pulses are active LOW
     assign hsync = ~((horizontal_count_value >= (H_VISIBLE + H_FRONT)) &&
@@ -90,14 +119,14 @@ module vga_out
                      (vertical_count_value   < V_VISIBLE);
 
     //! Current pixel coordinates from external counters
-    logic [9:0] x;
-    logic [9:0] y;
-    assign x = horizontal_count_value[9:0];
-    assign y = vertical_count_value[9:0];
+    logic [15:0] x;
+    logic [15:0] y;
+    assign x = horizontal_count_value[15:0];
+    assign y = vertical_count_value[15:0];
 
     //! Dividing by 8 to determine character cell position
-    logic [6:0] col;   
-    logic [5:0] row;   
+    logic [7:0] col;   
+    logic [7:0] row;   
     assign col = x >> 3;
     assign row = y >> 3;
 
@@ -108,13 +137,10 @@ module vga_out
     assign py = y[2:0];
 
     //! Character memory address (row * 80 + col)
-    //! Implemented as row*64 + row*16 to avoid hardware multiplier
-    //! Logic shifts can be done without multiplying
-
-    logic [12:0] char_address;
+    logic [15:0] char_address;
     logic [7:0]  ascii;
 
-    assign char_address = ({7'b0,row} << 6) + ({7'b0,row} << 4) + {6'b0,col};  //! row*80 + col
+    assign char_address = row * CHAR_COLL + {8'b0,col};  //! row*80 + col
 
     assign address_ram = char_address;  //!send address to character RAM
     assign ascii = visible ? data_out_ram : 8'd0;  //!ASCII returned from RAM
@@ -128,14 +154,14 @@ module vga_out
     assign address_rom = font_address;  //! send address to font ROM
     assign font_row = data_out_rom[7:0];  //! bitmap row returned from ROM
 
-    assign pixel_on = font_row[7 - px];  //! select horizontal pixel inside font
+    assign pixel_on = font_row[8 - px];  //! select horizontal pixel inside font
 
     //! Drive RGB colour outputs
     always_comb begin
         if (visible && pixel_on) begin
-            red   = 4'hF;
+            red   = 4'h0;
             green = 4'hF;
-            blue  = 4'hF;
+            blue  = 4'h0;
         end
         else begin
             red   = 4'h0;

@@ -10,7 +10,7 @@ module horizontal_counter
 (
 input logic clk,
 input logic reset, //! synchronous reset for stable startup
-output reg [9:0] horizontal_count_value = 0,
+output reg [15:0] horizontal_count_value = 0,
 output reg enable_vertical_counter = 0
 );
 
@@ -20,7 +20,7 @@ always@(posedge clk) begin
         enable_vertical_counter <= 0; //! ensure vertical counter is not triggered
     end
     else begin
-        if (horizontal_count_value < 799) begin
+        if (horizontal_count_value < 2199) begin
             horizontal_count_value <= horizontal_count_value + 1; //! increment horizontal counter to next pixel
             enable_vertical_counter <= 0; //! stay on current vertical line
         end

@@ -2,7 +2,7 @@
 `include "alu_op.sv"
 
 /* verilator lint_off UNUSEDSignal */
-task display_input_output_expected(input reg en, reg [7:0] a, b, alu_op opcode, reg [7:0] dout, expected, reg [7:0] status_flag);
+task display_input_output_expected(input reg en, reg [7:0] a, b, alu_op opcode, reg [7:0] dout, expected, reg [5:0] status_flag);
     $write("1'h%h | 8'h%h | 8'h%h | %s | 8'h%h | 8'h%h | 8'b%b", en, a, b, opcode.name, dout, expected, status_flag);
 endtask // display_input_output_expected
 
@@ -14,7 +14,7 @@ module alu_8_tb();
    	alu_op opcode;
    	wire [7:0] dout;
    	reg [7:0] expected;
-   	wire [7:0] status_flag;
+   	wire [5:0] status_flag;
 
    	typedef struct {
      	reg en;

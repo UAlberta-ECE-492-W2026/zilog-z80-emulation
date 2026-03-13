@@ -18,7 +18,7 @@ module  alu #(
     parameter integer alu_width=8
 )(
     output wire [alu_width-1:0] out,
-    output wire [7:0] status_flag,
+    output wire [5:0] status_flag,
 
     input wire [alu_width-1:0]  a,
     input wire [alu_width-1:0]  b,
@@ -56,20 +56,18 @@ module  alu #(
     endfunction // parity
 
 	// set outputs to X if not enabled to aid debugging
-    assign status_flag[7] = enable ? s_var  : 'X;
-    assign status_flag[6] = enable ? z_var  : 'X;
-    assign status_flag[5] = 0;
-    assign status_flag[4] = enable ? h_var  : 'X;
-    assign status_flag[3] = 0;
-    assign status_flag[2] = enable ? pv_var : 'X;
-    assign status_flag[1] = enable ? n_var  : 'X;
-    assign status_flag[0] = enable ? c_var  : 'X;
+    assign status_flag[5] = enable ? s_var  : 'Z;
+    assign status_flag[4] = enable ? z_var  : 'Z;
+    assign status_flag[3] = enable ? h_var  : 'Z;
+    assign status_flag[2] = enable ? pv_var : 'Z;
+    assign status_flag[1] = enable ? n_var  : 'Z;
+    assign status_flag[0] = enable ? c_var  : 'Z;
 
-    assign out = enable ? out_var : '{default: 'X};
+    assign out = enable ? out_var : '{default: 'Z};
 
 	// technically not needed, but should clarify intent when debugging
-    assign signed_a = enable ? a : '{default: 'X};
-    assign signed_b = enable ? b : '{default: 'X};
+    assign signed_a = enable ? a : '{default: 'Z};
+    assign signed_b = enable ? b : '{default: 'Z};
 
 
     always_comb begin
@@ -147,6 +145,9 @@ module  alu #(
            		out_var = tmp[upper_bit:0];
            		status_sign=1;
         	end
+			PASS: begin
+				out_var = a;
+			end
         	default: begin
 				out_var = '{default: 'X};
 			end

@@ -105,24 +105,24 @@ module  alu #(
         	end
         	SLL: begin
            		status_opcode = SHIFT_OP;
-               tmp= {1'b0, a} << b;
-               out_var = tmp[upper_bit:0];
+                tmp= {1'b0, a} << b;
+                out_var = tmp[upper_bit:0];
         	end
         	SRL: begin
            		status_opcode = SHIFT_OP;
-               status_sign = 1;
-               tmp = {a, 1'b0} >> b;
+                status_sign = 1;
+                tmp = {a, 1'b0} >> b;
            		out_var = tmp[upper_bit+1:1];
         	end
         	SLA: begin
            		status_opcode = SHIFT_OP;
-               tmp = signed'({1'b0, a}) <<< b;
-               out_var = tmp[upper_bit:0];
+                tmp = signed'({1'b0, a}) <<< b;
+                out_var = tmp[upper_bit:0];
         	end
         	SRA: begin
            		status_opcode = SHIFT_OP;
-               status_sign = 1;
-               tmp = signed'({signed_a, 1'b0}) >>> signed_b;
+                status_sign = 1;
+                tmp = signed'({signed_a, 1'b0}) >>> signed_b;
            		out_var = tmp[upper_bit+1:1];
         	end
         	/* There is a chance that the following does not synthesize */
@@ -145,8 +145,11 @@ module  alu #(
            		out_var = tmp[upper_bit:0];
            		status_sign=1;
         	end
-			PASS: begin
+			PASS_A: begin
 				out_var = a;
+			end
+			PASS_B: begin
+				out_var = b;
 			end
         	default: begin
 				out_var = '{default: 'X};

@@ -4,6 +4,7 @@
 `include "mop.sv"
 `include "exx_type.sv"
 `include "reg_name.sv"
+`include "f_op.sv"
 
 `include "alu_wrapper.sv"
 `include "register_file.sv"
@@ -29,6 +30,7 @@ module datapath (
     input reg_name reg_w_sel,
     input wire reg_w_en,
     input wire f_w_en,
+    input f_op f_op,
     input exx_type exx,
     output wire[5:0] f,
 
@@ -59,7 +61,6 @@ module datapath (
     input wire [2:0] instuction_length
 );
     // instruction related
-    wire [15:0] pc;
     wire [15:0] ir_mux_out;
     wire [15:0] ir_buff_out;
 
@@ -78,8 +79,6 @@ module datapath (
     wire [5:0] f_reset;
     wire [5:0] f_toggle;
 
-
-    // instruction mux (use pc or )
 
     buffer #(16) instruction_buff(
         .in(ir_mux_out),
@@ -104,6 +103,23 @@ module datapath (
     );
 
 
+    // for CCF and SCF instructions. tempted to put this in the register file
+    always_comb begin
+        case (f_op)
+            CCF: begin
+                f_toggle[0] = 1; // main intent of the CCF instruction
+                f_reset[1] = 1; // side effect
+            end
+            SCF: begin
+                f_set[0] = 1; // main intent
+                f_reset[1] = 1; // wow side effects! amazing
+                f_reset[3] = 1;
+            end
+            default: ;
+        endcase
+    end
+
+
     register_file #() register_file (
         .clk(clk),
         .reset(reset),
@@ -120,7 +136,6 @@ module datapath (
         .f_toggle(f_toggle),
         .f_w_en(f_w_en),
         .f(f),
-        .pc(pc)
     );
 
 

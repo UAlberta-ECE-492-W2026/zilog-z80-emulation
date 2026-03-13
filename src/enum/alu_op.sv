@@ -16,6 +16,7 @@ typedef enum byte {
     ROR, 
     INC, 
     DEC,
-    PASS
+    PASS_A,
+    PASS_B
 } alu_op;
 `endif

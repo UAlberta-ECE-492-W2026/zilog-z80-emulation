@@ -27,9 +27,6 @@ module register_file
     input  wire [5:0]   f_toggle,
     input  wire         f_w_en, // write enable for flags. note that a reg write to f can still happen if f_w_en = 0
     output wire [5:0]   f,
-
-    // PC output
-    output wire[15:0]   pc
 );
     reg [7:0] main_reg_set [0:7]; // In order A F B C D E H L
     reg [7:0] alt_reg_set [0:7]; // Same as above, but alternate bank
@@ -47,8 +44,6 @@ module register_file
     assign internal_f_set       = {f_set[5:4], 1'b0, f_set[3], 1'b0, f_set[2:0]};
     assign internal_f_reset     = {f_reset[5:4], 1'b0, f_reset[3], 1'b0, f_reset[2:0]};
     assign internal_f_toggle    = {f_toggle[5:4], 1'b0, f_toggle[3], 1'b0, f_toggle[2:0]};
-
-    assign pc = special_reg_set[4];
     
     // reg_sel unused?
     // verilator lint_off UNUSEDSIGNAL

@@ -8,7 +8,7 @@ module controller_next_state (
 );
 
     always_comb begin: next_state_block
-        next_state = invalid_uop;
+        next_state = current_state;
         if (reset_sig) next_state = reset_uop;
     end;
 

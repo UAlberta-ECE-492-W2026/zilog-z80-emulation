@@ -1,0 +1,30 @@
+##
+# Z80 Controller
+#
+# @file
+# @version 0.2
+
+
+.PHONY: clean
+
+obj_dir/Vcontroller: ./src/hdl/controller_next_state.sv ./src/hdl/controller_output.sv ./src/hdl/controller.sv ./src/enum/mop.sv ./src/enum/uop.sv ./src/enum/reg_name.sv
+	verilator --binary -j 0 -Wall -cc $^ --top-module controller --timing +incdir+./src/enum
+
+obj_dir/Vcontroller_%: ./src/hdl/controller_next_state.sv ./src/hdl/controller_output.sv ./src/hdl/controller.sv ./src/sim/controller_%.sv ./src/enum/mop.sv ./src/enum/uop.sv ./src/enum/reg_name.sv
+	verilator --binary -j 0 -Wall -cc $^ --top-module controller_$* --timing +incdir+./src/enum
+
+out/sim:
+	mkdir -p ./out/sim
+
+# Make target for building and running a test bench. The rest of the name
+# for the target comes from the ./src/sim directory, specifically the ALU
+# test benches.
+# Example:
+# 	make run_alu_8_tb
+run_controller_%: obj_dir/Vcontroller_% out/sim
+	./$<
+
+clean:
+	rm -rf ./obj_dir/ ./out
+
+# end

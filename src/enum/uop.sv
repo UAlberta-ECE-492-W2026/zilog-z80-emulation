@@ -15,7 +15,8 @@ to two different registers.
 */
 typedef enum [7:0] {
 // misc
-    INVALID,
+    invalid_uop,
+    reset_uop,
     
 
 // load
@@ -136,5 +137,5 @@ typedef enum [7:0] {
     OTIR,
     OUTD,
     OTDR // not being able to add a trailing comma here is sad
-} mop;
+    } uop ;
 `endif

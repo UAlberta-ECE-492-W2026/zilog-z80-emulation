@@ -11,6 +11,8 @@
 // purpose registers. This results in some isntructions like LD_R_R repeating 'R', despite reffering
 // to two different registers.
 
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off UNUSEDSIGNAL */
 typedef enum [6:0] { 
 // misc
     INVALID,
@@ -133,4 +135,6 @@ typedef enum [6:0] {
     OUTD,
     OTDR // not being able to add a trailing comma here is sad
 } mop;
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
 `endif

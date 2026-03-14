@@ -26,12 +26,14 @@ module register_file
     input  wire [5:0]   f_reset,
     input  wire [5:0]   f_toggle,
     input  wire         f_w_en, // write enable for flags. note that a reg write to f can still happen if f_w_en = 0
-    output wire [5:0]   f,
+    output wire [5:0]   f
 );
     reg [7:0] main_reg_set [0:7]; // In order A F B C D E H L
     reg [7:0] alt_reg_set [0:7]; // Same as above, but alternate bank
 
+    /* verilator lint_off UNUSEDSIGNAL */ // ?????
     reg [15:0] special_reg_set [0:4]; // IR IX IY SP PC
+    /* verilator lint_on UNUSEDSIGNAL */
 
     wire [7:0] internal_f_set;
     wire [7:0] internal_f_reset;
@@ -138,21 +140,21 @@ module register_file
         end
 
         // exchange
-        if (! (exx == EX_NONE)) begin
+        if (! (exx == EXX_NOP)) begin
             case(exx)
-                EX_DE_HL: begin
+                EXX_DE_HL: begin
                     main_reg_set[4] <= main_reg_set[6]; // D <=> H
                     main_reg_set[6] <= main_reg_set[4];
                     main_reg_set[5] <= main_reg_set[7]; // E <=> L
                     main_reg_set[7] <= main_reg_set[5];
                 end
-                EX_AF_AFp: begin
+                EXX_AF_AFp: begin
                     main_reg_set[0] <= alt_reg_set[0]; // A <=> A'
                     alt_reg_set[0]  <= main_reg_set[0];
                     main_reg_set[1] <= alt_reg_set[1]; // F <=> F'
                     alt_reg_set[1]  <= main_reg_set[1];
                 end
-                EXX: begin
+                EXX_ALL: begin
                     main_reg_set <= alt_reg_set;
                     alt_reg_set <= main_reg_set;
                 end

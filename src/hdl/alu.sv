@@ -49,11 +49,11 @@ module  alu #(
     reg [1:0]          status_opcode;
     reg                status_sign;
 
-    /* function that does parity bit logic */
-    function reg parity(reg first_op, second_op, result);
-        return (first_op & second_op & !result)
-        | (!first_op & !second_op & result);
-    endfunction // parity
+    /* function that does parity bit logic */ // unused, commented out for now
+    //function reg parity(reg first_op, second_op, result);
+    //    return (first_op & second_op & !result)
+    //    | (!first_op & !second_op & result);
+    //endfunction // parity
 
 	// set outputs to X if not enabled to aid debugging
     assign status_flag[5] = enable ? s_var  : 'Z;

@@ -3,10 +3,10 @@
 
 /* verilator lint_off UNUSEDSIGNAL */
 typedef enum { 
-    EX_NONE,
-    EX_DE_HL,
-    EX_AF_AFp,
-    EXX
+    EXX_NOP,
+    EXX_DE_HL,
+    EXX_AF_AFp,
+    EXX_ALL
 } exx_type;
 /* verilator lint_on UNUSEDSIGNAL */
 `endif

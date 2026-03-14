@@ -24,8 +24,10 @@ module decode #(
     output wire [7:0] imm_0,
     output wire [15:0] imm_1,
     output wire use_16b_alu,
-    output wire [5:0] update_flags
+    output wire [5:0] update_flags,
+    output wire [2:0] instruction_length
 );
+    assign instruction_length = 3'b000; // delete this in merge
     // this helps make it a bit easier to read and compare to the specification
     wire [7:0] op_0; //first byte
     wire [7:0] op_1; // second byte

@@ -1,12 +1,12 @@
 `timescale 1ns/1ps
-`include "uop.sv"
 `include "mop.sv"
 
 /* verilator lint_on UNUSEDSignal */
 module controller_next_state_tb();
-    uop current_state_in;
-    uop next_state_res;
-    uop expected;
+    import uop::*;
+    uop::uop_t current_state_in;
+    uop::uop_t next_state_res;
+    uop::uop_t expected;
     reg reset_sig;
     string curr_test;
 
@@ -17,11 +17,11 @@ module controller_next_state_tb();
      failed.
      */
     task display_input_output_expected(input string test_name,
-                                       uop current_state,
+                                                    uop::uop_t current_state,
                                                     next_state,
                                                     expected_value,
                                        reg          reset_v,
-                                                    pass_test);
+                                       pass_test);
         $display("test name: %s : %s", test_name, pass_test ? "PASS" : "FAIL");
         $display("    current_state : %s", current_state.name);
         $display("    next_state    : %s", next_state.name);
@@ -32,8 +32,8 @@ module controller_next_state_tb();
 
     typedef struct {
         string test_name;
-        uop curr_state;
-        uop expected_value;
+        uop::uop_t curr_state;
+        uop::uop_t expected_value;
         reg reset_sig;
     } test_vector;
 
@@ -54,8 +54,8 @@ module controller_next_state_tb();
 
     initial begin: test_definition
         testvectors = new [0];
-        testvectors = push_vector(testvectors, '{"invalid to reset",invalid_uop, reset_uop, 1});
-        testvectors = push_vector(testvectors, '{"reset to reset",reset_uop, reset_uop, 1});
+        testvectors = push_vector(testvectors, '{"invalid to reset",uop::invalid_uop, uop::reset_uop, 1});
+        testvectors = push_vector(testvectors, '{"reset to reset",uop::reset_uop, uop::reset_uop, 1});
     end;
 
     initial begin

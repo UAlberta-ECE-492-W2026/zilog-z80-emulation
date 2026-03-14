@@ -7,10 +7,10 @@
 
 .PHONY: clean
 
-obj_dir/Vcontroller: ./src/hdl/controller_next_state.sv ./src/hdl/controller_output.sv ./src/hdl/controller.sv ./src/enum/mop.sv ./src/enum/uop.sv ./src/enum/reg_name.sv
+obj_dir/Vcontroller: ./src/hdl/uop.sv ./src/hdl/controller_next_state.sv ./src/hdl/controller_output.sv ./src/hdl/controller.sv ./src/enum/mop.sv  ./src/enum/reg_name.sv
 	verilator --binary -j 0 -Wall -cc $^ --top-module controller --timing +incdir+./src/enum
 
-obj_dir/Vcontroller_%: ./src/hdl/controller_next_state.sv ./src/hdl/controller_output.sv ./src/hdl/controller.sv ./src/sim/controller_%.sv ./src/enum/mop.sv ./src/enum/uop.sv ./src/enum/reg_name.sv
+obj_dir/Vcontroller_%: ./src/hdl/uop.sv ./src/hdl/controller_next_state.sv ./src/hdl/controller_output.sv ./src/hdl/controller.sv ./src/sim/controller_%.sv ./src/enum/mop.sv  ./src/enum/reg_name.sv
 	verilator --binary -j 0 -Wall -cc $^ --top-module controller_$* --timing +incdir+./src/enum
 
 out/sim:

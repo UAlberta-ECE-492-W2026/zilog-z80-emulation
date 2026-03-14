@@ -1,10 +1,11 @@
 `timescale 1ns/1ps
-`include "uop.sv"
 
 module controller_output (
                           output wire wb_sel,
-                          input       uop current_state
+                          input       uop::uop_t current_state,
+                          input wire  reset
 );
+    import uop::*;
 
     reg wb_sel_reg;
 
@@ -13,15 +14,12 @@ module controller_output (
 
     always_comb begin: output_block
         wb_sel_reg = 0;
-        if (reset) aluop_reg = 0;
-        else begin
             case (current_state)
-              reset_uop: begin
+              uop::reset_uop: begin
               end
               default: begin
               end
             endcase; // case (current_state)
-        end;
     end;
 
 

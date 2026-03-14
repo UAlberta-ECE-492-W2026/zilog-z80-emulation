@@ -1,5 +1,4 @@
 `timescale 1ns/1ps
-`include "uop.sv"
 `include "mop.sv"
 
 /** Module for the controller of the datapath controller architecture.
@@ -12,13 +11,14 @@ module controller (output wire [3:0] aluop,
                    input wire        reset, /* active high reset */
                    input wire        clk
    );
+    import uop::*;
    /* parameters */
 
    /* callables */
 
    /* declaration ***********************************************************/
-   uop current_state;
-   uop next_state;
+   uop::uop_t current_state;
+   uop::uop_t next_state;
    reg [3:0] aluop_reg;
 
 
@@ -53,6 +53,7 @@ module controller (output wire [3:0] aluop,
 
     controller_output output_logic(
                                    .wb_sel(wb_signal),
-                                   .current_state(current_state)
+                                   .current_state(current_state),
+                                   .reset(reset)
                                    );
 endmodule; // controller

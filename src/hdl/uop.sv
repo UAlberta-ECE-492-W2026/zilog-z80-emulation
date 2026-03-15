@@ -8,10 +8,18 @@ package uop;
      This enum is primarily used by the controller next state logic and the output
      logic.
      */
-    typedef enum [7:0] {
-                        // misc
-                        invalid_uop,
-                        reset_uop
+    typedef enum [7:0] {invalid,
+                        reset,
 
+                        nop,
+
+                        /* PC ops */
+                        pc_m2,
+                        pc_m1,
+                        pc_next,
+
+                        /* sp ops */
+                        sp_m1,
+                        sp_p2
                         } uop_t ;
 endpackage;

@@ -18,6 +18,7 @@ module datapath (
     // buffers
     input wire              ir_en,
     input wire              o_buff_en,
+    input wire              mem_read_buff_en,
 
     // ALU
     input wire              alu_enable,
@@ -156,16 +157,13 @@ module datapath (
             A_MUX_O_BUFF        : alu_a = o_buff_out;
             A_MUX_REG_SHIFTED   : alu_a = {reg_a[7:0], 8'h00};
             A_MUX_REG           : alu_a = reg_a;
+            A_MUX_MEMORY_READ_BUFF : alu_a = {8'h00, memory_buff_out};
             default             : alu_a = 16'hXXXX;
         endcase
 
         unique case (alu_mux_b_sel)
             B_MUX_IMM               : alu_b = imm_in;
             B_MUX_INSTRUCTION_LENGTH: alu_b = {13'b0000000000000, instruction_length};
-            B_MUX_m2                : alu_b = -2;
-            B_MUX_m1                : alu_b = -1;
-            B_MUX_0                 : alu_b = 0;
-            B_MUX_1                 : alu_b = 1;
             B_MUX_REG               : alu_b = reg_b;
             default                 : alu_b = 16'hXXXX;
         endcase
@@ -199,7 +197,7 @@ module datapath (
 
     buffer #(8) mem_buff (
         .in(memory_in),
-        .w(1'b1),
+        .w(mem_read_buff_en),
         .clk(clk),
         .reset(reset),
         .out(memory_buff_out)
@@ -210,7 +208,7 @@ module datapath (
         unique case (write_back_sel)
             WB_MUX_ALU          : reg_w_data = alu_out;
             WB_MUX_MEMORY       : reg_w_data = {8'h00, memory_in};
-            WB_MUX_MEMORY_BUFF  : reg_w_data = {memory_buff_out, memory_in};
+            WB_MUX_MEMORY_READ_BUFF : reg_w_data = {memory_in, memory_buff_out};
             default             : reg_w_data = 16'hXXXX;
         endcase
     end

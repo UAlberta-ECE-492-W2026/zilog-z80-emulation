@@ -76,16 +76,16 @@ module  alu #(
 		status_sign = 0;
 
         case (opcode)
-        	ADD: begin
+        	ALU_ADD: begin
            		tmp = a + b;
            		out_var = tmp[upper_bit:0];
         	end
-        	SUB: begin
+        	ALU_SUB: begin
            		tmp = a - b;
            		out_var = tmp[upper_bit:0];
            		status_sign = 1;
         	end
-        	COMPARE: begin
+        	ALU_COMPARE: begin
                /* The compare operation does not output to accumulator, it
                 just affects the status bits. The spec of the Z80 allows the
                 COMPARE operation to be implemented as the subtraction op.
@@ -94,61 +94,61 @@ module  alu #(
            		out_var = tmp[upper_bit:0];
            		status_sign = 1;
 			end
-        	AND: begin
+        	ALU_AND: begin
            		out_var = a & b;
         	end
-        	OR: begin
+        	ALU_OR: begin
            		out_var = a | b;
         	end
-        	XOR: begin
+        	ALU_XOR: begin
            		out_var = a ^ b;
         	end
-        	SLL: begin
+        	ALU_SLL: begin
            		status_opcode = SHIFT_OP;
                 tmp= {1'b0, a} << b;
                 out_var = tmp[upper_bit:0];
         	end
-        	SRL: begin
+        	ALU_SRL: begin
            		status_opcode = SHIFT_OP;
                 status_sign = 1;
                 tmp = {a, 1'b0} >> b;
            		out_var = tmp[upper_bit+1:1];
         	end
-        	SLA: begin
+        	ALU_SLA: begin
            		status_opcode = SHIFT_OP;
                 tmp = signed'({1'b0, a}) <<< b;
                 out_var = tmp[upper_bit:0];
         	end
-        	SRA: begin
+        	ALU_SRA: begin
            		status_opcode = SHIFT_OP;
                 status_sign = 1;
                 tmp = signed'({signed_a, 1'b0}) >>> signed_b;
            		out_var = tmp[upper_bit+1:1];
         	end
         	/* There is a chance that the following does not synthesize */
-        	ROL: begin // need to implement the pv flag bit for this
+        	ALU_ROL: begin // need to implement the pv flag bit for this
            		status_opcode = SHIFT_OP;
            		out_var = (a << (b % a_size[upper_bit:0]))
             		| (a >> (a_size - {{(32 - b_size){1'b0}},(b % a_size[upper_bit:0])}));
 			end
-        	ROR: begin
+        	ALU_ROR: begin
            		status_opcode = SHIFT_OP;
            		out_var = (a >> (b % a_size[upper_bit:0]))
             		| (a << (a_size - {{(32 - b_size){1'b0}},(b % a_size[upper_bit:0])}));
         	end
-        	INC:begin
+        	ALU_INC:begin
            		tmp = a + 1;
            		out_var = tmp[upper_bit:0];
         	end
-        	DEC: begin
+        	ALU_DEC: begin
            		tmp = a - 1;
            		out_var = tmp[upper_bit:0];
            		status_sign=1;
         	end
-			PASS_A: begin
+			ALU_PASS_A: begin
 				out_var = a;
 			end
-			PASS_B: begin
+			ALU_PASS_B: begin
 				out_var = b;
 			end
         	default: begin

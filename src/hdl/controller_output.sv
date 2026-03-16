@@ -1,13 +1,11 @@
 `timescale 1ns/1ps
+`include "reg_name.sv"
 
+/**
+ module that provides the signal output logic for the controller.
+ */
 module controller_output (
-                          output wire wb_sel,
-                                      ir_en,
-                                      reg_a_sel,
-                                      reg_w_sel,
-                                      reg_b_sel,
-                          input       uop::uop_t current_state,
-                          wire        reset
+                          c_to_dp_intf.output_maker ctrl_intf
 );
     import uop::*;
 
@@ -15,8 +13,8 @@ module controller_output (
     reg ir_en_reg;
 
     /* assignments ***************/
-    assign wb_sel = wb_sel_reg;
-    assign ir_en = ir_en_reg;
+    assign ctrl_intf.write_back_sel = wb_sel_reg;
+    assign ctrl_intf.ir_en = ir_en_reg;
 
     always_comb begin: output_block
         wb_sel_reg = 0;

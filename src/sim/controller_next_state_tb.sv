@@ -17,16 +17,10 @@ module controller_next_state_tb();
      failed.
      */
     task display_input_output_expected(input string test_name,
-                                                    uop::uop_t current_state,
-                                                    next_state,
-                                                    expected_value,
-                                       reg          reset_v,
-                                       pass_test);
-        $display("test name: %s : %s", test_name, pass_test ? "PASS" : "FAIL");
-        $display("    current_state : %s", current_state.name);
-        $display("    next_state    : %s", next_state.name);
-        $display("    expected_value: %s", expected_value.name);
-        $display("    reset_v: %b", reset_v);
+                                       c_to_dp_intf result_interface
+                                       );
+        $display("test name: %s", test_name);
+        $display("    current_state : %s", c_to_dp_intf.current_state.name);
     endtask // display_input_output_expected
 
 
@@ -54,8 +48,8 @@ module controller_next_state_tb();
 
     initial begin: test_definition
         testvectors = new [0];
-        testvectors = push_vector(testvectors, '{"invalid to reset",uop::invalid_uop, uop::reset_uop, 1});
-        testvectors = push_vector(testvectors, '{"reset to reset",uop::reset_uop, uop::reset_uop, 1});
+        testvectors = push_vector(testvectors, '{"invalid to reset",uop::invalid, uop::reset, 1});
+        testvectors = push_vector(testvectors, '{"reset to reset",uop::reset, uop::reset, 1});
     end;
 
     initial begin
@@ -79,9 +73,10 @@ module controller_next_state_tb();
                                           next_state_res == expected);
     end
 
+    c_to_dp_intf next_state_intf;
+
     controller_next_state dut (
-                               .next_state(next_state_res),
-                               .current_state(current_state_in),
+                               .ctrl_intf(next_state_inf),
                                .reset_sig(reset_sig)
                                );
 

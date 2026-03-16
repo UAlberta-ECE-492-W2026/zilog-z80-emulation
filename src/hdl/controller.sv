@@ -44,16 +44,16 @@ module controller (output wire [3:0] aluop,
         end;
     end;
 
+    /* interface ***/
+    c_to_dp_intf internal_bus;
+
     /* structural **********************************************************/
     controller_next_state next_state_logic (
-                                            .next_state(next_state),
-                                            .current_state(current_state),
+                                            .ctrl_intf(internal_bus),
                                             .reset_sig(reset)
                                             );
 
     controller_output output_logic(
-                                   .wb_sel(wb_signal),
-                                   .current_state(current_state),
-                                   .reset(reset)
+                                   .ctrl_intf(internal_bus)
                                    );
 endmodule; // controller

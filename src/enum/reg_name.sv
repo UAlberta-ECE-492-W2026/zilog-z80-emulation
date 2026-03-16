@@ -1,6 +1,8 @@
 `ifndef REG_NAMES
 `define REG_NAMES
 
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off UNUSEDSIGNAL */
 typedef enum [4:0] { 
     NONE,
     ZERO,
@@ -21,7 +23,8 @@ typedef enum [4:0] {
     IX,
     IY,
     SP,
-    PC // special case
+    PC
 } reg_name;
-
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
 `endif

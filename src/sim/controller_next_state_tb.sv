@@ -15,18 +15,19 @@ module controller_next_state_tb();
      The pass_test reg is 1 when the test passed, and 0 when the test
      failed.
      */
-    task display_input_output_expected(input string test_name,
+    function void display_input_output_expected(input string test_name,
                                                     uop::uop_t current_state,
                                                     next_state,
                                                     expected_value,
                                        reg          reset_v,
                                        pass_test);
         $display("test name: %s : %s", test_name, pass_test ? "PASS" : "FAIL");
+        $display("    time          : %0t", $time);
         $display("    current_state : %s", current_state.name);
         $display("    next_state    : %s", next_state.name);
         $display("    expected_value: %s", expected_value.name);
         $display("    reset_v: %b", reset_v);
-    endtask // display_input_output_expected
+    endfunction // display_input_output_expected
 
 
     typedef struct {

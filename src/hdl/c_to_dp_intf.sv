@@ -3,6 +3,8 @@
 `include "mop.sv"
 `include "exx_type.sv"
 `include "reg_name.sv"
+`include "f_op.sv"
+`include "mux_enums.sv"
 
 /**
 Interface for the connection between the controller and the datapath.
@@ -10,6 +12,8 @@ Interface for the connection between the controller and the datapath.
 interface c_to_dp_intf();
     import uop::*;
 
+    /* verilator lint_off UNDRIVEN */
+    /* verilator lint_off UNUSEDSIGNAL */
     // buffer control
     wire              ir_en;
     wire              o_buff_en;
@@ -59,6 +63,8 @@ interface c_to_dp_intf();
     /* state information, used by the controller sub system */
     uop::uop_t current_state;
     uop::uop_t next_state;
+    /* verilator lint_on UNDRIVEN */
+    /* verilator lint_on UNUSEDSIGNAL */
 
     modport datapath (
                       // buffers

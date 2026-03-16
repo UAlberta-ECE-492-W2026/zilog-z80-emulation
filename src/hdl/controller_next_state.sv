@@ -7,7 +7,7 @@ module controller_next_state (
     import uop::*;
     always_comb begin: next_state_block
         ctrl_intf.next_state = ctrl_intf.current_state;
-        if (reset_sig) ctfl_intf.next_state = uop::reset;
+        if (reset_sig) ctrl_intf.next_state = uop::reset;
     end;
 
 

@@ -4,8 +4,7 @@
 /* verilator lint_on UNUSEDSignal */
 module controller_next_state_tb();
     import uop::*;
-    uop::uop_t current_state_in;
-    uop::uop_t next_state_res;
+
     uop::uop_t expected;
     reg reset_sig;
     string curr_test;
@@ -17,10 +16,16 @@ module controller_next_state_tb();
      failed.
      */
     task display_input_output_expected(input string test_name,
-                                       c_to_dp_intf result_interface
-                                       );
-        $display("test name: %s", test_name);
-        $display("    current_state : %s", c_to_dp_intf.current_state.name);
+                                                    uop::uop_t current_state,
+                                                    next_state,
+                                                    expected_value,
+                                       reg          reset_v,
+                                       pass_test);
+        $display("test name: %s : %s", test_name, pass_test ? "PASS" : "FAIL");
+        $display("    current_state : %s", current_state.name);
+        $display("    next_state    : %s", next_state.name);
+        $display("    expected_value: %s", expected_value.name);
+        $display("    reset_v: %b", reset_v);
     endtask // display_input_output_expected
 
 
@@ -55,7 +60,7 @@ module controller_next_state_tb();
     initial begin
         for (int i = 0; i < testvectors.size(); ++i) begin
             #10;
-            current_state_in = testvectors[i].curr_state;
+            next_state_intf.current_state = testvectors[i].curr_state;
             expected = testvectors[i].expected_value;
             reset_sig = testvectors[i].reset_sig;
             curr_test = testvectors[i].test_name;
@@ -66,17 +71,17 @@ module controller_next_state_tb();
 
     always begin
         #11 display_input_output_expected(curr_test,
-                                          current_state_in,
-                                          next_state_res,
+                                          next_state_intf.current_state,
+                                          next_state_intf.next_state,
                                           expected,
                                           reset_sig,
-                                          next_state_res == expected);
+                                          next_state_intf.next_state == expected);
     end
 
-    c_to_dp_intf next_state_intf;
+    c_to_dp_intf next_state_intf();
 
     controller_next_state dut (
-                               .ctrl_intf(next_state_inf),
+                               .ctrl_intf(next_state_intf),
                                .reset_sig(reset_sig)
                                );
 

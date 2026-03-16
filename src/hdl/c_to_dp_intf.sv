@@ -10,11 +10,11 @@ Interface for the connection between the controller and the datapath.
 interface c_to_dp_intf();
     import uop::*;
 
-    // buffers
+    // buffer control
     wire              ir_en;
     wire              o_buff_en;
 
-    // ALU
+    // ALU control
     wire              alu_enable;
     wire              alu_16b_mode;
     alu_op            alu_opcode;
@@ -56,6 +56,7 @@ interface c_to_dp_intf();
     wire [2:0]       instruction_length;
     wire [5:0]       raw_f_buffered;
 
+    /* state information, used by the controller sub system */
     uop::uop_t current_state;
     uop::uop_t next_state;
 
@@ -177,34 +178,34 @@ interface c_to_dp_intf();
                                        input  current_state
                                        );
     modport output_maker(
-                                       // buffers
-                                       input ir_en, o_buff_en,
+                         // buffers
+                         input  ir_en, o_buff_en,
 
-                                       // ALU
-                                       input alu_enable, alu_16b_mode, alu_opcode,
-                                              update_flags,
+                         // ALU
+                         input  alu_enable, alu_16b_mode, alu_opcode,
+                                update_flags,
 
-                                       // register file
-                                       input reg_a_sel,
-                                              reg_b_sel,
-                                              reg_w_sel,
-                                              reg_w_en,
-                                              f_w_en,
-                                              f_op,
-                                              exx,
+                         // register file
+                         input  reg_a_sel,
+                                reg_b_sel,
+                                reg_w_sel,
+                                reg_w_en,
+                                f_w_en,
+                                f_op,
+                                exx,
 
-                                       // mux
-                                       input alu_mux_a_sel,
-                                              alu_mux_b_sel,
-                                              write_back_sel,
+                         // mux
+                         input  alu_mux_a_sel,
+                                alu_mux_b_sel,
+                                write_back_sel,
 
-                                       // memory interfacing
-                                       input memory_in,
-                                              instruction_in,
-                                              imm_in,
-                                              instruction_length,
-                                       output  current_state
-);
+                         // memory interfacing
+                         input  memory_in,
+                                instruction_in,
+                                imm_in,
+                                instruction_length,
+                         output current_state
+                         );
 
     modport next_state_logic(
                              output next_state,

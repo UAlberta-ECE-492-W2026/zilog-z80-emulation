@@ -21,6 +21,7 @@ package uop;
 
                         /* sp ops */
                         sp_m1,
+                        sp_m1_2, /* the second stack pointer reduce in seq */
                         sp_p2,
 
                         /* load related */
@@ -42,6 +43,7 @@ package uop;
 
                         /* buffer control */
                         buff_addr_reg_a,
+                        buff_addr_reg_a_2,
                         buff_addr_reg_a_imm_1,
 
                         /* exchange */

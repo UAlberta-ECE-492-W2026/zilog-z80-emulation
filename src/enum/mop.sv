@@ -1,5 +1,5 @@
-`ifndef UOP
-`define UOP
+`ifndef MOP
+`define MOP
 // enum for decoded instruciton opcodes. Based off the original names.
 //
 // One major difference is that special characters like () and spaces can't be used in code

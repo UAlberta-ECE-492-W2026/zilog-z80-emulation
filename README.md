@@ -29,6 +29,22 @@ From there, run make from the root directory of the project with a valid target.
 
 For simulation purposes, the required programs are `make`, `verilator`, and `gcc`. Additionally, to view the resulting simulation waveform, a waveform viewer is required. The recommended open source waveform viewer is [GTKWave](https://github.com/gtkwave/gtkwave).
 
+#### MacOS
+
+The following command facilitates installation of the dependencies.
+
+``` sh
+brew install make verilator
+```
+
+Additionally, to view the output waveform, install GTKWave.
+
+##### Resources
+
+- [install GTKWave](https://gtkwave.github.io/gtkwave/install/mac.html "go to link")
+  - Provides instructions on how to either install GTKWave using Homebrew Taps, or building from source. 
+  Building from source here is relatively painless.
+
 #### Arch linux
 
 ``` sh

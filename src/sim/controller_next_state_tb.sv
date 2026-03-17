@@ -72,6 +72,8 @@ module controller_next_state_tb();
         testvectors = push_vector(testvectors, '{"POP_R", uop::fetch, uop::read_mrbuff_reg_b_imm_0, POP_R, 0});
         testvectors = push_vector(testvectors, '{"POP_R", uop::read_mrbuff_reg_b_imm_0, uop::read16_reg_a_reg_b_imm_0, POP_R, 0});
         testvectors = push_vector(testvectors, '{"POP_R", uop::sp_p2, uop::pc_next, POP_R, 0});
+        testvectors = push_vector(testvectors, '{"EX_DE_HL1", uop::fetch, uop::ex_de_hl, EX_DE_HL, 0});
+        testvectors = push_vector(testvectors, '{"EX_DE_HL2", uop::ex_de_hl, uop::pc_next, EX_DE_HL, 0});
     end;
 
     initial begin

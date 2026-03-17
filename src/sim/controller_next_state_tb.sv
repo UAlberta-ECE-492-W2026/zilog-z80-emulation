@@ -58,10 +58,17 @@ module controller_next_state_tb();
         testvectors = push_vector(testvectors, '{"invalid to reset",uop::invalid, uop::reset, PUSH_R, 1});
         testvectors = push_vector(testvectors, '{"reset to reset",uop::reset, uop::reset, ADD_R_R, 1});
         testvectors = push_vector(testvectors, '{"LD_R_R", uop::fetch, uop::ld_reg_a_reg_b, LD_R_R, 0});
-        testvectors = push_vector(testvectors, '{"LD_R_R", uop::ld_reg_a_reg_b, uop::pc_next, LD_R_R, 0});
-        testvectors = push_vector(testvectors, '{"LD_R_nn", uop::fetch, uop::read_mrbuff_reg_b_imm_0, LD_R_nn, 0});
-        testvectors = push_vector(testvectors, '{"LD_R_nn", uop::read_mrbuff_reg_b_imm_0, uop::read16_reg_a_reg_b_imm_0, LD_R_nn, 0});
-        testvectors = push_vector(testvectors, '{"LD_R_nn", uop::read16_reg_a_reg_b_imm_0, uop::pc_next, LD_R_nn, 0});
+        testvectors = push_vector(testvectors, '{"LD_R_R2", uop::ld_reg_a_reg_b, uop::pc_next, LD_R_R, 0});
+        testvectors = push_vector(testvectors, '{"LD_R_nn1", uop::fetch, uop::read_mrbuff_reg_b_imm_0, LD_R_nn, 0});
+        testvectors = push_vector(testvectors, '{"LD_R_nn2", uop::read_mrbuff_reg_b_imm_0, uop::read16_reg_a_reg_b_imm_0, LD_R_nn, 0});
+        testvectors = push_vector(testvectors, '{"LD_R_nn3", uop::read16_reg_a_reg_b_imm_0, uop::pc_next, LD_R_nn, 0});
+        testvectors = push_vector(testvectors, '{"PUSH_R", uop::fetch, uop::sp_m1, PUSH_R, 0});
+        testvectors = push_vector(testvectors, '{"PUSH_R", uop::sp_m1, uop::buff_addr_reg_a, PUSH_R, 0});
+        testvectors = push_vector(testvectors, '{"PUSH_R", uop::buff_addr_reg_a, uop::write_reg_bH, PUSH_R, 0});
+        testvectors = push_vector(testvectors, '{"PUSH_R", uop::write_reg_bH, uop::sp_m1_2, PUSH_R, 0});
+        testvectors = push_vector(testvectors, '{"PUSH_R", uop::sp_m1_2, uop::buff_addr_reg_a_2, PUSH_R, 0});
+        testvectors = push_vector(testvectors, '{"PUSH_R", uop::buff_addr_reg_a_2, uop::write_reg_bL, PUSH_R, 0});
+        testvectors = push_vector(testvectors, '{"PUSH_R", uop::write_reg_bL, uop::pc_next, PUSH_R, 0});
     end;
 
     initial begin

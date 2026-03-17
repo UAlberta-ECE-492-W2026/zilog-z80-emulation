@@ -34,6 +34,7 @@ module controller_next_state_tb();
         string test_name;
         uop::uop_t curr_state;
         uop::uop_t expected_value;
+        mop mop_val;
         reg reset_sig;
     } test_vector;
 
@@ -54,14 +55,16 @@ module controller_next_state_tb();
 
     initial begin: test_definition
         testvectors = new [0];
-        testvectors = push_vector(testvectors, '{"invalid to reset",uop::invalid, uop::reset, 1});
-        testvectors = push_vector(testvectors, '{"reset to reset",uop::reset, uop::reset, 1});
+        testvectors = push_vector(testvectors, '{"invalid to reset",uop::invalid, uop::reset, PUSH_R, 1});
+        testvectors = push_vector(testvectors, '{"reset to reset",uop::reset, uop::reset, ADD_R_R, 1});
+        testvectors = push_vector(testvectors, '{"LD_R_R", uop::fetch, uop::ld_reg_a_reg_b, LD_R_R, 0});
     end;
 
     initial begin
         for (int i = 0; i < testvectors.size(); ++i) begin
             #10;
             next_state_intf.current_state = testvectors[i].curr_state;
+            next_state_intf.mop_out = testvectors[i].mop_val;
             expected = testvectors[i].expected_value;
             reset_sig = testvectors[i].reset_sig;
             curr_test = testvectors[i].test_name;

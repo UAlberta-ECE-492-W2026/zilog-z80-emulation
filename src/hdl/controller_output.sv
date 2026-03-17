@@ -25,6 +25,16 @@ module controller_output (
           case (current_state)
             uop::reset: begin
             end
+            uop::pc_next: begin
+                ctrl_intf.reg_w_sel = PC;
+                ctrl_intf.reg_w_en = 1;
+                ctrl_intf.alu_mux_a_sel=A_MUX_REG;
+                ctrl_intf.alu_mux_b_sel =B_MUX_INSTRUCTION_LENGTH;
+                ctrl_intf.alu_op = ALU_ADD;
+                ctrl_intf.alu_enable = 1;
+                ctrl_intf.alu_16b_mode = 1;
+                ctrl_intf.write_back_sel = WB_MUX_ALU;
+            end
             default: begin
             end
           endcase; // case (current_state)

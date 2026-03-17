@@ -15,24 +15,24 @@ interface c_to_dp_intf();
     /* verilator lint_off UNDRIVEN */
     /* verilator lint_off UNUSEDSIGNAL */
     // buffer control
-    wire              ir_en;
-    wire              o_buff_en;
+    logic ir_en;
+    logic o_buff_en;
 
     // ALU control
-    wire              alu_enable;
-    wire              alu_16b_mode;
+    logic alu_enable;
+    logic alu_16b_mode;
     alu_op            alu_opcode;
-    wire [5:0]        update_flags;
+    logic [5:0]        update_flags;
 
     // register file
     reg_name          reg_a_sel;
     reg_name          reg_b_sel;
     reg_name          reg_w_sel;
-    wire              reg_w_en;
-    wire              f_w_en;
+    logic             reg_w_en;
+    logic             f_w_en;
     f_op_enum         f_op;
-    exx_type          exx;
-    wire[5:0]        f; // see the raw_f_buffered  for direct alu flag s
+    exx_type          exx_sig;
+    logic[5:0]        f; // see the raw_f_buffered  for direct alu flag s
 
     // mux
     alu_mux_a_enum    alu_mux_a_sel;
@@ -40,31 +40,35 @@ interface c_to_dp_intf();
     write_back_enum   write_back_sel;
 
     // memory interfacing
-    wire [7:0]        memory_in;
-    wire [15:0]       memory_out; // data or address depending on uop
-    wire [31:0]       instruction_in;
+    logic[7:0]        memory_in;
+    logic[15:0]       memory_out; // data or address depending on uop
+    logic[31:0]       instruction_in;
 
     // instruction decode
     // some of these have corresponding similarly named inputs from the controller
     mop              mop_out;
     reg_name         reg_a_sel_out;
     reg_name         reg_b_sel_out;
-    wire [7:0]       imm_0_out;
-    wire [15:0]      imm_1_out;
-    wire             use_16b_alu_out;
-    wire [5:0]       update_flags_out;
-    wire [2:0]       instruction_length_out;
+    logic[7:0]       imm_0_out;
+    logic[15:0]      imm_1_out;
+    logic            use_16b_alu_out;
+    logic[5:0]       update_flags_out;
+    logic[2:0]       instruction_length_out;
 
     // misc
-    wire [15:0]      imm_in;
-    wire [2:0]       instruction_length;
-    wire [5:0]       raw_f_buffered;
+    logic[15:0]      imm_in;
+    logic[2:0]       instruction_length;
+    logic[5:0]       raw_f_buffered;
 
     /* state information, used by the controller sub system */
     uop::uop_t current_state;
     uop::uop_t next_state;
     /* verilator lint_on UNDRIVEN */
     /* verilator lint_on UNUSEDSIGNAL */
+
+    function automatic void set_next_state(input uop::uop_t state);
+        next_state = state;
+    endfunction; // set_next_state
 
     modport datapath (
                       // buffers
@@ -83,7 +87,7 @@ interface c_to_dp_intf();
                       input  reg_w_en,
                       input  f_w_en,
                       input  f_op,
-                      input  exx,
+                      input  exx_sig,
 
                       // mux
                       input  alu_mux_a_sel,
@@ -127,7 +131,7 @@ interface c_to_dp_intf();
                       output reg_w_en,
                       output f_w_en,
                       output f_op,
-                      output exx,
+                      output exx_sig,
 
                       // mux
                       output alu_mux_a_sel,
@@ -169,7 +173,7 @@ interface c_to_dp_intf();
                                               reg_w_en,
                                               f_w_en,
                                               f_op,
-                                              exx,
+                                              exx_sig,
 
                                        // mux
                                        output alu_mux_a_sel,
@@ -198,7 +202,7 @@ interface c_to_dp_intf();
                                 reg_w_en,
                                 f_w_en,
                                 f_op,
-                                exx,
+                                exx_sig,
 
                          // mux
                          input  alu_mux_a_sel,
@@ -214,8 +218,8 @@ interface c_to_dp_intf();
                          );
 
     modport next_state_logic(
-                             output next_state,
-                             input  current_state
+                             input  current_state, mop_out,
+                             import set_next_state
                              );
 
 

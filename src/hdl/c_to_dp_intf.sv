@@ -70,6 +70,13 @@ interface c_to_dp_intf();
         next_state = state;
     endfunction; // set_next_state
 
+    /**
+     method that denotes if the controller should latch the new mop output
+     */
+    function automatic logic latch_mop();
+        return current_state == uop::fetch;
+    endfunction; // latch_mop
+
     modport datapath (
                       // buffers
                       input  ir_en, o_buff_en,

@@ -17,9 +17,10 @@ module controller (output wire [3:0] aluop,
    /* callables */
 
    /* declaration ***********************************************************/
-   uop::uop_t current_state;
-   uop::uop_t next_state;
-   reg [3:0] aluop_reg;
+    mop current_mop;
+    uop::uop_t current_state;
+    uop::uop_t next_state;
+    reg [3:0] aluop_reg;
 
 
    /* instantiation *********************************************************/
@@ -40,7 +41,8 @@ module controller (output wire [3:0] aluop,
         else begin
             /* we are not doing a reset */
             current_state <= next_state;
-
+            /* TODO: Verify the correctness of this assignment */
+            current_mop = internal_bus.latch_mop() ? internal_bus.out_mop : current_mop;
         end;
     end;
 

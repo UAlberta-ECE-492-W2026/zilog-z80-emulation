@@ -58,6 +58,10 @@ module controller_next_state_tb();
         testvectors = push_vector(testvectors, '{"invalid to reset",uop::invalid, uop::reset, PUSH_R, 1});
         testvectors = push_vector(testvectors, '{"reset to reset",uop::reset, uop::reset, ADD_R_R, 1});
         testvectors = push_vector(testvectors, '{"LD_R_R", uop::fetch, uop::ld_reg_a_reg_b, LD_R_R, 0});
+        testvectors = push_vector(testvectors, '{"LD_R_R", uop::ld_reg_a_reg_b, uop::pc_next, LD_R_R, 0});
+        testvectors = push_vector(testvectors, '{"LD_R_nn", uop::fetch, uop::read_mrbuff_reg_b_imm_0, LD_R_nn, 0});
+        testvectors = push_vector(testvectors, '{"LD_R_nn", uop::read_mrbuff_reg_b_imm_0, uop::read16_reg_a_reg_b_imm_0, LD_R_nn, 0});
+        testvectors = push_vector(testvectors, '{"LD_R_nn", uop::read16_reg_a_reg_b_imm_0, uop::pc_next, LD_R_nn, 0});
     end;
 
     initial begin

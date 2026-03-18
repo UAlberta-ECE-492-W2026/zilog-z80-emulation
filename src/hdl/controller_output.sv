@@ -19,6 +19,12 @@ module controller_output (
     always_comb begin: output_block
         wb_sel_reg = 0;
         ir_en_reg = 0;
+        ctrl_intf.reg_a_sel = NONE;
+        ctrl_intf.reg_b_sel = NONE;
+        ctrl_intf.reg_w_sel = NONE;
+        ctrl_intf.reg_w_en = 0;
+        ctrl_intf.exx_sig = EXX_NOP;
+
         if (reset) begin // output the reset output
         end
         else

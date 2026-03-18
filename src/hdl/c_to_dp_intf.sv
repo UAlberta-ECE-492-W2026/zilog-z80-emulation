@@ -10,7 +10,6 @@
 Interface for the connection between the controller and the datapath.
  */
 interface c_to_dp_intf();
-    import uop::*;
 
     /* verilator lint_off UNDRIVEN */
     /* verilator lint_off UNUSEDSIGNAL */

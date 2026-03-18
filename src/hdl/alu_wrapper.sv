@@ -17,8 +17,8 @@ module alu_wrapper #()
 );
     wire alu_8_en;
     wire alu_16_en;
-    assign alu_8_en = (alu_16b_mode == 0) ? enable : 0;
-    assign alu_16_en = (alu_16b_mode == 1) ? enable : 0;
+    assign alu_8_en = (alu_16b_mode == 0) ? (enable  && opcode != ALU_NOP) : 0;
+    assign alu_16_en = (alu_16b_mode == 1) ? (enable  && opcode != ALU_NOP) : 0;
 
     wire [7:0] out_8;
     wire [15:0] out_16;

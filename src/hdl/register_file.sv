@@ -129,37 +129,33 @@ module register_file
             end
 
             if (f_w_en == 1'b1) begin
-                //$display("doing flag stuff!");
-                //$display("%b %b %b", internal_f_set, internal_f_reset, internal_f_toggle);
-                //$display("%b", main_reg_set[1]);
-                //$display("%b", main_reg_set[1] & ( ~ internal_f_reset));
                 if (! (internal_f_set == 0)) main_reg_set[1] <= main_reg_set[1] | internal_f_set;
                 if (! (internal_f_reset == 0)) main_reg_set[1] <= main_reg_set[1] & ( ~ internal_f_reset);
                 if (! (internal_f_toggle == 0)) main_reg_set[1] <= main_reg_set[1] ^ internal_f_toggle;
             end
-        end
-
-        // exchange
-        if (! (exx == EXX_NOP)) begin
-            case(exx)
-                EXX_DE_HL: begin
-                    main_reg_set[4] <= main_reg_set[6]; // D <=> H
-                    main_reg_set[6] <= main_reg_set[4];
-                    main_reg_set[5] <= main_reg_set[7]; // E <=> L
-                    main_reg_set[7] <= main_reg_set[5];
-                end
-                EXX_AF_AFp: begin
-                    main_reg_set[0] <= alt_reg_set[0]; // A <=> A'
-                    alt_reg_set[0]  <= main_reg_set[0];
-                    main_reg_set[1] <= alt_reg_set[1]; // F <=> F'
-                    alt_reg_set[1]  <= main_reg_set[1];
-                end
-                EXX_ALL: begin
-                    main_reg_set <= alt_reg_set;
-                    alt_reg_set <= main_reg_set;
-                end
-                default:;
-            endcase
+        
+            // exchange
+            if (! (exx == EXX_NOP)) begin
+                case(exx)
+                    EXX_DE_HL: begin
+                        main_reg_set[4] <= main_reg_set[6]; // D <=> H
+                        main_reg_set[6] <= main_reg_set[4];
+                        main_reg_set[5] <= main_reg_set[7]; // E <=> L
+                        main_reg_set[7] <= main_reg_set[5];
+                    end
+                    EXX_AF_AFp: begin
+                        main_reg_set[0] <= alt_reg_set[0]; // A <=> A'
+                        alt_reg_set[0]  <= main_reg_set[0];
+                        main_reg_set[1] <= alt_reg_set[1]; // F <=> F'
+                        alt_reg_set[1]  <= main_reg_set[1];
+                    end
+                    EXX_ALL: begin
+                        main_reg_set <= alt_reg_set;
+                        alt_reg_set <= main_reg_set;
+                    end
+                    default:;
+                endcase
+            end
         end
     end
 endmodule

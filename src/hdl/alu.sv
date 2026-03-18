@@ -152,7 +152,7 @@ module  alu #(
 				out_var = b;
 			end
         	default: begin
-				out_var = '{default: 'X};
+				out_var = 0;
 			end
         endcase
    	end // always_comb

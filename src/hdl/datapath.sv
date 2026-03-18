@@ -34,7 +34,7 @@ module datapath (
     input wire              f_w_en,
     input f_op_enum         f_op,
     input exx_type          exx,
-    output wire[5:0]        f, // see the raw_f_buffered output for direct alu flag outputs
+    output wire[5:0]        f, // see the raw_f output for direct alu flag outputs
 
     // mux
     input alu_mux_a_enum    alu_mux_a_sel,
@@ -60,7 +60,7 @@ module datapath (
     // misc
     input wire [15:0]       imm_in,
     input wire [2:0]        instruction_length,
-    output wire[5:0]        raw_f_buffered
+    output wire[5:0]        raw_f
 );
     wire [31:0] ir_buff_out;
 
@@ -75,11 +75,12 @@ module datapath (
     wire [7:0]  memory_buff_out;
 
     // flags
-    wire [5:0] f_raw;
-    wire [5:0] f_set;
-    wire [5:0] f_reset;
-    wire [5:0] f_toggle;
-
+    reg [5:0] f_set;
+    reg [5:0] f_reset;
+    reg [5:0] f_toggle;
+    wire [5:0] alu_f_set;
+    wire [5:0] alu_f_reset;
+    wire [5:0] alu_f_toggle;
 
     buffer #(32) instruction_buff(
         .in(instruction_in),
@@ -117,7 +118,11 @@ module datapath (
                 f_reset[1] = 1; // wow side effects! amazing
                 f_reset[3] = 1;
             end
-            default: ;
+            default: begin
+                f_set = 0;
+                f_reset = 0;
+                f_toggle = 0;
+            end
         endcase
     end
 
@@ -133,9 +138,9 @@ module datapath (
         .reg_w_sel(reg_w_sel),
         .reg_w_data(reg_w_data),
         .reg_w_en(reg_w_en),
-        .f_set(f_set),
-        .f_reset(f_reset),
-        .f_toggle(f_toggle),
+        .f_set(f_set | alu_f_set),
+        .f_reset(f_reset | alu_f_reset),
+        .f_toggle(f_toggle | alu_f_toggle),
         .f_w_en(f_w_en),
         .f(f)
     );
@@ -173,24 +178,16 @@ module datapath (
     // alu
     alu_wrapper #() alu (
         .out(alu_out),
-        .set_flags(f_set),
-        .reset_flags(f_reset),
-        .toggle_flags(f_toggle),
-        .raw_flags(f_raw),
+        .set_flags(alu_f_set),
+        .reset_flags(alu_f_reset),
+        .toggle_flags(alu_f_toggle),
+        .raw_flags(raw_f),
         .a(alu_a),
         .b(alu_b),
         .opcode(alu_opcode),
         .enable(alu_enable),
         .alu_16b_mode(alu_16b_mode),
         .update_flags(update_flags)
-    );
-
-    buffer #(6) raw_flag_buff (
-        .in(f_raw),
-        .w(1'b1),
-        .clk(clk),
-        .reset(reset),
-        .out(raw_f_buffered)
     );
 
     assign memory_out = alu_out;

@@ -15,6 +15,9 @@
 obj_dir/Valu_%: ./src/hdl/alu_status.sv ./src/hdl/alu.sv ./src/sim/alu_%.sv ./src/enum/alu_op.sv
 	verilator --binary -j 0 -Wall -cc $^ --top-module alu_$* --timing +incdir+./src/enum
 
+obj_dir/Vcontroller: ./src/hdl/controller.sv ./src/enum/uop.sv ./src/enum/reg_name.sv
+	verilator --binary -j 0 -Wall -cc $^ --top-module controller --timing +incdir+./src/enum
+
 out/sim:
 	mkdir -p ./out/sim
 

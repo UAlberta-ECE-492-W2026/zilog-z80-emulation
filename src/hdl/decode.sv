@@ -27,7 +27,6 @@ module decode #(
     output wire [5:0] update_flags,
     output wire [2:0] instruction_length
 );
-    assign instruction_length = 3'b000; // delete this in merge
     // this helps make it a bit easier to read and compare to the specification
     wire [7:0] op_0; //first byte
     wire [7:0] op_1; // second byte
@@ -1111,21 +1110,12 @@ module decode #(
             reg_b = HL;
         end else if (op_0 == 8'hE9) begin // JP (IX)
             output_op = JP_R;
-<<<<<<< HEAD
             reg_a = PC;
             reg_b = IX;
         end else if (op_0 == 8'hE9) begin // JP (IY)
             output_op = JP_R;
             reg_a = PC;
             reg_b = IY;
-=======
-            reg_a = IX;
-            insutruction_length = 2;
-        end else if (op_0 == 8'hE9) begin // JP (IY)
-            output_op = JP_R;
-            reg_a = IY;
-            insutruction_length = 2;
->>>>>>> c8fe16b32bde06946d6ce6d805b3e0b60b7c5b95
         end else if (op_0 == 8'h10) begin // DJNZ, e
             output_op = DJNZ_e;
             reg_a = PC;

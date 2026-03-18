@@ -28,7 +28,7 @@ module controller_output (
         if (reset) begin // output the reset output
         end
         else
-          case (current_state)
+          case (ctrl_intf.current_state)
             uop::reset: begin
             end
             uop::pc_next: begin
@@ -36,7 +36,7 @@ module controller_output (
                 ctrl_intf.reg_w_en = 1;
                 ctrl_intf.alu_mux_a_sel=A_MUX_REG;
                 ctrl_intf.alu_mux_b_sel =B_MUX_INSTRUCTION_LENGTH;
-                ctrl_intf.alu_op = ALU_ADD;
+                ctrl_intf.alu_opcode = ALU_ADD;
                 ctrl_intf.alu_enable = 1;
                 ctrl_intf.alu_16b_mode = 1;
                 ctrl_intf.write_back_sel = WB_MUX_ALU;

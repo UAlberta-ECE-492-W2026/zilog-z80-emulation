@@ -1,213 +1,212 @@
 
 `timescale 1ns/1ps
 `include "alu_op.sv"
+`include "mop.sv"
+`include "exx_type.sv"
+`include "reg_name.sv"
+`include "f_op.sv"
+`include "mux_enums.sv"
+
+`include "alu_wrapper.sv"
+`include "register_file.sv"
+`include "buffer.sv"
 
 module datapath (
-    input logic clk,
-    input logic reset,
+    input wire              clk,
+    input wire              reset,
 
-    // ######################
-    // ALU control
-    // ######################
-    input  logic        alu_enable,
-    input  alu_op       alu_opcode,
+    // buffers
+    input wire              ir_en,
+    input wire              o_buff_en,
+    input wire              mem_read_buff_en,
 
-    // Select ALU operand sources
-    // 00 = reg8 (selected by reg8_src_*)
-    // 01 = immediate (imm8)
-    // 10 = constant 0
-    // 11 = constant 8'hFF
-    input  logic [1:0]  alu_a_sel,
-    input  logic [1:0]  alu_b_sel,
-    input  logic [7:0]  reg8_src_a,
-    input  logic [7:0]  reg8_src_b,
-    input  logic [7:0]  imm8,
-
-    // ######################
-    // Register writeback control
-    // ######################
-    input  logic        reg8_we,
-    input  logic [7:0]  reg8_dst,
-
-    // 00 = ALU out
-    // 01 = imm8
-    // 10 = mem_rdata
-    // 11 = passthrough reg8_src_a
-    input  logic [1:0]  reg8_wsel,
-
-    input  logic        reg16_we,
-    input  logic [15:0] reg16_dst,
-    input  logic [15:0] reg16_wdata,
-
-    // ######################
-    // Flags writeback control
-    // ######################
-    input  logic        flags_we,
-
-    // 0 = ALU status flags
-    // 1 = flags_in (explicit)
-    input  logic        flags_sel,
-    input  logic [7:0]  flags_in,
-
-    // ######################
-    // Memory datapath hooks
-    // ######################
-    input  logic [7:0]  mem_rdata,
-
-    // ######################
-    // Debug / taps
-    // ######################
-    output logic [7:0]  alu_out,
-    output logic [7:0]  alu_flags,
-
-    output logic [7:0]  A, B, C, D, E, H, L, F,
-    output logic [15:0] PC, SP
-);
-
-    // ############################################
-    // Register encoding constants
-    // ############################################
-    localparam logic [7:0]  REG_A  = 8'h00;
-    localparam logic [7:0]  REG_B  = 8'h01;
-    localparam logic [7:0]  REG_C  = 8'h02;
-    localparam logic [7:0]  REG_D  = 8'h03;
-    localparam logic [7:0]  REG_E  = 8'h04;
-    localparam logic [7:0]  REG_H  = 8'h05;
-    localparam logic [7:0]  REG_L  = 8'h06;
-
-    localparam logic [15:0] REG_BC = 16'h07;
-    localparam logic [15:0] REG_DE = 16'h08;
-    localparam logic [15:0] REG_HL = 16'h09;
-    localparam logic [15:0] REG_SP = 16'h10;
-
-    // ############################################
-    // Internal wires
-    // ############################################
-    logic [7:0] reg8_a_val;
-    logic [7:0] reg8_b_val;
-    logic [7:0] alu_a;
-    logic [7:0] alu_b;
-
-    logic [7:0] reg8_wdata;
-    logic [7:0] flags_wdata;
-
-    // ############################################
-    // Helper functions: read an 8-bit or 16-bit register from the exposed taps
-    // ############################################
-    function automatic logic [7:0] read_reg8(input logic [7:0] r);
-        unique case (r)
-            REG_A:   read_reg8 = A;
-            REG_B:   read_reg8 = B;
-            REG_C:   read_reg8 = C;
-            REG_D:   read_reg8 = D;
-            REG_E:   read_reg8 = E;
-            REG_H:   read_reg8 = H;
-            REG_L:   read_reg8 = L;
-            default: read_reg8 = 8'h00;
-        endcase
-    endfunction
-
-    function automatic logic [15:0] read_reg16(input logic [15:0] rr);
-        unique case (rr)
-            REG_BC:  read_reg16 = {B, C};
-            REG_DE:  read_reg16 = {D, E};
-            REG_HL:  read_reg16 = {H, L};
-            REG_SP:  read_reg16 = SP;
-            default: read_reg16 = 16'h0000;
-        endcase
-    endfunction
-
-    // ##############
-    // Read sources
-    // ##############
-    always_comb begin
-        reg8_a_val = read_reg8(reg8_src_a);
-        reg8_b_val = read_reg8(reg8_src_b);
-    end
-
-    // ###################
-    // ALU operand muxes
-    // ###################
-    always_comb begin
-        unique case (alu_a_sel)
-            2'b00: alu_a = reg8_a_val;
-            2'b01: alu_a = imm8;
-            2'b10: alu_a = 8'h00;
-            2'b11: alu_a = 8'hFF;
-            default: alu_a = 8'h00;
-        endcase
-
-        unique case (alu_b_sel)
-            2'b00: alu_b = reg8_b_val;
-            2'b01: alu_b = imm8;
-            2'b10: alu_b = 8'h00;
-            2'b11: alu_b = 8'hFF;
-            default: alu_b = 8'h00;
-        endcase
-    end
-
-    // #######################
     // ALU
-    // #######################
-    wire [7:0] alu_out_w;
-    wire [7:0] alu_flags_w;
+    input wire              alu_enable,
+    input wire              alu_16b_mode,
+    input alu_op            alu_opcode,
+    input wire [5:0]        update_flags,
 
-    alu #(.alu_width(8)) u_alu (
-        .out(alu_out_w),
-        .status_flag(alu_flags_w),
+    // register file
+    input reg_name          reg_a_sel,
+    input reg_name          reg_b_sel,
+    input reg_name          reg_w_sel,
+    input wire              reg_w_en,
+    input wire              f_w_en,
+    input f_op_enum         f_op,
+    input exx_type          exx,
+    output wire[5:0]        f, // see the raw_f output for direct alu flag outputs
+
+    // mux
+    input alu_mux_a_enum    alu_mux_a_sel,
+    input alu_mux_b_enum    alu_mux_b_sel,
+    input write_back_enum   write_back_sel,
+
+    // memory interfacing
+    input wire [7:0]        memory_in,
+    output wire [15:0]      memory_out, // data or address depending on uop
+    input wire [31:0]       instruction_in,
+
+    // instruction decode
+    // some of these have corrosponding similarly named inputs from the controller
+    output mop              mop_out,
+    output reg_name         reg_a_sel_out,
+    output reg_name         reg_b_sel_out,
+    output wire [7:0]       imm_0_out,
+    output wire [15:0]      imm_1_out,
+    output wire             use_16b_alu_out,
+    output wire [5:0]       update_flags_out,  
+    output wire [2:0]       instruction_length_out,
+
+    // misc
+    input wire [15:0]       imm_in,
+    input wire [2:0]        instruction_length,
+    output wire[5:0]        raw_f
+);
+    wire [31:0] ir_buff_out;
+
+    // alu and data movement related
+    reg  [15:0] alu_a;
+    reg  [15:0] alu_b;
+    wire [15:0] reg_a;
+    wire [15:0] reg_b;
+    wire [15:0] o_buff_out;
+    wire [15:0] alu_out;
+    reg  [15:0] reg_w_data;
+    wire [7:0]  memory_buff_out;
+
+    // flags
+    reg [5:0] f_set;
+    reg [5:0] f_reset;
+    reg [5:0] f_toggle;
+    wire [5:0] alu_f_set;
+    wire [5:0] alu_f_reset;
+    wire [5:0] alu_f_toggle;
+
+    buffer #(32) instruction_buff(
+        .in(instruction_in),
+        .w(ir_en),
+        .clk(clk),
+        .reset(reset),
+        .out(ir_buff_out)
+    );
+
+
+    // instruction related stuff
+    decode #() decode (
+        .input_op(ir_buff_out),
+        .enable(1'b1),
+        .output_op(mop_out),
+        .reg_a(reg_a_sel_out),
+        .reg_b(reg_b_sel_out),
+        .imm_0(imm_0_out),
+        .imm_1(imm_1_out),
+        .use_16b_alu(use_16b_alu_out),
+        .update_flags(update_flags_out),
+        .instruction_length(instruction_length_out)
+    );
+
+
+    // for CCF and SCF instructions. tempted to put this in the register file
+    always_comb begin
+        case (f_op)
+            F_CCF: begin
+                f_toggle[0] = 1; // main intent of the CCF instruction
+                f_reset[1] = 1; // side effect
+            end
+            F_SCF: begin
+                f_set[0] = 1; // main intent
+                f_reset[1] = 1; // wow side effects! amazing
+                f_reset[3] = 1;
+            end
+            default: begin
+                f_set = 0;
+                f_reset = 0;
+                f_toggle = 0;
+            end
+        endcase
+    end
+
+
+    register_file #() register_file (
+        .clk(clk),
+        .reset(reset),
+        .exx(exx),
+        .reg_a_sel(reg_a_sel),
+        .reg_b_sel(reg_b_sel),
+        .reg_a(reg_a),
+        .reg_b(reg_b),
+        .reg_w_sel(reg_w_sel),
+        .reg_w_data(reg_w_data),
+        .reg_w_en(reg_w_en),
+        .f_set(f_set | alu_f_set),
+        .f_reset(f_reset | alu_f_reset),
+        .f_toggle(f_toggle | alu_f_toggle),
+        .f_w_en(f_w_en),
+        .f(f)
+    );
+
+
+    // op buff
+    buffer #(16) op_buff (
+        .in(reg_a),
+        .w(o_buff_en),
+        .clk(clk),
+        .reset(reset),
+        .out(o_buff_out)
+    );
+
+
+    // alu mux a and mux b
+    always_comb begin
+        unique case (alu_mux_a_sel)
+            A_MUX_O_BUFF        : alu_a = o_buff_out;
+            A_MUX_REG_SHIFTED   : alu_a = {reg_a[7:0], 8'h00};
+            A_MUX_REG           : alu_a = reg_a;
+            A_MUX_MEMORY_READ_BUFF : alu_a = {8'h00, memory_buff_out};
+            default             : alu_a = 16'hXXXX;
+        endcase
+
+        unique case (alu_mux_b_sel)
+            B_MUX_IMM               : alu_b = imm_in;
+            B_MUX_INSTRUCTION_LENGTH: alu_b = {13'b0000000000000, instruction_length};
+            B_MUX_REG               : alu_b = reg_b;
+            default                 : alu_b = 16'hXXXX;
+        endcase
+    end
+
+
+    // alu
+    alu_wrapper #() alu (
+        .out(alu_out),
+        .set_flags(alu_f_set),
+        .reset_flags(alu_f_reset),
+        .toggle_flags(alu_f_toggle),
+        .raw_flags(raw_f),
         .a(alu_a),
         .b(alu_b),
         .opcode(alu_opcode),
-        .enable(alu_enable)
+        .enable(alu_enable),
+        .alu_16b_mode(alu_16b_mode),
+        .update_flags(update_flags)
     );
 
-    always_comb begin
-        alu_out   = alu_out_w;
-        alu_flags = alu_flags_w;
-    end
+    assign memory_out = alu_out;
 
-    // ##########################
-    // 8-bit register writeback mux
-    // ##########################
-    always_comb begin
-        unique case (reg8_wsel)
-            2'b00: reg8_wdata = alu_out_w;
-            2'b01: reg8_wdata = imm8;
-            2'b10: reg8_wdata = mem_rdata;
-            2'b11: reg8_wdata = reg8_a_val;
-            default: reg8_wdata = 8'h00;
-        endcase
-    end
-
-    // ######################
-    // Flags writeback mux
-    // ######################
-    always_comb begin
-        flags_wdata = (flags_sel == 1'b0) ? alu_flags_w : flags_in;
-    end
-
-    // ##########################
-    // Register file
-    // ##########################
-    registerfile u_rf (
+    buffer #(8) mem_buff (
+        .in(memory_in),
+        .w(mem_read_buff_en),
         .clk(clk),
         .reset(reset),
+        .out(memory_buff_out)
+    );
 
-        .reg8_we(reg8_we),
-        .reg8_dst(reg8_dst),
-        .reg8_data(reg8_wdata),
-
-        .reg16_we(reg16_we),
-        .reg16_dst(reg16_dst),
-        .reg16_data(reg16_wdata),
-
-        .flags_we(flags_we),
-        .flags(flags_wdata),
-
-        .A(A), .B(B), .C(C), .D(D), .E(E), .H(H), .L(L), .F(F),
-        .PC(PC), .SP(SP)
-    );    
+    // writeback mux
+    always_comb begin
+        unique case (write_back_sel)
+            WB_MUX_ALU          : reg_w_data = alu_out;
+            WB_MUX_MEMORY       : reg_w_data = {8'h00, memory_in};
+            WB_MUX_MEMORY_READ_BUFF : reg_w_data = {memory_in, memory_buff_out};
+            default             : reg_w_data = 16'hXXXX;
+        endcase
+    end
 endmodule
-// ###########################
-// End of module datapath
-// ###########################

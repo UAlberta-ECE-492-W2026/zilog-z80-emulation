@@ -25,7 +25,7 @@ module decode #(
     output wire [15:0] imm_1,
     output wire use_16b_alu,
     output wire [5:0] update_flags,
-    output wire [2:0] insutruction_length
+    output wire [2:0] instruction_length
 );
     // this helps make it a bit easier to read and compare to the specification
     wire [7:0] op_0; //first byte
@@ -1066,51 +1066,60 @@ module decode #(
         // Jump
         end else if (op_0 == 8'hC3) begin // JP nn
             output_op = JP_nn;
+            reg_a = PC;
             imm_1 = {op_2, op_1};
             insutruction_length = 3;
         end else if (op_0[7:6] == 2'b11 && op_0[2:0] == 3'b010) begin // JP cc, nn
             output_op = JP_cc_nn;
+            reg_a = PC;
             imm_0 = {5'b00000, op_0[5:3]}; // cc
             imm_1 = {op_2, op_1};
             insutruction_length = 3;
         end else if (op_0 == 8'h18) begin // JR e
             output_op = JR_e;
+            reg_a = PC;
             imm_1 = {8'h00, op_1}; // NOTE: imm_1 used for e for consistency with other J instructions that use imm_0 for cc
             insutruction_length = 2;
         end else if (op_0 == 8'h38) begin // JR C e
             output_op = JR_cc_e;
+            reg_a = PC;
             imm_0 = 8'b00000011;
             imm_1 = {8'h00, op_1};
             insutruction_length = 2;
         end else if (op_0 == 8'h30) begin // JR NC e
             output_op = JR_cc_e;
+            reg_a = PC;
             imm_0 = 8'b00000010;
             imm_1 = {8'h00, op_1};
             insutruction_length = 2;
         end else if (op_0 == 8'h28) begin // JR Z e
             output_op = JR_cc_e;
+            reg_a = PC;
             imm_0 = 8'b00000001;
             imm_1 = {8'h00, op_1};
             insutruction_length = 2;
         end else if (op_0 == 8'h20) begin // JR NZ e
             output_op = JR_cc_e;
+            reg_a = PC;
             imm_0 = 8'b00000000;
             imm_1 = {8'h00, op_1};
             insutruction_length = 2;
         end else if (op_0 == 8'hE9) begin // JP (HL)
             output_op = JP_R;
-            reg_a = HL;
+            reg_a = PC;
+            reg_b = HL;
         end else if (op_0 == 8'hE9) begin // JP (IX)
             output_op = JP_R;
-            reg_a = IX;
-            insutruction_length = 2;
+            reg_a = PC;
+            reg_b = IX;
         end else if (op_0 == 8'hE9) begin // JP (IY)
             output_op = JP_R;
-            reg_a = IY;
-            insutruction_length = 2;
+            reg_a = PC;
+            reg_b = IY;
         end else if (op_0 == 8'h10) begin // DJNZ, e
             output_op = DJNZ_e;
-            reg_a = B;
+            reg_a = PC;
+            reg_b = B;
             imm_0 = 0'HFF; // -1, possibly useful. Just add imm_0 and reg_a
             imm_1 = {8'h00, op_1};
             insutruction_length = 2;
@@ -1119,17 +1128,25 @@ module decode #(
         // Call and Return
         end else if (op_0 == 8'hCD) begin // CALL nn
             output_op = CALL_nn;
+            reg_a = SP;
+            reg_b = PC;
             imm_1 = {op_2, op_1};
             insutruction_length = 3;
         end else if (op_0[7:6] == 2'b11 && op_0[2:0] == 3'b100) begin // CALL cc, nn
             output_op = CALL_cc_nn;
+            reg_a = SP;
+            reg_b = PC;
             imm_0 = {5'b00000, op_0[5:3]};
             imm_1 = {op_2, op_1};
             insutruction_length = 3;
         end else if (op_0 == 8'hC9) begin //RET
             output_op = RET;
+            reg_a = PC;
+            reg_b = SP;
         end else if (op_0[7:6] == 2'b11 && op_0[2:0] == 3'b100) begin //RET cc
             output_op = RET_cc;
+            reg_a = PC;
+            reg_b = SP;
             imm_0 = {5'b00000, op_0[5:3]};
         end else if (op_0 == 8'hED && op_1 == 8'h4D) begin // RETI
             output_op = RETI;

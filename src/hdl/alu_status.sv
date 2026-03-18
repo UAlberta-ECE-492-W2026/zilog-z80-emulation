@@ -38,6 +38,7 @@ module  alu_status #(
    	parameter SHIFT_OP = 'b1;
 
    	/* function that does overflow_check bit logic */
+	/* verilator lint_off UNUSEDSIGNAL */
    	function reg overflow_check(reg sign_bit, first_op, second_op, result);
       	return (sign_bit == 0)
           ? (first_op & second_op & !result)
@@ -45,9 +46,11 @@ module  alu_status #(
               : (first_op & !second_op & !result)
                 | (!first_op & second_op & result);
    	endfunction // overflow_check
+	/* verilator lint_on UNUSEDSIGNAL */
 
-   	/* verilator lint_off UNUSEDSIGNAL */
+	/* verilator lint_off UNUSEDSIGNAL */
    	reg[4:0] half_buffer;
+	/* verilator lint_on UNUSEDSIGNAL */
    	reg c_var;
    	reg pv_var;
    	reg s_var;

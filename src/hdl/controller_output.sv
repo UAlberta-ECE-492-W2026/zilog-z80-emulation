@@ -7,9 +7,7 @@
  */
 module controller_output (
                           c_to_dp_intf.output_maker ctrl_intf
-);
-    import uop::*;
-
+                          );
     /* assignments ***************/
 
     always_comb begin: output_block
@@ -22,9 +20,8 @@ module controller_output (
         ctrl_intf.exx_sig = EXX_NOP;
         ctrl_intf.alu_mux_a_sel = A_MUX_NOP;
         ctrl_intf.alu_mux_b_sel = B_MUX_NOP;
-        ctrl_intf.alu_opcode = ALU_NOP;
+        ctrl_intf.disable_alu();
         ctrl_intf.o_buff_en = 0;
-        ctrl_intf.alu_enable = 0;
         ctrl_intf.alu_16b_mode = 0;
         ctrl_intf.write_back_sel = WB_MUX_NOP;
         ctrl_intf.mem_read_buff_en = 0;
@@ -42,8 +39,7 @@ module controller_output (
                 ctrl_intf.reg_w_en = 0;
                 ctrl_intf.alu_mux_a_sel=A_MUX_REG;
                 ctrl_intf.alu_mux_b_sel =B_MUX_INSTRUCTION_LENGTH;
-                ctrl_intf.alu_opcode = ALU_ADD;
-                ctrl_intf.alu_enable = 1;
+                ctrl_intf.set_and_enable_alu_opcode(ALU_ADD);
                 ctrl_intf.alu_16b_mode = 1;
                 ctrl_intf.write_back_sel = WB_MUX_ALU;
             end
@@ -57,6 +53,15 @@ module controller_output (
                 ctrl_intf.mem_mux_sel = MEM_MUX_UNBUFFERED;
                 ctrl_intf.mem_r_en = 1;
             end
+            uop::sp_m1: begin
+                ctrl_intf.reg_a_sel = SP;
+                ctrl_intf.reg_w_sel = SP;
+                ctrl_intf.reg_w_en = 1;
+                ctrl_intf.alu_mux_b_sel = B_MUX_IMM;
+                ctrl_intf.alu_mux_a_sel = A_MUX_REG;
+                ctrl_intf.alu_opcode = ALU_ADD;
+
+                end
             uop::pc_next: begin
                 ctrl_intf.reg_w_sel = PC;
                 ctrl_intf.reg_w_en = 1;

@@ -87,6 +87,25 @@ interface c_to_dp_intf();
         return current_state == uop::fetch;
     endfunction; // latch_mop
 
+    /* output logic related *************************************/
+
+    /** function that will disable the ALU
+      */
+    function automatic void disable_alu();
+        alu_enable = 0;
+        alu_opcode = ALU_NOP;
+    endfunction; // disable_alu
+
+    function automatic void set_and_enable_alu_opcode(alu_op aop);
+        alu_enable = 1;
+        alu_opcode = aop;
+    endfunction; // set_alu_opcode
+
+    function automatic void set_output_default();
+
+    endfunction; // set_output_default
+
+
     modport datapath (
                       // buffers
                       input  ir_en, o_buff_en,
@@ -168,51 +187,15 @@ interface c_to_dp_intf();
                       input  raw_f_buffered);
 
     modport output_maker(
-                                       // buffers
-                                       output ir_en, o_buff_en,
-
-                                       // ALU
-                                       output alu_enable, alu_16b_mode, alu_opcode,
-                                              update_flags,
-
-                                       // register file
-                                       output reg_a_sel,
-                                              reg_b_sel,
-                                              reg_w_sel,
-                                              reg_w_en,
-                                              f_w_en,
-                                              f_op,
-                                              exx_sig,
-
-                                       // mux
-                                       output alu_mux_a_sel,
-                                              alu_mux_b_sel,
-                                              write_back_sel,
-                                              mem_mux_sel,
-                                              mem_read_buff_en,
-                                              mem_addr_buff_en,
-
-                                       // memory interfacing
-                                       output memory_in,
-                                              instruction_in,
-                                              imm_in,
-                                              instruction_length,
-                                              mem_r_en,
-
-                                       // IO controls
-                                       output io_mem_r_en, io_mem_w_en,
-                                       input  current_state, reset_sig
-                                       );
-    modport controller_to_output_maker (
                          // buffers
-                         input  ir_en, o_buff_en,
+                         output ir_en, o_buff_en,
 
                          // ALU
-                         input  alu_enable, alu_16b_mode, alu_opcode,
+                         output alu_enable, alu_16b_mode, alu_opcode,
                                 update_flags,
 
                          // register file
-                         input  reg_a_sel,
+                         output reg_a_sel,
                                 reg_b_sel,
                                 reg_w_sel,
                                 reg_w_en,
@@ -221,17 +204,24 @@ interface c_to_dp_intf();
                                 exx_sig,
 
                          // mux
-                         input  alu_mux_a_sel,
+                         output alu_mux_a_sel,
                                 alu_mux_b_sel,
                                 write_back_sel,
+                                mem_mux_sel,
+                                mem_read_buff_en,
+                                mem_addr_buff_en,
 
-                         // memory interfacing
-                         input  memory_in,
+                                       // memory interfacing
+                         output memory_in,
                                 instruction_in,
                                 imm_in,
                                 instruction_length,
-                         output current_state
-                         );
+                                mem_r_en,
+
+                                       // IO controls
+                         output io_mem_r_en, io_mem_w_en,
+                         input  current_state, reset_sig,
+                         import disable_alu, set_and_enable_alu_opcode);
 
     modport next_state_logic(
                              input  current_state, mop_out,

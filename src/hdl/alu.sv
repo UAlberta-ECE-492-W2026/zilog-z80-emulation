@@ -23,7 +23,8 @@ module  alu #(
     input wire [alu_width-1:0]  a,
     input wire [alu_width-1:0]  b,
     input alu_op opcode,
-	input wire enable
+	input wire enable,
+	input wire carry_in
 );
 
     parameter upper_bit=alu_width-1;
@@ -48,6 +49,7 @@ module  alu #(
     wire               s_var;
     reg [1:0]          status_opcode;
     reg                status_sign;
+	reg [upper_bit:0] status_b;
 
     /* function that does parity bit logic */ // unused, commented out for now
     //function reg parity(reg first_op, second_op, result);
@@ -74,6 +76,7 @@ module  alu #(
         status_opcode = NUMERIC_OP;
 		tmp = 0; // default set to 0 to prevent generation of a latch
 		status_sign = 0;
+		status_b = b;
 
         case (opcode)
         	ALU_ADD: begin
@@ -85,6 +88,17 @@ module  alu #(
            		out_var = tmp[upper_bit:0];
            		status_sign = 1;
         	end
+            ALU_ADC: begin
+                tmp = a + b + carry_in;
+                out_var = tmp[upper_bit:0];
+                status_b = b + carry_in;
+            end
+            ALU_SBC: begin
+                tmp = a - b - carry_in;
+                out_var = tmp[upper_bit:0];
+                status_sign = 1;
+                status_b = b + carry_in;
+            end
         	ALU_COMPARE: begin
                /* The compare operation does not output to accumulator, it
                 just affects the status bits. The spec of the Z80 allows the
@@ -165,7 +179,7 @@ module  alu #(
                        .s(s_var),
                        .z(z_var),
                        .a(a),
-                       .b(b),
+                       .b(status_b),
                        .op_result(out_var),
                        .result_buffer(tmp),
                        .opcode(status_opcode),

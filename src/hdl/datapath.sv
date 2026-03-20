@@ -187,7 +187,8 @@ module datapath (
         .opcode(alu_opcode),
         .enable(alu_enable),
         .alu_16b_mode(alu_16b_mode),
-        .update_flags(update_flags)
+        .update_flags(update_flags),
+        .carry_in(f[0])
     );
 
     assign memory_out = alu_out;

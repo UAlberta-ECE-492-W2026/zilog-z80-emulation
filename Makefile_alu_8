@@ -1,0 +1,16 @@
+.PHONY: clean waves
+
+obj_dir/Valu_8_tb: ./src/hdl/alu.sv ./src/enum/alu_op.sv ./src/sim/alu_8_tb.sv
+	verilator --trace-vcd --binary -j 0 -Wall -cc ./src/sim/alu_8_tb.sv --top-module alu_8_tb --timing +incdir+./src/enum +incdir+./src/hdl
+
+out/sim:
+	mkdir -p ./out/sim
+
+.stamp.run_alu_8: obj_dir/Valu_8_tb out/sim
+	./$<
+
+waves: .stamp.run_alu_8
+	gtkwave out/sim/alu_8_tb.vcd
+
+clean:
+	rm -rf ./obj_dir/ ./out

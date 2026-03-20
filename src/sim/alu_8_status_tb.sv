@@ -1,148 +1,146 @@
 `timescale 1ns/1ps
 `include "alu_op.sv"
 
-/* verilator lint_on UNUSEDSignal */
+/* verilator lint_off UNUSEDSignal */
+/* verilator lint_off UNUSEDSIGNAL */
+task display_input_output_expected(
+    input reg en,
+    input reg carry_in,
+    input reg [7:0] a,
+    input reg [7:0] b,
+    input alu_op opcode,
+    input reg [5:0] status_flag,
+    input reg [5:0] expected
+);
+    $write("1'h%h | 1'h%h | 8'h%h | 8'h%h | %s | 6'b%b | 6'b%b",
+        en, carry_in, a, b, opcode.name, status_flag, expected);
+endtask
+
 module alu_8_status_tb();
 
-   parameter data_width = 8;
-   parameter upper_bit = data_width - 1;
+    reg en;
+    reg [7:0] a, b;
+    alu_op opcode;
+    reg carry_in;
 
-   reg [upper_bit:0] a, b;
-   alu_op opcode;
-   wire [upper_bit:0] dout;
-   reg [upper_bit:0] expected;
-   wire [7:0] status_flag;
-   wire       enable_alu;
+    wire [7:0] dout;
+    wire [5:0] status_flag;
+    reg [5:0] expected;
 
+    typedef struct {
+        reg en;
+        reg [7:0] a;
+        reg [7:0] b;
+        alu_op opcode;
+        reg [5:0] expected;
+        reg carry_in;
+    } test_vector;
 
-   /* verilator lint_off UNUSEDSignal */
-task display_input_output_expected(input reg [upper_bit:0] input_a, input_b, alu_op target_opcode, reg [upper_bit:0] data_out, expected_value, reg [7:0] output_status_flag);
-   $write("'h%h | 'h%h | %s | 'h%h | 8'b%b | 8'b%b", input_a, input_b, target_opcode.name, data_out , output_status_flag, expected_value);
-endtask // display_input_output_expected
+    test_vector testvectors[];
 
+    initial begin: file_setup
+        $dumpfile("out/sim/alu_8_status_tb.vcd");
+        $dumpvars();
+    end
 
-   typedef struct {
-      reg [upper_bit:0] a;
-      reg[upper_bit:0] b;
-      alu_op opcode;
-      reg [7:0] expected;
-   } test_vector;
+    initial begin: test_definition
+        testvectors = new [26];
 
-   typedef test_vector test_vectors[];
+        // ADD
+        testvectors[0]  = '{1, 8'd7,  8'd7,  ALU_ADD, 6'b000000, 0};
+        testvectors[1]  = '{1, 8'hFF, 8'd1,  ALU_ADD, 6'b011001, 0};
 
-   test_vectors testvectors;
+        // SUB
+        testvectors[2]  = '{1, 8'd7,  8'd7,  ALU_SUB, 6'b010010, 0};
+        testvectors[3]  = '{1, 8'd0,  8'd1,  ALU_SUB, 6'b101011, 0};
 
-   initial begin: file_setup
-      $dumpfile("out/sim/alu_8_status_tb.vcd");
-      $dumpvars();
-   end
+        // AND
+        testvectors[4]  = '{1, 8'h0D, 8'd7,  ALU_AND, 6'b001000, 0};
 
+        // OR
+        testvectors[5]  = '{1, 8'hCB, 8'h2B, ALU_OR,  6'b101000, 0};
 
-   function automatic test_vectors push_vector (test_vectors v, test_vector test);
-	  test_vectors ret_array = new [v.size() + 1] (v);
-      ret_array[v.size()] = test;
-      return ret_array;
-   endfunction // push_vector
+        // XOR
+        testvectors[6]  = '{1, 8'd7,  8'd7,  ALU_XOR, 6'b010000, 0};
 
-   assign enable_alu = 1;
+        // SLL
+        testvectors[7]  = '{1, 8'h07, 8'd3,  ALU_SLL, 6'b000000, 0};
+        testvectors[8]  = '{1, 8'h0F, 8'd6,  ALU_SLL, 6'b000101, 0};
 
+        // SRL
+        testvectors[9]  = '{1, 8'hCA, 8'd3,  ALU_SRL, 6'b000000, 0};
+        testvectors[10] = '{1, 8'hCA, 8'd8,  ALU_SRL, 6'b000101, 0};
 
-   /* This is the operations that must be supported in 16 bits mode. The
-    * instructions that must be supported are the following:
-    *   ADD
-    *   ADC
-    *   SBC
-    *   INC
-    *   DEC
-    *
-    * Therefore, those will be the only operations that are tested in this
-    * testbench
-     */
-   initial begin: test_definition
-      testvectors = new [1];
-      // a, b, opcode, expected output
-      // Add
-      testvectors[0] = '{7, 7, ADD, 8'b0};
-      testvectors = push_vector(testvectors, '{1, 8'hff, ADD, 8'b01010001});
-      // testing  that the zero flag is not asserted when the result not zero
-      testvectors = push_vector(testvectors, '{2, 8'hff, ADD, 8'b00010001});
-      testvectors = push_vector(testvectors, '{8'h7f, 8'h7f, ADD, 8'b10010100});
-      // SUB
-      /* testing subtraction of the same value. Should set zero flag, and
-       the negative flag. */
-      testvectors = push_vector(testvectors, '{8'h7f, 8'h7f, SUB, 8'b01000010});
-      /* testing subtraction of postive and a negative value. Should result in
-       a large value. So large that it overflows back to negative. There is a
-       borrow out, the negative sign bit, and the subtraction bit is used. */
-      testvectors = push_vector(testvectors, '{8'h7f, 8'h80, SUB, 8'b10000111});
-      testvectors = push_vector(testvectors, '{8'h7e, 8'h7f, SUB, 8'b10010011});
+        // SLA
+        testvectors[11] = '{1, 8'h07, 8'd3,  ALU_SLA, 6'b000000, 0};
+        testvectors[12] = '{1, 8'h0F, 8'd6,  ALU_SLA, 6'b000101, 0};
 
-      // COMPARE
-      /* Comparison match test. The zero flag is 1 */
-      testvectors = push_vector(testvectors, '{7, 7, COMPARE, 8'b01000010});
-      /* Comparison miss test. The zero flag is 0 */
-      testvectors = push_vector(testvectors, '{7, 8, COMPARE, 8'b10010011});
+        // SRA
+        testvectors[13] = '{1, 8'hCA, 8'd3,  ALU_SRA, 6'b000100, 0};
+        testvectors[14] = '{1, 8'hCA, 8'd8,  ALU_SRA, 6'b000101, 0};
 
-      // Shift test
-      testvectors = push_vector(testvectors, '{8'h2, 0, SLL, 8'b00000000});
-      testvectors = push_vector(testvectors, '{8'h3, 0, SLL, 8'b00000100});
-      testvectors = push_vector(testvectors, '{8'h83, 1, SLL, 8'b00000101});
-      testvectors = push_vector(testvectors, '{8'h2, 0, SLA, 8'b00000000});
-      testvectors = push_vector(testvectors, '{8'h3, 0, SLA, 8'b00000100});
-      testvectors = push_vector(testvectors, '{8'h81, 1, SLA, 8'b00000001});
-      testvectors = push_vector(testvectors, '{8'h2, 0, SRL, 8'b00000000});
-      testvectors = push_vector(testvectors, '{8'h3, 0, SRL, 8'b00000100});
-      testvectors = push_vector(testvectors, '{8'h83, 1, SRL, 8'b00000101});
-      testvectors = push_vector(testvectors, '{8'h2, 0, SRA, 8'b00000000});
-      testvectors = push_vector(testvectors, '{8'h3, 0, SRA, 8'b00000100});
-      testvectors = push_vector(testvectors, '{8'h81, 1, SRA, 8'b00000101});
+        // ROL
+        testvectors[15] = '{1, 8'hCA, 8'd3,  ALU_ROL, 6'b000100, 0};
 
-      // Logical operations
-      testvectors = push_vector(testvectors, '{8'h81, 1, AND, 8'b00000000});
-      testvectors = push_vector(testvectors, '{8'h81, 1, OR, 8'b10000000});
-      testvectors = push_vector(testvectors, '{8'h81, 1, XOR, 8'b10000000});
+        // ROR
+        testvectors[16] = '{1, 8'hCA, 8'd3,  ALU_ROR, 6'b000100, 0};
 
-      // BIT on set bit: bit1 of 0x42 is 1 => Z=0, H=1
-      testvectors = push_vector(testvectors, '{8'h42, 8'd1, ALU_BIT,    8'b00001000});
+        // 1 + 2 + 0 = 3
+        testvectors[17] = '{1, 8'h01, 8'h02, ALU_ADC, 6'b000000, 0};
 
-      // BIT on clear bit: bit0 of 0x42 is 0 => Z=1, H=1
-      testvectors = push_vector(testvectors, '{8'h42, 8'd0, ALU_BIT,    8'b00011000});
+        // 0x0F + 0 + carry = 0x10
+        testvectors[18] = '{1, 8'h0F, 8'h00, ALU_ADC, 6'b001000, 1};
 
-      // BIT on msb set: bit7 of 0x80 is 1 => Z=0, H=1
-      testvectors = push_vector(testvectors, '{8'h80, 8'd7, ALU_BIT,    8'b00001000});
+        // 0xFF + 0 + carry = 0x00 (carry out)
+        testvectors[19] = '{1, 8'hFF, 8'h00, ALU_ADC, 6'b011001, 1};
 
-      // SETBIT / RESBIT currently expected to drive no raw flag changes
-      testvectors = push_vector(testvectors, '{8'h42, 8'd0, ALU_SETBIT, 8'b00000000});
-      testvectors = push_vector(testvectors, '{8'h43, 8'd6, ALU_RESBIT, 8'b00000000});
-   end
+        // 5 - 2 - 0 = 3
+        testvectors[20] = '{1, 8'h05, 8'h02, ALU_SBC, 6'b000010, 0};
 
+        // 0x10 - 0 - 1 = 0x0F
+        testvectors[21] = '{1, 8'h10, 8'h00, ALU_SBC, 6'b001010, 1};
 
-   initial begin
-      $display("    a |     b |   op |  dout | real status | expected status |");
-      for (int i = 0; i < testvectors.size(); ++i) begin
-         #10;
-         a = testvectors[i].a;
-         b = testvectors[i].b;
-         opcode = testvectors[i].opcode;
-         expected = testvectors[i].expected;
-         #1;
-      end
+        // 0x00 - 1 - 1 = 0xFE (borrow + negative)
+        testvectors[22] = '{1, 8'h00, 8'h01, ALU_SBC, 6'b101011, 1};
 
-      #10 $finish;
-   end // initial begin
+        testvectors[23] = '{0, 8'h00, 8'h00, ALU_NOP, 6'b000000, 0};
+        testvectors[24] = '{0, 8'h00, 8'h00, ALU_NOP, 6'b000000, 0};
+        testvectors[25] = '{0, 8'h00, 8'h00, ALU_NOP, 6'b000000, 0};
+    end
 
-   always begin
-      #11 display_input_output_expected(a, b, opcode, dout, expected, status_flag);
-      if (status_flag == expected) $display("    | PASS");
-      else $display("    | FAIL");
-   end
+    initial begin
+        $display("en|cin|   a |   b |   op | flags | expected |");
 
-   alu #(.alu_width(data_width)) dut(
-                                     .out(dout),
-                                     .a(a),
-                                     .b(b),
-                                     .opcode(opcode),
-                                     .status_flag(status_flag),
-                                     .enable(enable_alu));
+        for (int i = 0; i < $size(testvectors); ++i) begin
+            #10;
+            en       = testvectors[i].en;
+            a        = testvectors[i].a;
+            b        = testvectors[i].b;
+            opcode   = testvectors[i].opcode;
+            expected = testvectors[i].expected;
+            carry_in = testvectors[i].carry_in;
+            #1;
+        end
+
+        #10 $finish;
+    end
+
+    always begin
+        #11 display_input_output_expected(en, carry_in, a, b, opcode, status_flag, expected);
+        if (status_flag == expected) $display(" | PASS");
+        else $display(" | FAIL");
+    end
+
+    alu #(
+        .alu_width(8)
+    ) dut (
+        .out(dout),
+        .enable(en),
+        .a(a),
+        .b(b),
+        .opcode(opcode),
+        .status_flag(status_flag),
+        .carry_in(carry_in)
+    );
 
 endmodule

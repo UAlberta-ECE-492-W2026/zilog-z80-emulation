@@ -101,8 +101,23 @@ interface c_to_dp_intf();
         alu_opcode = aop;
     endfunction; // set_alu_opcode
 
-    function automatic void set_output_default();
-
+    function automatic void set_default_outputs();
+        write_back_sel = WB_MUX_NOP;
+        ir_en = 0;
+        reg_a_sel = NONE;
+        reg_b_sel = NONE;
+        reg_w_sel = NONE;
+        reg_w_en = 0;
+        exx_sig = EXX_NOP;
+        alu_mux_a_sel = A_MUX_NOP;
+        alu_mux_b_sel = B_MUX_NOP;
+        disable_alu();
+        o_buff_en = 0;
+        alu_16b_mode = 0;
+        write_back_sel = WB_MUX_NOP;
+        mem_read_buff_en = 0;
+        mem_addr_buff_en = 0;
+        mem_mux_sel = MEM_MUX_NOP;
     endfunction; // set_output_default
 
     modport datapath (
@@ -220,7 +235,9 @@ interface c_to_dp_intf();
                                        // IO controls
                          output io_mem_r_en, io_mem_w_en,
                          input  current_state, reset_sig,
-                         import disable_alu, set_and_enable_alu_opcode);
+                         import disable_alu,
+                         import set_and_enable_alu_opcode,
+                         import set_default_outputs);
 
     modport next_state_logic(
                              input  current_state, mop_out,

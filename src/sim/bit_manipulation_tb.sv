@@ -221,13 +221,13 @@ module bit_manipulation_tb();
         // Seed registers / flags
         // --------------------------------------------------------------------
         // A = 0x42
-        testvectors.push_back('{0,0,0,1,0,ALU_PASS_B,6'b000000,NONE,NONE,A,1,0,F_NOP,EXX_NOP,A_MUX_NOP,B_MUX_IMM,WB_MUX_ALU,8'h00,16'h0042,3'd0,6'b000000,6'b000000,16'h0000});
+        testvectors.push_back('{0,0,0,1,0,ALU_PASS_B,6'b000000,NONE,NONE,A,1,0,F_NOP,EXX_NOP,A_MUX_NOP,B_MUX_IMM,WB_MUX_ALU,8'h00,16'h0042,3'd0,6'b000000,6'b000000,16'h0042});
 
         // B = 0x81
-        testvectors.push_back('{0,0,0,1,0,ALU_PASS_B,6'b000000,NONE,NONE,B,1,0,F_NOP,EXX_NOP,A_MUX_NOP,B_MUX_IMM,WB_MUX_ALU,8'h00,16'h0081,3'd0,6'b000000,6'b100000,16'h0000});
+        testvectors.push_back('{0,0,0,1,0,ALU_PASS_B,6'b000000,NONE,NONE,B,1,0,F_NOP,EXX_NOP,A_MUX_NOP,B_MUX_IMM,WB_MUX_ALU,8'h00,16'h0081,3'd0,6'b000000,6'b100000,16'h0081});
 
         // F = 0x3F
-        testvectors.push_back('{0,0,0,1,0,ALU_PASS_B,6'b000000,NONE,NONE,F,1,0,F_NOP,EXX_NOP,A_MUX_NOP,B_MUX_IMM,WB_MUX_ALU,8'h00,16'h003F,3'd0,6'b001111,6'b000000,16'h0000});
+        testvectors.push_back('{0,0,0,1,0,ALU_PASS_B,6'b000000,NONE,NONE,F,1,0,F_NOP,EXX_NOP,A_MUX_NOP,B_MUX_IMM,WB_MUX_ALU,8'h00,16'h003F,3'd0,6'b001111,6'b000000,16'h003f});
 
         // --------------------------------------------------------------------
         // BIT tests

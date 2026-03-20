@@ -25,7 +25,7 @@ run_controller_%: obj_dir/Vcontroller_% out/sim
 	./$<
 
 wave_controller_%: run_controller_%
-	gtkwave out/sim/controller_$*.vcd
+	gtkwave out/sim/controller_$*.vcd &
 
 clean:
 	rm -rf ./obj_dir/ ./out

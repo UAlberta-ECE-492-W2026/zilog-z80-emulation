@@ -105,7 +105,6 @@ interface c_to_dp_intf();
 
     endfunction; // set_output_default
 
-
     modport datapath (
                       // buffers
                       input  ir_en, o_buff_en,

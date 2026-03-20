@@ -1,5 +1,6 @@
 `timescale 1ns/1ps
 `include "reg_name.sv"
+`include "mux_enums.sv"
 
 /**
  module that provides the signal output logic for the controller.
@@ -9,7 +10,7 @@ module controller_output (
 );
     import uop::*;
 
-    reg wb_sel_reg;
+    write_back_enum wb_sel_reg;
     reg ir_en_reg;
 
     /* assignments ***************/
@@ -17,7 +18,7 @@ module controller_output (
     assign ctrl_intf.ir_en = ir_en_reg;
 
     always_comb begin: output_block
-        wb_sel_reg = 0;
+        wb_sel_reg = WB_MUX_NOP;
         ir_en_reg = 0;
         ctrl_intf.reg_a_sel = NONE;
         ctrl_intf.reg_b_sel = NONE;
@@ -25,7 +26,7 @@ module controller_output (
         ctrl_intf.reg_w_en = 0;
         ctrl_intf.exx_sig = EXX_NOP;
 
-        if (reset) begin // output the reset output
+        if (ctrl_intf.reset_sig) begin // output the reset output
         end
         else
           case (ctrl_intf.current_state)

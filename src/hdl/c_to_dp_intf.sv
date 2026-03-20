@@ -58,6 +58,7 @@ interface c_to_dp_intf();
     logic[15:0]      imm_in;
     logic[2:0]       instruction_length;
     logic[5:0]       raw_f_buffered;
+    logic            reset_sig;
 
     /* state information, used by the controller sub system */
     uop::uop_t current_state;
@@ -164,7 +165,7 @@ interface c_to_dp_intf();
                       input  instruction_length_out,
                       input  raw_f_buffered);
 
-    modport controller_to_output_maker(
+    modport output_maker(
                                        // buffers
                                        output ir_en, o_buff_en,
 
@@ -191,9 +192,9 @@ interface c_to_dp_intf();
                                               instruction_in,
                                               imm_in,
                                               instruction_length,
-                                       input  current_state
+                                       input  current_state, reset_sig
                                        );
-    modport output_maker(
+    modport controller_to_output_maker (
                          // buffers
                          input  ir_en, o_buff_en,
 

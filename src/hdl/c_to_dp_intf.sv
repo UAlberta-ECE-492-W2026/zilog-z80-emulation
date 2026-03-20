@@ -16,6 +16,9 @@ interface c_to_dp_intf();
     // buffer control
     logic ir_en;
     logic o_buff_en;
+    logic mem_read_buff_en;
+    logic mem_addr_buff_en;
+    logic io_mem_addr_buff_en;
 
     // ALU control
     logic alu_enable;
@@ -37,11 +40,18 @@ interface c_to_dp_intf();
     alu_mux_a_enum    alu_mux_a_sel;
     alu_mux_b_enum    alu_mux_b_sel;
     write_back_enum   write_back_sel;
+    mem_mux_enum      mem_mux_sel;
 
     // memory interfacing
     logic[7:0]        memory_in;
     logic[15:0]       memory_out; // data or address depending on uop
     logic[31:0]       instruction_in;
+    logic             mem_r_en;
+    logic             mem_w_en;
+
+    /* IO interfacing */
+    logic             io_mem_r_en;
+    logic             io_mem_w_en;
 
     // instruction decode
     // some of these have corresponding similarly named inputs from the controller
@@ -126,30 +136,22 @@ interface c_to_dp_intf();
                       output ir_en, o_buff_en,
 
                       // ALU
-                      output alu_enable,
-                      output alu_16b_mode,
-                      output alu_opcode,
-                      output update_flags,
+                        alu_enable, alu_16b_mode, alu_opcode, update_flags,
 
                       // register file
-                      output reg_a_sel,
-                      output reg_b_sel,
-                      output reg_w_sel,
-                      output reg_w_en,
-                      output f_w_en,
-                      output f_op,
-                      output exx_sig,
+                        reg_a_sel, reg_b_sel, reg_w_sel, reg_w_en, f_w_en,
+                        f_op, exx_sig,
 
                       // mux
-                      output alu_mux_a_sel,
-                      output alu_mux_b_sel,
-                      output write_back_sel,
+                        alu_mux_a_sel,
+                        alu_mux_b_sel,
+                        write_back_sel,
 
                       // memory interfacing
-                      output memory_in,
-                      output instruction_in,
-                      output imm_in,
-                      output instruction_length,
+                        memory_in,
+                        instruction_in,
+                        imm_in,
+                        instruction_length,
 
                       // instruction decode
                       // some of these have corrosponding similarly named inputs from the controller
@@ -186,12 +188,19 @@ interface c_to_dp_intf();
                                        output alu_mux_a_sel,
                                               alu_mux_b_sel,
                                               write_back_sel,
+                                              mem_mux_sel,
+                                              mem_read_buff_en,
+                                              mem_addr_buff_en,
 
                                        // memory interfacing
                                        output memory_in,
                                               instruction_in,
                                               imm_in,
                                               instruction_length,
+                                              mem_r_en,
+
+                                       // IO controls
+                                       output io_mem_r_en, io_mem_w_en,
                                        input  current_state, reset_sig
                                        );
     modport controller_to_output_maker (

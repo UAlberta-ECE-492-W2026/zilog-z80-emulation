@@ -10,27 +10,52 @@ module controller_output (
 );
     import uop::*;
 
-    write_back_enum wb_sel_reg;
-    reg ir_en_reg;
-
     /* assignments ***************/
-    assign ctrl_intf.write_back_sel = wb_sel_reg;
-    assign ctrl_intf.ir_en = ir_en_reg;
 
     always_comb begin: output_block
-        wb_sel_reg = WB_MUX_NOP;
-        ir_en_reg = 0;
+        ctrl_intf.write_back_sel = WB_MUX_NOP;
+        ctrl_intf.ir_en = 0;
         ctrl_intf.reg_a_sel = NONE;
         ctrl_intf.reg_b_sel = NONE;
         ctrl_intf.reg_w_sel = NONE;
         ctrl_intf.reg_w_en = 0;
         ctrl_intf.exx_sig = EXX_NOP;
+        ctrl_intf.alu_mux_a_sel = A_MUX_NOP;
+        ctrl_intf.alu_mux_b_sel = B_MUX_NOP;
+        ctrl_intf.alu_opcode = ALU_NOP;
+        ctrl_intf.o_buff_en = 0;
+        ctrl_intf.alu_enable = 0;
+        ctrl_intf.alu_16b_mode = 0;
+        ctrl_intf.write_back_sel = WB_MUX_NOP;
+        ctrl_intf.mem_read_buff_en = 0;
+        ctrl_intf.mem_addr_buff_en = 0;
+        ctrl_intf.mem_mux_sel = MEM_MUX_NOP;
+
 
         if (ctrl_intf.reset_sig) begin // output the reset output
         end
         else
           case (ctrl_intf.current_state)
             uop::reset: begin
+            end
+            uop::nop: begin
+                ctrl_intf.reg_w_en = 0;
+                ctrl_intf.alu_mux_a_sel=A_MUX_REG;
+                ctrl_intf.alu_mux_b_sel =B_MUX_INSTRUCTION_LENGTH;
+                ctrl_intf.alu_opcode = ALU_ADD;
+                ctrl_intf.alu_enable = 1;
+                ctrl_intf.alu_16b_mode = 1;
+                ctrl_intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::fetch: begin
+                ctrl_intf.ir_en = 1;
+                ctrl_intf.reg_a_sel = PC;
+                ctrl_intf.alu_mux_a_sel = A_MUX_REG;
+                ctrl_intf.alu_opcode = ALU_PASS_A;
+                ctrl_intf.alu_enable = 1;
+                ctrl_intf.alu_16b_mode = 1;
+                ctrl_intf.mem_mux_sel = MEM_MUX_UNBUFFERED;
+                ctrl_intf.mem_r_en = 1;
             end
             uop::pc_next: begin
                 ctrl_intf.reg_w_sel = PC;

@@ -101,6 +101,19 @@ endtask // display_input_output_expected
       testvectors = push_vector(testvectors, '{8'h81, 1, AND, 8'b00000000});
       testvectors = push_vector(testvectors, '{8'h81, 1, OR, 8'b10000000});
       testvectors = push_vector(testvectors, '{8'h81, 1, XOR, 8'b10000000});
+
+      // BIT on set bit: bit1 of 0x42 is 1 => Z=0, H=1
+      testvectors = push_vector(testvectors, '{8'h42, 8'd1, ALU_BIT,    8'b00001000});
+
+      // BIT on clear bit: bit0 of 0x42 is 0 => Z=1, H=1
+      testvectors = push_vector(testvectors, '{8'h42, 8'd0, ALU_BIT,    8'b00011000});
+
+      // BIT on msb set: bit7 of 0x80 is 1 => Z=0, H=1
+      testvectors = push_vector(testvectors, '{8'h80, 8'd7, ALU_BIT,    8'b00001000});
+
+      // SETBIT / RESBIT currently expected to drive no raw flag changes
+      testvectors = push_vector(testvectors, '{8'h42, 8'd0, ALU_SETBIT, 8'b00000000});
+      testvectors = push_vector(testvectors, '{8'h43, 8'd6, ALU_RESBIT, 8'b00000000});
    end
 
 

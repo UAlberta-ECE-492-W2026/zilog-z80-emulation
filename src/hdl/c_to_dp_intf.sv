@@ -13,6 +13,10 @@ interface c_to_dp_intf();
 
     /* verilator lint_off UNDRIVEN */
     /* verilator lint_off UNUSEDSIGNAL */
+    /* fundamental */
+    logic clk;
+
+
     // buffer control
     logic ir_en;
     logic o_buff_en;
@@ -67,8 +71,8 @@ interface c_to_dp_intf();
     // misc
     logic[15:0]      imm_in;
     logic[2:0]       instruction_length;
-    logic[5:0]       raw_f_buffered;
-    logic            reset_sig;
+    logic[5:0]       raw_f;
+    logic            reset;
 
     /* state information, used by the controller sub system */
     uop::uop_t current_state;
@@ -121,14 +125,14 @@ interface c_to_dp_intf();
     endfunction; // set_output_default
 
     modport datapath (
+                      input  clk, reset,
                       // buffers
                       input  ir_en, o_buff_en,
 
                       // ALU
-                      input  alu_enable,
-                      input  alu_16b_mode,
-                      input  alu_opcode,
-                      input  update_flags,
+                      input  alu_enable, alu_16b_mode,
+                             alu_opcode,
+                             update_flags,
 
                       // register file
                       input  reg_a_sel,
@@ -146,9 +150,10 @@ interface c_to_dp_intf();
 
                       // memory interfacing
                       input  memory_in,
-                      input  instruction_in,
-                      input  imm_in,
-                      input  instruction_length,
+                             instruction_in,
+                             imm_in,
+                             instruction_length,
+                             mem_read_buff_en,
 
                       // instruction decode
                       // some of these have corrosponding similarly named inputs from the controller
@@ -162,7 +167,7 @@ interface c_to_dp_intf();
                       output use_16b_alu_out,
                       output update_flags_out,
                       output instruction_length_out,
-                      output raw_f_buffered);
+                      output raw_f);
 
     modport controller (
                       // buffers
@@ -198,7 +203,7 @@ interface c_to_dp_intf();
                       input  use_16b_alu_out,
                       input  update_flags_out,
                       input  instruction_length_out,
-                      input  raw_f_buffered);
+                      input  raw_f);
 
     modport output_maker(
                          // buffers
@@ -234,7 +239,7 @@ interface c_to_dp_intf();
 
                                        // IO controls
                          output io_mem_r_en, io_mem_w_en,
-                         input  current_state, reset_sig,
+                         input  current_state, reset,
                          import disable_alu,
                          import set_and_enable_alu_opcode,
                          import set_default_outputs);

@@ -32,7 +32,7 @@ module alu_8_tb();
    	end
 
    	initial begin: test_definition
-      	testvectors = new [22];
+      	testvectors = new [34];
       	// enable, a, b, opcode, expected output
       	testvectors[0] = '{1, 7, 7, ADD, 14};
       	testvectors[1] = '{1, 7, 7, SUB, 0};
@@ -80,6 +80,22 @@ module alu_8_tb();
       	// testing for parity checking on logical shift left
       	testvectors[33] = '{1, 8'h2, 0, SLL, 2};
       	testvectors[34] = '{1, 8'h3, 0, SLL, 3};
+
+       // BIT: output should pass a through unchanged
+       testvectors[22] = '{1, 8'b01000010, 8'd1, ALU_BIT,    8'b01000010};  // test bit 1 = 1
+       testvectors[23] = '{1, 8'b01000010, 8'd0, ALU_BIT,    8'b01000010};  // test bit 0 = 0
+       testvectors[24] = '{1, 8'b10000000, 8'd7, ALU_BIT,    8'b10000000};  // test bit 7 = 1
+       testvectors[25] = '{1, 8'b00000000, 8'd3, ALU_BIT,    8'b00000000};  // test bit 3 = 0
+
+       // SETBIT
+       testvectors[26] = '{1, 8'b01000010, 8'd0, ALU_SETBIT, 8'b01000011};  // set bit 0
+       testvectors[27] = '{1, 8'b00000000, 8'd7, ALU_SETBIT, 8'b10000000};  // set bit 7
+       testvectors[28] = '{1, 8'b11111111, 8'd4, ALU_SETBIT, 8'b11111111};  // already set
+
+       // RESBIT
+       testvectors[29] = '{1, 8'b01000011, 8'd6, ALU_RESBIT, 8'b00000011};  // clear bit 6
+       testvectors[30] = '{1, 8'b10000001, 8'd7, ALU_RESBIT, 8'b00000001};
+       testvectors[31] = '{1, 8'b11111111, 8'd0, ALU_RESBIT, 8'b11111110};		
 
    	end
 

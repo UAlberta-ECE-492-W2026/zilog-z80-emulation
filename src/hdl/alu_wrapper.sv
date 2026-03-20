@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 `include "alu_op.sv"
 
 module alu_wrapper #() 

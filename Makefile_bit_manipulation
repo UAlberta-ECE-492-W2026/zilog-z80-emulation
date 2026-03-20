@@ -1,7 +1,7 @@
 .PHONY: clean waves
 
-obj_dir/Vbit_manipulation_tb: ./src/hdl/alu.sv ./src/hdl/alu_wrapper.sv ./src/hdl/alu_bit_op.sv ./src/hdl/register_file.sv ./src/hdl/buffer.sv ./src/enum/reg_name.sv ./src/enum/exx_type.sv ./src/enum/f_op.sv ./src/enum/mop.sv ./src/enum/mux_enums.sv ./src/enum/alu_op.sv ./src/hdl/datapath.sv ./src/sim/bit_manipulation_tb.sv
-	verilator --trace-vcd --binary -j 0 -Wall -cc ./src/sim/bit_manipulation_tb.sv --top-module bit_manipulation_tb --timing +incdir+./src/enum +incdir+./src/hdl
+obj_dir/Vbit_manipulation_tb: ./src/hdl/uop.sv ./src/hdl/c_to_dp_intf.sv ./src/hdl/decode.sv ./src/hdl/alu_status.sv ./src/hdl/alu.sv ./src/hdl/alu_wrapper.sv ./src/hdl/alu_bit_op.sv ./src/hdl/register_file.sv ./src/hdl/buffer.sv ./src/enum/reg_name.sv ./src/enum/exx_type.sv ./src/enum/f_op.sv ./src/enum/mop.sv ./src/enum/mux_enums.sv ./src/enum/alu_op.sv ./src/hdl/datapath.sv ./src/sim/bit_manipulation_tb.sv
+	verilator --trace-vcd --binary -j 0 -Wall -cc $^ --top-module bit_manipulation_tb --timing +incdir+./src/enum
 
 out/sim:
 	mkdir -p ./out/sim

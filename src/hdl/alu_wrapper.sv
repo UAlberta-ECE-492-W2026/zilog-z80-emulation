@@ -5,7 +5,8 @@ module alu_wrapper #()
     input wire enable,
     input wire alu_16b_mode,
     input alu_op opcode,
-    input wire [5:0] update_flags, 
+    input wire [5:0] update_flags,
+    input wire carry_in,
     input wire [15:0] a,
     input wire [15:0] b,
     output wire [15:0] out,
@@ -51,6 +52,7 @@ module alu_wrapper #()
         .b(b[7:0]),
         .opcode(opcode),
         .enable(alu_8_en),
+        .carry_in(carry_in),
         .status_flag(flags_8),
         .out(out_8)
     );
@@ -59,6 +61,7 @@ module alu_wrapper #()
         .b(b),
         .opcode(opcode),
         .enable(alu_16_en),
+        .carry_in(carry_in),
         .status_flag(flags_16),
         .out(out_16)
 

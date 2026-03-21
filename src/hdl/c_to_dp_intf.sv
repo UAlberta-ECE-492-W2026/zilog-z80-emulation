@@ -22,7 +22,6 @@ interface c_to_dp_intf();
     logic o_buff_en;
     logic mem_read_buff_en;
     logic mem_addr_buff_en;
-    logic io_mem_addr_buff_en;
 
     // ALU control
     logic alu_enable;
@@ -52,10 +51,6 @@ interface c_to_dp_intf();
     logic[31:0]       instruction_in;
     logic             mem_r_en;
     logic             mem_w_en;
-
-    /* IO interfacing */
-    logic             io_mem_r_en;
-    logic             io_mem_w_en;
 
     // instruction decode
     // some of these have corresponding similarly named inputs from the controller
@@ -238,7 +233,6 @@ interface c_to_dp_intf();
                                 mem_r_en,
 
                                        // IO controls
-                         output io_mem_r_en, io_mem_w_en,
                          input  current_state, reset,
                          import disable_alu,
                          import set_and_enable_alu_opcode,

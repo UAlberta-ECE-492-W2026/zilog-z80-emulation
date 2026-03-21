@@ -71,40 +71,9 @@ task display_input_output_expected_bit_manip(
 endtask
 
 module bit_manipulation_tb();
-
-    reg clk;
-    reg reset;
-
-    reg         ir_en;
-    reg         o_buff_en;
-    reg         mem_read_buff_en;
-
-    reg         alu_enable;
-    reg         alu_16b_mode;
-    alu_op      alu_opcode;
-    reg [5:0]   update_flags;
-
-    reg_name    reg_a_sel;
-    reg_name    reg_b_sel;
-    reg_name    reg_w_sel;
-    reg         reg_w_en;
-    reg         f_w_en;
-    f_op_enum   f_op;
-    exx_type    exx;
-    reg [5:0]   f;
-
-    alu_mux_a_enum  alu_mux_a_sel;
-    alu_mux_b_enum  alu_mux_b_sel;
-    write_back_enum write_back_sel;
-
-    reg [7:0]   memory_in;
-    reg [15:0]  memory_out;
-
-    mop         mop_out;
-
-    reg [15:0]  imm_in;
-    reg [2:0]   instruction_length;
-    reg [5:0]   raw_f;
+    c_to_dp_intf intf();
+    logic clk;
+    assign clk = intf.clk;
 
     reg all_pass;
 
@@ -137,55 +106,18 @@ module bit_manipulation_tb();
 
     test_vector testvectors[$];
 
-    initial begin
-        clk = 0;
-        forever #5 clk = ~clk;
+    initial begin: clock_block
+        intf.clk = 0;
+        forever #5 intf.clk = ~intf.clk;
     end
 
-    /* verilator lint_off PINCONNECTEMPTY */
-    datapath dut (
-        .clk(clk),
-        .reset(reset),
-        .ir_en(ir_en),
-        .o_buff_en(o_buff_en),
-        .mem_read_buff_en(mem_read_buff_en),
-        .alu_enable(alu_enable),
-        .alu_16b_mode(alu_16b_mode),
-        .alu_opcode(alu_opcode),
-        .update_flags(update_flags),
-        .reg_a_sel(reg_a_sel),
-        .reg_b_sel(reg_b_sel),
-        .reg_w_sel(reg_w_sel),
-        .reg_w_en(reg_w_en),
-        .f_w_en(f_w_en),
-        .f_op(f_op),
-        .exx(exx),
-        .f(f),
-        .alu_mux_a_sel(alu_mux_a_sel),
-        .alu_mux_b_sel(alu_mux_b_sel),
-        .write_back_sel(write_back_sel),
-        .memory_in(memory_in),
-        .memory_out(memory_out),
-        .instruction_in(32'h0000),
-        .mop_out(mop_out),
-        .reg_a_sel_out(),
-        .reg_b_sel_out(),
-        .imm_0_out(),
-        .imm_1_out(),
-        .use_16b_alu_out(),
-        .update_flags_out(),
-        .instruction_length_out(),
-        .imm_in(imm_in),
-        .instruction_length(instruction_length),
-        .raw_f(raw_f)
-    );
-    /* verilator lint_on PINCONNECTEMPTY */
+    datapath dut (.intf(intf));
 
     task reset_tb;
         begin
-            reset = 1;
+            intf.reset = 1;
             repeat (2) @(posedge clk);
-            reset = 0;
+            intf.reset = 0;
             @(posedge clk);
         end
     endtask
@@ -193,26 +125,26 @@ module bit_manipulation_tb();
     initial begin
         all_pass = 1'b1;
 
-        ir_en              = 0;
-        o_buff_en          = 0;
-        mem_read_buff_en   = 0;
-        alu_enable         = 0;
-        alu_16b_mode       = 0;
-        alu_opcode         = ALU_NOP;
-        update_flags       = 6'b000000;
-        reg_a_sel          = NONE;
-        reg_b_sel          = NONE;
-        reg_w_sel          = NONE;
-        reg_w_en           = 0;
-        f_w_en             = 0;
-        f_op               = F_NOP;
-        exx                = EXX_NOP;
-        alu_mux_a_sel      = A_MUX_NOP;
-        alu_mux_b_sel      = B_MUX_NOP;
-        write_back_sel     = WB_MUX_NOP;
-        memory_in          = 8'h00;
-        imm_in             = 16'h0000;
-        instruction_length = 3'd0;
+        intf.ir_en              = 0;
+        intf.o_buff_en          = 0;
+        intf.mem_read_buff_en   = 0;
+        intf.alu_enable         = 0;
+        intf.alu_16b_mode       = 0;
+        intf.alu_opcode         = ALU_NOP;
+        intf.update_flags       = 6'b000000;
+        intf.reg_a_sel          = NONE;
+        intf.reg_b_sel          = NONE;
+        intf.reg_w_sel          = NONE;
+        intf.reg_w_en           = 0;
+        intf.f_w_en             = 0;
+        intf.f_op               = F_NOP;
+        intf.exx_sig                = EXX_NOP;
+        intf.alu_mux_a_sel      = A_MUX_NOP;
+        intf.alu_mux_b_sel      = B_MUX_NOP;
+        intf.write_back_sel     = WB_MUX_NOP;
+        intf.memory_in          = 8'h00;
+        intf.imm_in             = 16'h0000;
+        intf.instruction_length = 3'd0;
 
         $dumpfile("out/sim/bit_manipulation_tb.vcd");
         $dumpvars(0, bit_manipulation_tb);
@@ -276,60 +208,60 @@ module bit_manipulation_tb();
         $display("ir_en|o_buff_en|mem_read_buff_en|alu_enable|alu_16b_mode|alu_opcode |update_flags|reg_a_sel|reg_b_sel|reg_w_sel|reg_w_en|f_w_en| f_op|       exx|         alu_mux_a_sel|            alu_mux_b_sel|          write_back_sel|memory_in|  imm_in|instuction_length|     f|   raw_f|memory_out");
 
         for (int i = 0; i < $size(testvectors); ++i) begin
-            ir_en              = testvectors[i].ir_en;
-            o_buff_en          = testvectors[i].o_buff_en;
-            mem_read_buff_en   = testvectors[i].mem_read_buff_en;
-            alu_enable         = testvectors[i].alu_enable;
-            alu_16b_mode       = testvectors[i].alu_16b_mode;
-            alu_opcode         = testvectors[i].alu_opcode;
-            update_flags       = testvectors[i].update_flags;
-            reg_a_sel          = testvectors[i].reg_a_sel;
-            reg_b_sel          = testvectors[i].reg_b_sel;
-            reg_w_sel          = testvectors[i].reg_w_sel;
-            reg_w_en           = testvectors[i].reg_w_en;
-            f_w_en             = testvectors[i].f_w_en;
-            f_op               = testvectors[i].f_op;
-            exx                = testvectors[i].exx;
-            alu_mux_a_sel      = testvectors[i].alu_mux_a_sel;
-            alu_mux_b_sel      = testvectors[i].alu_mux_b_sel;
-            write_back_sel     = testvectors[i].write_back_sel;
-            memory_in          = testvectors[i].memory_in;
-            imm_in             = testvectors[i].imm_in;
-            instruction_length = testvectors[i].instruction_length;
+            intf.ir_en              = testvectors[i].ir_en;
+            intf.o_buff_en          = testvectors[i].o_buff_en;
+            intf.mem_read_buff_en   = testvectors[i].mem_read_buff_en;
+            intf.alu_enable         = testvectors[i].alu_enable;
+            intf.alu_16b_mode       = testvectors[i].alu_16b_mode;
+            intf.alu_opcode         = testvectors[i].alu_opcode;
+            intf.update_flags       = testvectors[i].update_flags;
+            intf.reg_a_sel          = testvectors[i].reg_a_sel;
+            intf.reg_b_sel          = testvectors[i].reg_b_sel;
+            intf.reg_w_sel          = testvectors[i].reg_w_sel;
+            intf.reg_w_en           = testvectors[i].reg_w_en;
+            intf.f_w_en             = testvectors[i].f_w_en;
+            intf.f_op               = testvectors[i].f_op;
+            intf.exx_sig            = testvectors[i].exx;
+            intf.alu_mux_a_sel      = testvectors[i].alu_mux_a_sel;
+            intf.alu_mux_b_sel      = testvectors[i].alu_mux_b_sel;
+            intf.write_back_sel     = testvectors[i].write_back_sel;
+            intf.memory_in          = testvectors[i].memory_in;
+            intf.imm_in             = testvectors[i].imm_in;
+            intf.instruction_length = testvectors[i].instruction_length;
 
             #1;
             display_input_output_expected_bit_manip(
-                ir_en,
-                o_buff_en,
-                mem_read_buff_en,
-                alu_enable,
-                alu_16b_mode,
-                alu_opcode,
-                update_flags,
-                reg_a_sel,
-                reg_b_sel,
-                reg_w_sel,
-                reg_w_en,
-                f_w_en,
-                f_op,
-                exx,
-                alu_mux_a_sel,
-                alu_mux_b_sel,
-                write_back_sel,
-                memory_in,
-                imm_in,
-                instruction_length,
-                f,
-                raw_f,
-                memory_out,
+                intf.ir_en,
+                intf.o_buff_en,
+                intf.mem_read_buff_en,
+                intf.alu_enable,
+                intf.alu_16b_mode,
+                intf.alu_opcode,
+                intf.update_flags,
+                intf.reg_a_sel,
+                intf.reg_b_sel,
+                intf.reg_w_sel,
+                intf.reg_w_en,
+                intf.f_w_en,
+                intf.f_op,
+                intf.exx_sig,
+                intf.alu_mux_a_sel,
+                intf.alu_mux_b_sel,
+                intf.write_back_sel,
+                intf.memory_in,
+                intf.imm_in,
+                intf.instruction_length,
+                intf.f,
+                intf.raw_f,
+                intf.memory_out,
                 testvectors[i].expected_f,
                 testvectors[i].expected_raw_f,
                 testvectors[i].expected_memory_out
             );
 
-            if ((testvectors[i].expected_f == f) &&
-                (testvectors[i].expected_raw_f == raw_f) &&
-                (testvectors[i].expected_memory_out == memory_out)) begin
+            if ((testvectors[i].expected_f == intf.f) &&
+                (testvectors[i].expected_raw_f == intf.raw_f) &&
+                (testvectors[i].expected_memory_out == intf.memory_out)) begin
                 $display("    | PASS");
             end else begin
                 $display("    | FAIL at time = %f", $realtime);

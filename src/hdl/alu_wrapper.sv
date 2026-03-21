@@ -1,6 +1,5 @@
+`timescale 1ns/1ps
 `include "alu_op.sv"
-`include "alu.sv"
-`include "alu_bit_op.sv"
 
 module alu_wrapper #() 
 (

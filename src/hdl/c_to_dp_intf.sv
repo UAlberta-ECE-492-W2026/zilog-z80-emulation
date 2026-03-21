@@ -16,7 +16,6 @@ interface c_to_dp_intf();
     /* fundamental */
     logic clk;
 
-
     // buffer control
     logic ir_en;
     logic o_buff_en;
@@ -66,6 +65,8 @@ interface c_to_dp_intf();
     // misc
     logic[15:0]      imm_in;
     logic[2:0]       instruction_length;
+    logic [5:0]      raw_f;
+    logic reset;
 
     /* state information, used by the controller sub system */
     uop::uop_t current_state;

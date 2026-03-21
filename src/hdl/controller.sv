@@ -3,14 +3,7 @@
 
 /** Module for the controller of the datapath controller architecture.
  */
-module controller (output wire [3:0] aluop,
-                   output wire       wb_signal,
-                   output            uop current_uop, /* debug output */
-
-                   input             mop micro_op,
-                   input wire        reset, /* active high reset */
-                   input wire        clk
-   );
+module controller (c_to_dp_intf.controller intf);
     import uop::*;
    /* parameters */
 
@@ -46,16 +39,13 @@ module controller (output wire [3:0] aluop,
         end;
     end;
 
-    /* interface ***/
-    c_to_dp_intf internal_bus;
-
     /* structural **********************************************************/
     controller_next_state next_state_logic (
-                                            .ctrl_intf(internal_bus),
+                                            .ctrl_intf(intf),
                                             .reset_sig(reset)
                                             );
 
     controller_output output_logic(
-                                   .ctrl_intf(internal_bus)
+                                   .ctrl_intf(intf)
                                    );
 endmodule; // controller

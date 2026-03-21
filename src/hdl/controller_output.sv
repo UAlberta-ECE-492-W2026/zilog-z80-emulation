@@ -13,7 +13,7 @@ module controller_output (
     always_comb begin: output_block
         ctrl_intf.set_default_outputs();
 
-        if (ctrl_intf.reset_sig) begin // output the reset output
+        if (ctrl_intf.reset) begin // output the reset output
         end
         else
           case (ctrl_intf.current_state)

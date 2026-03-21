@@ -1,9 +1,6 @@
 `timescale 1ns/1ps
 
-module controller_next_state (
-                              c_to_dp_intf.next_state_logic ctrl_intf,
-                              input wire reset_sig
-);
+module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
     import uop::*;
 
     function automatic void set_next_state(input uop::uop_t next_state);
@@ -14,7 +11,7 @@ module controller_next_state (
 
     always_comb begin: next_state_block
         set_next_state(curr_state);
-        if (reset_sig) set_next_state(uop::reset);
+        if (intf.reset) set_next_state(uop::reset);
         else
           case (curr_state)
             uop::fetch: begin

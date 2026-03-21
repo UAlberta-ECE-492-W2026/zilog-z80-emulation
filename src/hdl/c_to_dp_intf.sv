@@ -25,8 +25,8 @@ interface c_to_dp_intf();
     // ALU control
     logic alu_enable;
     logic alu_16b_mode;
+    logic [5:0] update_flags;
     alu_op            alu_opcode;
-    logic [5:0]        update_flags;
 
     // register file
     reg_name          reg_a_sel;
@@ -66,7 +66,7 @@ interface c_to_dp_intf();
     logic[15:0]      imm_in;
     logic[2:0]       instruction_length;
     logic [5:0]      raw_f;
-    logic reset;
+    logic            reset;
 
     /* state information, used by the controller sub system */
     uop::uop_t current_state;
@@ -92,23 +92,50 @@ interface c_to_dp_intf();
     function automatic void disable_alu();
         alu_enable = 0;
         alu_opcode = ALU_NOP;
+        alu_mux_a_sel = A_MUX_NOP;
+        alu_mux_b_sel = B_MUX_NOP;
     endfunction; // disable_alu
 
-    function automatic void set_and_enable_alu_opcode(alu_op aop);
+    function automatic void enable_and_set_alu_opcode(alu_op aop,
+                                                      alu_mux_a_enum mux_a = A_MUX_REG,
+                                                      alu_mux_b_enum mux_b = B_MUX_IMM);
         alu_enable = 1;
         alu_opcode = aop;
+        alu_mux_a_sel = mux_a;
+        alu_mux_b_sel = mux_b;
     endfunction; // set_alu_opcode
+
+    function automatic void disable_reg_w();
+        reg_w_en = 0;
+        reg_w_sel = NONE;
+    endfunction; // disable_reg_w
+
+
+    function automatic void enable_and_set_reg_w(reg_name rn);
+        reg_w_en = 1;
+        reg_w_sel = rn;
+    endfunction; // enable_and_set_write_reg
+
+    function automatic void set_imm(logic [15:0] v);
+        imm_in = v;
+    endfunction; // set_imm
+
+    function automatic void imm_1_to_imm();
+        set_imm(imm_1_out);
+    endfunction; // imm_1_to_imm
+
+    function automatic void imm_0_to_imm();
+        set_imm({{8{1'b0}},imm_0_out});
+    endfunction; // imm_0_to_imm
+
 
     function automatic void set_default_outputs();
         write_back_sel = WB_MUX_NOP;
         ir_en = 0;
         reg_a_sel = NONE;
         reg_b_sel = NONE;
-        reg_w_sel = NONE;
-        reg_w_en = 0;
+        disable_reg_w();
         exx_sig = EXX_NOP;
-        alu_mux_a_sel = A_MUX_NOP;
-        alu_mux_b_sel = B_MUX_NOP;
         disable_alu();
         o_buff_en = 0;
         alu_16b_mode = 0;
@@ -118,8 +145,7 @@ interface c_to_dp_intf();
         mem_mux_sel = MEM_MUX_NOP;
     endfunction; // set_output_default
 
-    modport datapath (
-                      input  clk, reset,
+    modport datapath (input  clk, reset,
                       // buffers
                       input  ir_en, o_buff_en,
 
@@ -167,23 +193,24 @@ interface c_to_dp_intf();
                       // buffers
                       output ir_en, o_buff_en,
 
-                      // ALU
-                        alu_enable, alu_16b_mode, alu_opcode, update_flags,
+                             // ALU
+                             alu_enable, alu_16b_mode, alu_opcode, update_flags,
 
-                      // register file
-                        reg_a_sel, reg_b_sel, reg_w_sel, reg_w_en, f_w_en,
-                        f_op, exx_sig,
+                             // register file
+                             reg_a_sel, reg_b_sel, reg_w_sel, reg_w_en, f_w_en,
+                             f_op, exx_sig,
 
-                      // mux
-                        alu_mux_a_sel,
-                        alu_mux_b_sel,
-                        write_back_sel,
+                             // mux
+                             alu_mux_a_sel,
+                             alu_mux_b_sel,
+                             write_back_sel,
 
-                      // memory interfacing
-                        memory_in,
-                        instruction_in,
-                        imm_in,
-                        instruction_length,
+                             // memory interfacing
+                             memory_in,
+                             instruction_in,
+                             imm_in,
+                             instruction_length,
+                             current_state,
 
                       // instruction decode
                       // some of these have corrosponding similarly named inputs from the controller
@@ -197,14 +224,14 @@ interface c_to_dp_intf();
                       input  use_16b_alu_out,
                       input  update_flags_out,
                       input  instruction_length_out,
-                      input  raw_f);
+                      input  clk, reset,
+                      input  next_state,
+                      input  raw_f,
+                      import latch_mop);
 
-    modport output_maker(
-                         // buffers
-                         output ir_en, o_buff_en,
-
-                         // ALU
-                         output alu_enable, alu_16b_mode, alu_opcode,
+    modport output_maker(output ir_en, o_buff_en,
+                                // ALU
+                                alu_enable, alu_16b_mode, alu_opcode,
                                 update_flags,
 
                          // register file
@@ -224,23 +251,33 @@ interface c_to_dp_intf();
                                 mem_read_buff_en,
                                 mem_addr_buff_en,
 
-                                       // memory interfacing
+                         // memory interfacing
                          output memory_in,
                                 instruction_in,
                                 imm_in,
                                 instruction_length,
                                 mem_r_en,
 
-                                       // IO controls
-                         input  current_state, reset,
+                         input  current_state, reset, reg_a_sel_out,
+                                reg_b_sel_out,
                          import disable_alu,
-                         import set_and_enable_alu_opcode,
-                         import set_default_outputs);
+                         import enable_and_set_alu_opcode,
+                         import set_default_outputs,
+                         import enable_and_set_reg_w,
+                         import disable_reg_w,
+                         import imm_1_to_imm,
+                         import imm_0_to_imm
+                         );
 
     modport next_state_logic(
                              input  current_state, mop_out,
                              import set_next_state
                              );
-
-
 endinterface; // c_to_dp_intf
+
+/*
+ Local Variables:
+ eval:(add-to-list 'flycheck-verilator-include-path "../enum")
+ eval:(add-to-list 'flycheck-verilator-include-path "./")
+ End:
+ */

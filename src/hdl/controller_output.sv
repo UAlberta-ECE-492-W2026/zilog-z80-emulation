@@ -6,61 +6,84 @@
  module that provides the signal output logic for the controller.
  */
 module controller_output (
-                          c_to_dp_intf.output_maker ctrl_intf
+                          c_to_dp_intf.output_maker intf
                           );
     /* assignments ***************/
 
     always_comb begin: output_block
-        ctrl_intf.set_default_outputs();
+        intf.set_default_outputs();
 
-        if (ctrl_intf.reset) begin // output the reset output
+        if (intf.reset) begin // output the reset output
         end
         else
-          case (ctrl_intf.current_state)
+          case (intf.current_state)
             uop::reset: begin
             end
             uop::nop: begin
-                ctrl_intf.reg_w_en = 0;
-                ctrl_intf.alu_mux_a_sel=A_MUX_REG;
-                ctrl_intf.alu_mux_b_sel =B_MUX_INSTRUCTION_LENGTH;
-                ctrl_intf.set_and_enable_alu_opcode(ALU_ADD);
-                ctrl_intf.alu_16b_mode = 1;
-                ctrl_intf.write_back_sel = WB_MUX_ALU;
+                intf.disable_reg_w();
+                intf.enable_and_set_alu_opcode(ALU_ADD,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_INSTRUCTION_LENGTH));
+                intf.alu_16b_mode = 1;
+                intf.write_back_sel = WB_MUX_ALU;
             end
             uop::fetch: begin
-                ctrl_intf.ir_en = 1;
-                ctrl_intf.reg_a_sel = PC;
-                ctrl_intf.alu_mux_a_sel = A_MUX_REG;
-                ctrl_intf.alu_opcode = ALU_PASS_A;
-                ctrl_intf.alu_enable = 1;
-                ctrl_intf.alu_16b_mode = 1;
-                ctrl_intf.mem_mux_sel = MEM_MUX_UNBUFFERED;
-                ctrl_intf.mem_r_en = 1;
+                intf.ir_en = 1;
+                intf.reg_a_sel = PC;
+                intf.enable_and_set_alu_opcode(ALU_PASS_A,
+                                               .mux_a(A_MUX_REG));
+                intf.alu_16b_mode = 1;
+                intf.mem_mux_sel = MEM_MUX_UNBUFFERED;
+                intf.mem_r_en = 1;
             end
             uop::sp_m1: begin
-                ctrl_intf.reg_a_sel = SP;
-                ctrl_intf.reg_w_sel = SP;
-                ctrl_intf.reg_w_en = 1;
-                ctrl_intf.alu_mux_b_sel = B_MUX_IMM;
-                ctrl_intf.alu_mux_a_sel = A_MUX_REG;
-                ctrl_intf.set_and_enable_alu_opcode(ALU_ADD);
-                ctrl_intf.alu_16b_mode = 1;
-                ctrl_intf.write_back_sel = WB_MUX_ALU;
+                intf.reg_a_sel = SP;
+                intf.enable_and_set_reg_w(SP);
+                intf.enable_and_set_alu_opcode(ALU_ADD,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_REG));
+                intf.alu_16b_mode = 1;
+                intf.write_back_sel = WB_MUX_ALU;
             end
             uop::pc_next: begin
-                ctrl_intf.reg_w_sel = PC;
-                ctrl_intf.reg_w_en = 1;
-                ctrl_intf.alu_mux_a_sel=A_MUX_REG;
-                ctrl_intf.alu_mux_b_sel =B_MUX_INSTRUCTION_LENGTH;
-                ctrl_intf.alu_opcode = ALU_ADD;
-                ctrl_intf.alu_enable = 1;
-                ctrl_intf.alu_16b_mode = 1;
-                ctrl_intf.write_back_sel = WB_MUX_ALU;
+                intf.enable_and_set_reg_w(PC);
+                intf.enable_and_set_alu_opcode(ALU_ADD,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_INSTRUCTION_LENGTH));
+                intf.alu_16b_mode = 1;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::ld_reg_a_reg_b: begin
+                intf.reg_a_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel_out);
+                intf.enable_and_set_alu_opcode(ALU_PASS_A,
+                                               .mux_a(A_MUX_REG));
+                intf.alu_16b_mode = 1;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::ld_reg_a_imm_1: begin
+                intf.enable_and_set_reg_w(intf.reg_a_sel_out);
+                intf.imm_1_to_imm();
+                intf.enable_and_set_alu_opcode(ALU_PASS_B, .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 1;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::ld_reg_b_imm_1: begin
+                intf.enable_and_set_reg_w(intf.reg_b_sel_out);
+                intf.imm_1_to_imm();
+                intf.enable_and_set_alu_opcode(ALU_PASS_B, .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 1;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::buff_addr_reg_a: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_alu_opcode(ALU_PASS_A, .mux_a(A_MUX_REG));
+                intf.alu_16b_mode = 1;
+                intf.mem_addr_buff_en = 1;
             end
             default: begin
             end
           endcase; // case (current_state)
     end;
-
 
 endmodule; // controller_next_state

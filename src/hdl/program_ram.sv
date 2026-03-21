@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 // the main RAM of the system
 
 module char_ram #()(

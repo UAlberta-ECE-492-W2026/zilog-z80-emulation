@@ -7,37 +7,37 @@
 `include "alu_op.sv"
 
 /* verilator lint_off UNUSEDSignal */
-task display_input_output_expected_datapath(input 
-        reg ir_en,
-        reg o_buff_en,
-        reg mem_read_buff_en,
-        reg alu_enable,
-        reg alu_16b_mode,
-        alu_op alu_opcode,
-        reg[5:0] update_flags,
-        reg_name reg_a_sel,
-        reg_name reg_b_sel,
-        reg_name reg_w_sel,
-        reg reg_w_en,
-        reg f_w_en,
-        f_op_enum f_op,
-        exx_type exx,
-        alu_mux_a_enum alu_mux_a_sel,
-        alu_mux_b_enum alu_mux_b_sel,
-        write_back_enum write_back_sel,
-        reg [7:0] memory_in,
-        reg [15:0] imm_in,
-        reg [2:0] instruction_length,
+task display_input_output_expected_datapath(input
+                                            reg        ir_en,
+                                            reg        o_buff_en,
+                                            reg        mem_read_buff_en,
+                                            reg        alu_enable,
+                                            reg        alu_16b_mode,
+                                            alu_op alu_opcode,
+                                            reg [5:0]  update_flags,
+                                            reg_name reg_a_sel,
+                                            reg_name reg_b_sel,
+                                            reg_name reg_w_sel,
+                                            reg        reg_w_en,
+                                            reg        f_w_en,
+                                            f_op_enum f_op,
+                                            exx_type exx,
+                                            alu_mux_a_enum alu_mux_a_sel,
+                                            alu_mux_b_enum alu_mux_b_sel,
+                                            write_back_enum write_back_sel,
+                                            reg [7:0]  memory_in,
+                                            reg [15:0] imm_in,
+                                            reg [2:0]  instruction_length,
 
-        //outputs
-        reg[5:0] f, 
-        reg[5:0] raw_f,
-        reg [15:0] memory_out, 
+                                            //outputs
+                                            reg [5:0]  f,
+                                            reg [5:0]  raw_f,
+                                            reg [15:0] memory_out,
 
-        //expected outputs
-        reg[5:0] expected_f, 
-        reg[5:0] expected_raw_f,
-        reg [15:0] expected_memory_out
+                                            //expected outputs
+                                            reg [5:0]  expected_f,
+                                            reg [5:0]  expected_raw_f,
+                                            reg [15:0] expected_memory_out
     );
 
 //$display("ir_en|o_buff_en|mem_read_buff_en|alu_enable|alu_16b_mode|alu_opcode |update_flags|reg_a_sel|reg_b_sel|reg_w_sel|reg_w_en|f_w_en| f_op|       exx|         alu_mux_a_sel|            alu_mux_b_sel|          write_back_sel|memory_in|  imm_in|instuction_length|     f|   raw_f|memory_out");
@@ -77,54 +77,8 @@ task display_input_output_expected_datapath(input
 endtask // display_input_output_expected
 
 module datapath_tb();
-    reg          clk;
-    reg          reset;
-
-    // buffers
-    reg         ir_en;
-    reg         o_buff_en;
-    reg         mem_read_buff_en;
-
-    // ALU
-    reg         alu_enable;
-    reg         alu_16b_mode;
-    alu_op      alu_opcode;
-    reg [5:0]   update_flags;
-
-    // register file
-    reg_name    reg_a_sel;
-    reg_name    reg_b_sel;
-    reg_name    reg_w_sel;
-    reg         reg_w_en;
-    reg         f_w_en;
-    f_op_enum   f_op;
-    exx_type    exx;
-    reg[5:0]    f;
-
-    // mux
-    alu_mux_a_enum  alu_mux_a_sel;
-    alu_mux_b_enum  alu_mux_b_sel;
-    write_back_enum write_back_sel;
-
-    // memory interfacing
-    reg [7:0]   memory_in;
-    reg [15:0]  memory_out;
-
-    // instruction decode not tested here, ports mostly left unconnected
-    mop         mop_out; // enough to make sure everything is hooked up
-    // reg_name     reg_a_sel_out;
-    // reg_name     reg_b_sel_out;
-    // reg [7:0]    imm_0_out;
-    // reg [15:0]   imm_1_out;
-    // reg          use_16b_alu_out;
-    // reg [5:0]    update_flags_out;
-    // reg [2:0]    instruction_length_out;
-
-    // misc
-    reg [15:0]  imm_in;
-    reg [2:0]   instruction_length;
-    reg [5:0]   raw_f;
-
+    c_to_dp_intf intf();
+    logic clk;
     reg all_pass = 1;
 
 
@@ -160,54 +114,21 @@ module datapath_tb();
 
     //! Clock pulse period of 10ns
     initial begin
-        clk = 0;
-        forever #5 clk = ~clk;
+        intf.clk = 0;
+        forever #5 intf.clk = ~intf.clk;
     end
 
+    assign clk = intf.clk;
+
     /* verilator lint_off PINCONNECTEMPTY */
-    datapath dut (
-        .clk(clk),
-        .reset(reset),
-        .ir_en(ir_en),
-        .o_buff_en(o_buff_en),
-        .mem_read_buff_en(mem_read_buff_en),
-        .alu_enable(alu_enable),
-        .alu_16b_mode(alu_16b_mode),
-        .alu_opcode(alu_opcode),
-        .update_flags(update_flags),
-        .reg_a_sel(reg_a_sel),
-        .reg_b_sel(reg_b_sel),
-        .reg_w_sel(reg_w_sel),
-        .reg_w_en(reg_w_en),
-        .f_w_en(f_w_en),
-        .f_op(f_op),
-        .exx(exx),
-        .f(f), 
-        .alu_mux_a_sel(alu_mux_a_sel),
-        .alu_mux_b_sel(alu_mux_b_sel),
-        .write_back_sel(write_back_sel),
-        .memory_in(memory_in),
-        .memory_out(memory_out),
-        .instruction_in(32'h0000),
-        .mop_out(mop_out),
-        .reg_a_sel_out(),
-        .reg_b_sel_out(),
-        .imm_0_out(),
-        .imm_1_out(),
-        .use_16b_alu_out(),
-        .update_flags_out(),  
-        .instruction_length_out(),
-        .imm_in(imm_in),
-        .instruction_length(instruction_length),
-        .raw_f(raw_f)
-    );
+    datapath dut (intf);
     /* verilator lint_on PINCONNECTEMPTY */
 
     task reset_tb;
         begin
-            reset = 1;
+            intf.reset = 1;
             repeat(2) @(posedge clk);
-            reset = 0;
+            intf.reset = 0;
             @(posedge clk);
         end
     endtask
@@ -249,13 +170,13 @@ module datapath_tb();
         testvectors.push_back('{0,     0,         0,               1,          0,            ALU_NOP       , 6'b000000,    A        , NONE     , B        , 1,        0,      F_NOP,EXX_NOP,A_MUX_REG       ,B_MUX_IMM                ,WB_MUX_MEMORY          , 8'hD7,     16'h0001, 0,                 6'b001010,  6'b000000,               16'h0000});  // write B=0xD7
         testvectors.push_back('{0,     0,         0,               1,          1,            ALU_PASS_A    , 6'b000000,    BC       , NONE     , NONE     , 0,        0,      F_NOP,EXX_NOP,A_MUX_REG       ,B_MUX_IMM                ,WB_MUX_NOP             , 8'h00,     16'h0000, 0,                 6'b001010,  6'b100000,               16'hD734});  // observe BC
         testvectors.push_back('{0,     0,         0,               1,          0,            ALU_PASS_B    , 6'b000000,    NONE     , B        , F        , 1,        0,      F_NOP,EXX_NOP,A_MUX_NOP       ,B_MUX_REG                ,WB_MUX_ALU             , 8'h00,     16'h0000, 0,                 6'b000000,  6'b100000,               16'h00D7});  // write flags from B
-        testvectors.push_back('{0,     0,         0,               0,          0,            ALU_NOP,        6'b000000,    NONE,      NONE,      NONE,      0,        0,      F_NOP,EXX_NOP,A_MUX_NOP,       B_MUX_NOP,                WB_MUX_NOP,              8'h00,     16'h0000, 0,                 6'b111111,  6'b000000,               16'h0000});  // check f
-        testvectors.push_back('{0,     0,         0,               1,          0,            ALU_PASS_B    , 6'b000000,    NONE     , NONE     , F        , 1,        0,      F_NOP,EXX_NOP,A_MUX_NOP       ,B_MUX_IMM                ,WB_MUX_ALU             , 8'h00,     16'h0000, 0,                 6'b111111,  6'b010000,               16'h0000});  // clear f
+        testvectors.push_back('{0,     0,         0,               0,          0,            ALU_NOP,        6'b000000,    NONE,      NONE,      NONE,      0,        0,      F_NOP,EXX_NOP,A_MUX_NOP,       B_MUX_NOP,                WB_MUX_NOP,              8'h00,     16'h0000, 0,                 6'b000000,  6'b000000,               16'h0000});  // check f
+        testvectors.push_back('{0,     0,         0,               1,          0,            ALU_PASS_B    , 6'b000000,    NONE     , NONE     , F        , 1,        0,      F_NOP,EXX_NOP,A_MUX_NOP       ,B_MUX_IMM                ,WB_MUX_ALU             , 8'h00,     16'h0000, 0,                 6'b000000,  6'b010000,               16'h0000});  // clear f
         testvectors.push_back('{0,     0,         0,               0,          0,            ALU_NOP       , 6'b000000,    NONE     , NONE     , NONE     , 0,        1,      F_SCF,EXX_NOP,A_MUX_NOP       ,B_MUX_NOP                ,WB_MUX_NOP             , 8'h00,     16'h0000, 0,                 6'b000000,  6'b000000,               16'h0000});  // SCF flag op
-        testvectors.push_back('{0,     0,         0,               0,          0,            ALU_NOP,        6'b000000,    NONE,      NONE,      NONE,      0,        0,      F_NOP,EXX_NOP,A_MUX_NOP,       B_MUX_NOP,                WB_MUX_NOP,              8'h00,     16'h0000, 0,                 6'b000001,  6'b000000,               16'h0000});  // check f
+        testvectors.push_back('{0,     0,         0,               0,          0,            ALU_NOP,        6'b000000,    NONE,      NONE,      NONE,      0,        0,      F_NOP,EXX_NOP,A_MUX_NOP,       B_MUX_NOP,                WB_MUX_NOP,              8'h00,     16'h0000, 0,                 6'b000000,  6'b000000,               16'h0000});  // check f
         testvectors.push_back('{0,     0,         0,               0,          0,            ALU_NOP       , 6'b000000,    NONE     , NONE     , NONE     , 0,        1,      F_CCF,EXX_NOP,A_MUX_NOP       ,B_MUX_NOP                ,WB_MUX_NOP             , 8'h00,     16'h0000, 0,                 6'b000001,  6'b000000,               16'h0000});  // CCF flag op
         testvectors.push_back('{0,     0,         0,               0,          0,            ALU_NOP       , 6'b000000,    NONE     , NONE     , NONE     , 0,        1,      F_CCF,EXX_NOP,A_MUX_NOP       ,B_MUX_NOP                ,WB_MUX_NOP             , 8'h00,     16'h0000, 0,                 6'b000000,  6'b000000,               16'h0000});  // CCF flag op (again)
-        testvectors.push_back('{0,     0,         0,               1,          0,            ALU_NOP       , 6'b000000,    NONE     , NONE     , F        , 1,        0,      F_NOP,EXX_NOP,A_MUX_NOP       ,B_MUX_IMM                ,WB_MUX_ALU             , 8'h00,     16'h0000, 0,                 6'b000001,  6'b000000,               16'h0000});  // clear f
+        testvectors.push_back('{0,     0,         0,               1,          0,            ALU_NOP       , 6'b000000,    NONE     , NONE     , F        , 1,        0,      F_NOP,EXX_NOP,A_MUX_NOP       ,B_MUX_IMM                ,WB_MUX_ALU             , 8'h00,     16'h0000, 0,                 6'b000000,  6'b000000,               16'h0000});  // clear f
         testvectors.push_back('{0,     0,         0,               0,          0,            ALU_NOP       , 6'b000000,    NONE     , NONE     , NONE     , 0,        0,      F_SCF,EXX_NOP,A_MUX_NOP       ,B_MUX_NOP                ,WB_MUX_NOP             , 8'h00,     16'h0000, 0,                 6'b000000,  6'b000000,               16'h0000});  // SCF flag, but flag write disabled
         testvectors.push_back('{0,     0,         0,               0,          0,            ALU_NOP,        6'b000000,    NONE,      NONE,      NONE,      0,        0,      F_NOP,EXX_NOP,A_MUX_NOP,       B_MUX_NOP,                WB_MUX_NOP,              8'h00,     16'h0000, 0,                 6'b000000,  6'b000000,               16'h0000});  // check f
 
@@ -266,60 +187,60 @@ module datapath_tb();
 
         for (int i = 0; i < $size(testvectors); ++i) begin
             if (i == 0) begin  $display("============================================================"); $display("SECTION: BLANK TEMPLATE / SANITY CHECK"); $display("============================================================");$display("ir_en|o_buff_en|mem_read_buff_en|alu_enable|alu_16b_mode|alu_opcode |update_flags|reg_a_sel|reg_b_sel|reg_w_sel|reg_w_en|f_w_en| f_op|       exx|         alu_mux_a_sel|            alu_mux_b_sel|          write_back_sel|memory_in|  imm_in|instuction_length|     f|   raw_f|memory_out");end
-            ir_en               = testvectors[i].ir_en;
-            o_buff_en           = testvectors[i].o_buff_en;
-            mem_read_buff_en    = testvectors[i].mem_read_buff_en;
-            alu_enable          = testvectors[i].alu_enable;
-            alu_16b_mode        = testvectors[i].alu_16b_mode;
-            alu_opcode          = testvectors[i].alu_opcode;
-            update_flags        = testvectors[i].update_flags;
-            reg_a_sel           = testvectors[i].reg_a_sel;
-            reg_b_sel           = testvectors[i].reg_b_sel;
-            reg_w_sel           = testvectors[i].reg_w_sel;
-            reg_w_en            = testvectors[i].reg_w_en;
-            f_w_en              = testvectors[i].f_w_en;
-            f_op                = testvectors[i].f_op;
-            exx                 = testvectors[i].exx;
-            alu_mux_a_sel       = testvectors[i].alu_mux_a_sel;
-            alu_mux_b_sel       = testvectors[i].alu_mux_b_sel;
-            write_back_sel      = testvectors[i].write_back_sel;
-            memory_in           = testvectors[i].memory_in;
-            imm_in              = testvectors[i].imm_in;
-            instruction_length  = testvectors[i].instruction_length;
+            intf.ir_en               = testvectors[i].ir_en;
+            intf.o_buff_en           = testvectors[i].o_buff_en;
+            intf.mem_read_buff_en    = testvectors[i].mem_read_buff_en;
+            intf.alu_enable          = testvectors[i].alu_enable;
+            intf.alu_16b_mode        = testvectors[i].alu_16b_mode;
+            intf.alu_opcode          = testvectors[i].alu_opcode;
+            intf.update_flags        = testvectors[i].update_flags;
+            intf.reg_a_sel           = testvectors[i].reg_a_sel;
+            intf.reg_b_sel           = testvectors[i].reg_b_sel;
+            intf.reg_w_sel           = testvectors[i].reg_w_sel;
+            intf.reg_w_en            = testvectors[i].reg_w_en;
+            intf.f_w_en              = testvectors[i].f_w_en;
+            intf.f_op                = testvectors[i].f_op;
+            intf.exx_sig                 = testvectors[i].exx;
+            intf.alu_mux_a_sel       = testvectors[i].alu_mux_a_sel;
+            intf.alu_mux_b_sel       = testvectors[i].alu_mux_b_sel;
+            intf.write_back_sel      = testvectors[i].write_back_sel;
+            intf.memory_in           = testvectors[i].memory_in;
+            intf.imm_in              = testvectors[i].imm_in;
+            intf.instruction_length  = testvectors[i].instruction_length;
             #1
             display_input_output_expected_datapath(
-                ir_en,
-                o_buff_en,
-                mem_read_buff_en,
-                alu_enable,
-                alu_16b_mode,
-                alu_opcode,
-                update_flags,
-                reg_a_sel,
-                reg_b_sel,
-                reg_w_sel,
-                reg_w_en,
-                f_w_en,
-                f_op,
-                exx,
-                alu_mux_a_sel,
-                alu_mux_b_sel,
-                write_back_sel,
-                memory_in,
-                imm_in,
-                instruction_length,
-                f, 
-                raw_f,
-                memory_out, 
+                intf.ir_en,
+                intf.o_buff_en,
+                intf.mem_read_buff_en,
+                intf.alu_enable,
+                intf.alu_16b_mode,
+                intf.alu_opcode,
+                intf.update_flags,
+                intf.reg_a_sel,
+                intf.reg_b_sel,
+                intf.reg_w_sel,
+                intf.reg_w_en,
+                intf.f_w_en,
+                intf.f_op,
+                intf.exx_sig,
+                intf.alu_mux_a_sel,
+                intf.alu_mux_b_sel,
+                intf.write_back_sel,
+                intf.memory_in,
+                intf.imm_in,
+                intf.instruction_length,
+                intf.f,
+                intf.raw_f,
+                intf.memory_out,
                 testvectors[i].expected_f, 
                 testvectors[i].expected_raw_f, 
                 testvectors[i].expected_memory_out
             );
 
             if (
-                testvectors[i].expected_f == f && 
-                testvectors[i].expected_raw_f == raw_f &&
-                testvectors[i].expected_memory_out == memory_out
+                testvectors[i].expected_f == intf.f &&
+                testvectors[i].expected_raw_f == intf.raw_f &&
+                testvectors[i].expected_memory_out == intf.memory_out
             ) 
             begin
                 $display("    | PASS");

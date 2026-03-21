@@ -36,6 +36,7 @@ module decode_tb();
    	wire [15:0] imm_1;
    	wire        use_16b_alu;
     wire [5:0]  update_flags;
+    logic [2:0] instruction_length;
 
    	mop         expected_output_op;
 	reg_name    expected_reg_a, expected_reg_b;
@@ -121,16 +122,17 @@ module decode_tb();
         end
    	end
 
-   	decode #() dut(
-        .input_op(input_op),
-        .enable(1'b1),
-        .output_op(output_op),
-        .reg_a(reg_a),
-        .reg_b(reg_b),
-        .imm_0(imm_0),
-        .imm_1(imm_1),
-        .use_16b_alu(use_16b_alu),
-        .update_flags(update_flags)
-   	);
+    decode #() dut(
+                   .input_op(input_op),
+                   .enable(1'b1),
+                   .output_op(output_op),
+                   .reg_a(reg_a),
+                   .reg_b(reg_b),
+                   .imm_0(imm_0),
+                   .imm_1(imm_1),
+                   .use_16b_alu(use_16b_alu),
+                   .update_flags(update_flags),
+                   .instruction_length(instruction_length)
+                   );
 
 endmodule

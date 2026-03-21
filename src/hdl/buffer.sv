@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module buffer #(
     parameter integer width=8 
 ) (

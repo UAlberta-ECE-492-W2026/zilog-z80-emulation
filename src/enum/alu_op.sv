@@ -6,7 +6,9 @@
 typedef enum [4:0] { 
     ALU_NOP,
     ALU_ADD, 
-    ALU_SUB, 
+    ALU_SUB,
+    ALU_ADC,
+    ALU_SBC, 
     ALU_AND, 
     ALU_OR, 
     ALU_XOR, 
@@ -19,6 +21,9 @@ typedef enum [4:0] {
     ALU_ROR, 
     ALU_INC, 
     ALU_DEC,
+    ALU_BIT,
+    ALU_SETBIT,
+    ALU_RESBIT,
     ALU_PASS_A,
     ALU_PASS_B
 } alu_op;

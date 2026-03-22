@@ -91,6 +91,6 @@ module controller_output_tb();
 
     c_to_dp_intf dut_intf();
 
-    controller_output dut (.ctrl_intf(dut_intf));
+    controller_output dut (.intf(dut_intf));
 
 endmodule

@@ -43,6 +43,7 @@ interface c_to_dp_intf();
     alu_mux_b_enum    alu_mux_b_sel;
     write_back_enum   write_back_sel;
     mem_mux_enum      mem_mux_sel;
+    mem_data_mux_enum mem_data_mux_sel;
 
     // memory interfacing
     logic[7:0]        memory_in;
@@ -143,6 +144,10 @@ interface c_to_dp_intf();
         mem_read_buff_en = 0;
         mem_addr_buff_en = 0;
         mem_mux_sel = MEM_MUX_NOP;
+        mem_w_en = 0;
+        mem_r_en = 0;
+        imm_in = 0; // TODO: Determine if this is a safe default
+        mem_data_mux_sel = MEM_DATA_MUX_NOP;
     endfunction; // set_output_default
 
     modport datapath (input  clk, reset,
@@ -250,6 +255,7 @@ interface c_to_dp_intf();
                                 mem_mux_sel,
                                 mem_read_buff_en,
                                 mem_addr_buff_en,
+                                mem_data_mux_sel,
 
                          // memory interfacing
                          output memory_in,
@@ -257,6 +263,7 @@ interface c_to_dp_intf();
                                 imm_in,
                                 instruction_length,
                                 mem_r_en,
+                                mem_w_en,
 
                          input  current_state, reset, reg_a_sel_out,
                                 reg_b_sel_out,
@@ -265,6 +272,7 @@ interface c_to_dp_intf();
                          import set_default_outputs,
                          import enable_and_set_reg_w,
                          import disable_reg_w,
+                         import set_imm,
                          import imm_1_to_imm,
                          import imm_0_to_imm
                          );

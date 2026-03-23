@@ -3,15 +3,17 @@
 module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
     import uop::*;
 
+    /* verilator lint_off UNUSEDSIGNAL */
     function automatic void set_next_state(input uop::uop_t next_state);
         ctrl_intf.set_next_state(next_state);
     endfunction; // set_next_state
+    /* verilator lint_on UNUSEDSIGNAL */
 
     uop::uop_t curr_state = ctrl_intf.current_state;
 
     always_comb begin: next_state_block
         set_next_state(curr_state);
-        if (intf.reset) set_next_state(uop::reset);
+        if (ctrl_intf.reset) set_next_state(uop::reset);
         else
           case (curr_state)
             uop::fetch: begin

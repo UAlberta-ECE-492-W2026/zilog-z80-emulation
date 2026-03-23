@@ -30,11 +30,10 @@ module controller (c_to_dp_intf.controller intf);
             /* we are not doing a reset */
             current_state <= intf.next_state;
             /* TODO: Verify the correctness of this assignment */
-            current_mop = intf.latch_mop() ? intf.mop_out : current_mop;
+            current_mop <= intf.latch_mop() ? intf.mop_out : current_mop;
         end;
     end;
 
     /* structural **********************************************************/
-    controller_next_state next_state_logic(.ctrl_intf(intf));
-    controller_output output_logic(.intf(intf));
+
 endmodule; // controller

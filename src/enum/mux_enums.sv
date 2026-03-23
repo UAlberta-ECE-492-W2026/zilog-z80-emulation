@@ -26,10 +26,11 @@ typedef enum [1:0] {
 } write_back_enum;
 
 typedef enum [1:0] {
-    MEM_MUX_NOP,
-    MEM_MUX_BUFFERED,
-    MEM_MUX_UNBUFFERED
-} mem_mux_enum;
+                    MEM_MUX_NOP,
+                    MEM_MUX_BUFFERED,
+                    MEM_MUX_UNBUFFERED,
+                    MEM_MUX_UNBUFFERED_P1
+                    } mem_mux_enum;
 
 typedef enum [1:0] {
     MEM_DATA_MUX_NOP,

@@ -158,7 +158,7 @@ module controller_output (
                                                .mux_b(B_MUX_IMM));
                 intf.alu_16b_mode = 1;
                 intf.write_back_sel = WB_MUX_MEMORY_READ_BUFF;
-                intf.mem_mux_sel = MEM_MUX_UNBUFFERED;
+                intf.mem_mux_sel = MEM_MUX_UNBUFFERED_P1;
                 intf.mem_read_buff_en = 1;
                 intf.mem_r_en = 1;
             end // case: uop::read16_reg_a_reg_b_imm_0

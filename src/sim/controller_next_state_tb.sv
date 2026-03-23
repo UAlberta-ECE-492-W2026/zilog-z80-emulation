@@ -6,7 +6,6 @@ module controller_next_state_tb();
     import uop::*;
 
     uop::uop_t expected;
-    reg reset_sig;
     string curr_test;
 
    /* verilator lint_off UNUSEDSignal */
@@ -87,10 +86,10 @@ module controller_next_state_tb();
     initial begin
         for (int i = 0; i < testvectors.size(); ++i) begin
             #10;
-            next_state_intf.current_state = testvectors[i].curr_state;
-            next_state_intf.mop_out = testvectors[i].mop_val;
+            intf.current_state = testvectors[i].curr_state;
+            intf.mop_out = testvectors[i].mop_val;
             expected = testvectors[i].expected_value;
-            reset_sig = testvectors[i].reset_sig;
+            intf.reset = testvectors[i].reset_sig;
             curr_test = testvectors[i].test_name;
             #1;
         end
@@ -99,18 +98,15 @@ module controller_next_state_tb();
 
     always begin
         #11 display_input_output_expected(curr_test,
-                                          next_state_intf.current_state,
-                                          next_state_intf.next_state,
+                                          intf.current_state,
+                                          intf.next_state,
                                           expected,
-                                          reset_sig,
-                                          next_state_intf.next_state == expected);
+                                          intf.reset,
+                                          intf.next_state == expected);
     end
 
-    c_to_dp_intf next_state_intf();
+    c_to_dp_intf intf();
 
-    controller_next_state dut (
-                               .ctrl_intf(next_state_intf),
-                               .reset_sig(reset_sig)
-                               );
+    controller_next_state dut (.ctrl_intf(intf));
 
 endmodule

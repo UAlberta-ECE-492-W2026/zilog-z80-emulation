@@ -97,6 +97,18 @@ module decode #(
         endcase
     endfunction
 
+    /** Function that converts the op_byte value for the jump into the relative
+     jump distance.
+     */
+    function automatic logic[15:0] imm_1_e_from_op_byte (logic[7:0] op_byte);
+        automatic logic[7:0] sum_value;
+        automatic logic sign_bit;
+        sum_value = op_byte + 2;
+        sign_bit = sum_value[7] && op_byte[7];
+        return {{8{sign_bit}}, sum_value};
+    endfunction; // imm_1_e_from_op_byte
+
+
     // Decoder programming standards:
     //    if one register is used reg_a is used
     //    if an instruction writes to a register it writes to reg_a. similarly if it writes to (R) then R is also reg_a
@@ -1078,31 +1090,33 @@ module decode #(
         end else if (op_0 == 8'h18) begin // JR e
             output_op = JR_e;
             reg_a = PC;
-            imm_1 = {8'h00, op_1}; // NOTE: imm_1 used for e for consistency with other J instructions that use imm_0 for cc
+            /* NOTE: op_1 is actually e - 2, so to extract e out, we have to
+             add 2 to the value */
+            imm_1 = imm_1_e_from_op_byte(op_1); // NOTE: imm_1 used for e for consistency with other J instructions that use imm_0 for cc
             instruction_length = 2;
         end else if (op_0 == 8'h38) begin // JR C e
             output_op = JR_cc_e;
             reg_a = PC;
             imm_0 = 8'b00000011;
-            imm_1 = {8'h00, op_1};
+            imm_1 = imm_1_e_from_op_byte(op_1);
             instruction_length = 2;
         end else if (op_0 == 8'h30) begin // JR NC e
             output_op = JR_cc_e;
             reg_a = PC;
             imm_0 = 8'b00000010;
-            imm_1 = {8'h00, op_1};
+            imm_1 = imm_1_e_from_op_byte(op_1);
             instruction_length = 2;
         end else if (op_0 == 8'h28) begin // JR Z e
             output_op = JR_cc_e;
             reg_a = PC;
             imm_0 = 8'b00000001;
-            imm_1 = {8'h00, op_1};
+            imm_1 = imm_1_e_from_op_byte(op_1);
             instruction_length = 2;
         end else if (op_0 == 8'h20) begin // JR NZ e
             output_op = JR_cc_e;
             reg_a = PC;
             imm_0 = 8'b00000000;
-            imm_1 = {8'h00, op_1};
+            imm_1 = imm_1_e_from_op_byte(op_1);
             instruction_length = 2;
         end else if (op_0 == 8'hE9) begin // JP (HL)
             output_op = JP_R;
@@ -1121,7 +1135,7 @@ module decode #(
             reg_a = PC;
             reg_b = B;
             imm_0 = 8'b0; // imm_0 here encodes the cc command for NZ
-            imm_1 = {8'h00, op_1}; // e is passed through here
+            imm_1 = imm_1_e_from_op_byte(op_1);
             instruction_length = 2;
 
 

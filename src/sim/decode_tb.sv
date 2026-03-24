@@ -28,24 +28,32 @@ endtask // display_input_output_expected
 /* verilator lint_on UNUSEDSignal */
 
 module decode_tb();
+    /* verilator lint_off UNUSEDSignal */
     reg[31:0]   input_op;
 
-   	mop         output_op;
+    mop         output_op;
 	reg_name    reg_a, reg_b;
-   	wire [7:0]  imm_0;
-   	wire [15:0] imm_1;
-   	wire        use_16b_alu;
+    wire [7:0]  imm_0;
+    wire [15:0] imm_1;
+    wire        use_16b_alu;
     wire [5:0]  update_flags;
     logic [2:0] instruction_length;
 
-   	mop         expected_output_op;
+    mop         expected_output_op;
 	reg_name    expected_reg_a, expected_reg_b;
-   	reg [7:0]  expected_imm_0;
-   	reg [15:0] expected_imm_1;
-   	reg        expected_use_16b_alu;
+    reg [7:0]  expected_imm_0;
+    reg [15:0] expected_imm_1;
+    reg        expected_use_16b_alu;
     reg [5:0]  expected_update_flags;
 
-   	typedef struct {
+    /* verilator lint_on UNUSEDSignal */
+    /* events */
+    event      test_applied;
+    event      file_dump_setup;
+    event      test_vector_setup;
+    event      setup_done;
+
+    typedef struct {
         reg[31:0]   input_op;
         mop         expected_output_op;
         reg_name    expected_reg_a;
@@ -54,25 +62,36 @@ module decode_tb();
         reg [15:0]  expected_imm_1;
         reg         expected_use_16b_alu;
         reg [5:0]   expected_update_flags;
-   	} test_vector;
+    } test_vector;
 
-   	test_vector testvectors[];
+    test_vector testvectors[$];
 
-   	initial begin: file_setup
+    initial begin: setup_synchronizer
+        wait(file_dump_setup.triggered);
+        wait(test_vector_setup.triggered);
+        ->setup_done;
+    end;
+
+    initial begin: file_setup
       	$dumpfile("out/sim/decode_tb.vcd");
+        ->file_dump_setup;
       	$dumpvars();
-   	end
+    end
 
-   	initial begin: test_definition
-      	testvectors = new [1];
+    initial begin: test_definition
       	// input_op, expected_output_op, expected_a, expected_b, expected_imm_0, expected_imm_1, expected_use_16b_alu, expected_update_flags
-      	testvectors[0] = '{32'b01001011000000000000000000000000, LD_R_R, C, E, 0, 0, 0, 0};
-   	end
+      	testvectors.push_back('{32'b01001011000000000000000000000000, LD_R_R, C, E, 0, 0, 0, 0});
+        testvectors.push_back('{32'h18800000, JR_e, PC, NONE, 0, -126, 0, 0});
+        testvectors.push_back('{32'h18ff0000, JR_e, PC, NONE, 0, 1, 0, 0});
+        testvectors.push_back('{32'h187f0000, JR_e, PC, NONE, 0, 129, 0, 0});
+        ->test_vector_setup;
+    end
 
 
-   	initial begin
+    initial begin
       	$display(" input op                            |  mop |  reg_a | reg_b |  imm_0 | imm_1 | use_16b_alu | expected_update_flags ");
-      	for (int i = 0; i < $size(testvectors); ++i) begin
+        wait(setup_done.triggered);
+      	foreach (testvectors[i]) begin
          	#10;
          	input_op                = testvectors[i].input_op;
             expected_output_op      = testvectors[i].expected_output_op;
@@ -83,43 +102,46 @@ module decode_tb();
             expected_use_16b_alu    = testvectors[i].expected_use_16b_alu;
             expected_update_flags   = testvectors[i].expected_update_flags;
          	#1;
+            ->test_applied;
+
       	end
 
       	#10 $finish;
    	end // initial begin
 
    	always begin
-      	#11 display_input_output_expected_decode(
-            input_op, 
-            output_op, 
-            reg_a, 
-            reg_b, 
-            imm_0, 
-            imm_1, 
-            use_16b_alu, 
-            update_flags,
-            expected_output_op, 
-            expected_reg_a, 
-            expected_reg_b, 
-            expected_imm_0, 
-            expected_imm_1, 
-            expected_use_16b_alu, 
-            expected_update_flags
-        );
-      	if (
-            output_op    == expected_output_op && 
-            reg_a        == expected_reg_a &&
-            reg_b        == expected_reg_b && 
-            imm_0        == expected_imm_0 && 
-            imm_1        == expected_imm_1 && 
-            use_16b_alu  == expected_use_16b_alu && 
-            update_flags == expected_update_flags 
-        ) 
-        begin
-            $display("    | PASS");
-        end else begin
-            $display("    | FAIL");
-        end
+            @test_applied;
+      	    display_input_output_expected_decode(
+                                                 input_op,
+                                                 output_op,
+                                                 reg_a,
+                                                 reg_b,
+                                                 imm_0,
+                                                 imm_1,
+                                                 use_16b_alu,
+                                                 update_flags,
+                                                 expected_output_op,
+                                                 expected_reg_a,
+                                                 expected_reg_b,
+                                                 expected_imm_0,
+                                                 expected_imm_1,
+                                                 expected_use_16b_alu,
+                                                 expected_update_flags
+                                                 );
+            if (
+                output_op    == expected_output_op &&
+                reg_a        == expected_reg_a &&
+                reg_b        == expected_reg_b &&
+                imm_0        == expected_imm_0 &&
+                imm_1        == expected_imm_1 &&
+                use_16b_alu  == expected_use_16b_alu &&
+                update_flags == expected_update_flags
+                )
+              begin
+                  $display("    | PASS");
+              end else begin
+                  $display("    | FAIL");
+              end
    	end
 
     decode #() dut(

@@ -6,6 +6,7 @@ module controller_next_state_tb();
     uop::uop_t expected;
     string curr_test;
     event  vector_applied;
+    event  setup_done;
 
 
    /* verilator lint_off UNUSEDSignal */
@@ -114,9 +115,28 @@ module controller_next_state_tb();
                                                                 .imm_0('b001), .flag(6'b010001)));
         testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; P/V", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
                                                                 .imm_0('b100), .flag(6'b010001)));
+        testvectors = push_vector(testvectors, cons_test_vector("JR_e", uop::fetch, uop::add_reg_a_imm_1, JR_e));
+        testvectors = push_vector(testvectors, cons_test_vector("JR_e", uop::add_reg_a_imm_1, uop::fetch, JR_e));
+        testvectors = push_vector(testvectors, cons_test_vector("JR_cc_e; NC", uop::fetch, uop::add_reg_a_imm_1, JR_cc_e,
+                                                                .imm_0('b010), .flag(6'b00000)));
+        testvectors = push_vector(testvectors, cons_test_vector("JR_cc_e; NC", uop::add_reg_a_imm_1, uop::fetch, JR_cc_e,
+                                                                .imm_0('b010), .flag(6'b00000)));
+        testvectors = push_vector(testvectors, cons_test_vector("JR_cc_e; NC", uop::fetch, uop::pc_next, JR_cc_e,
+                                                                .imm_0('b010), .flag(6'b00001)));
+        testvectors = push_vector(testvectors, cons_test_vector("JR_cc_e; C", uop::fetch, uop::add_reg_a_imm_1, JR_cc_e,
+                                                                .imm_0('b011), .flag(6'b00001)));
+        testvectors = push_vector(testvectors, cons_test_vector("JR_cc_e; Z", uop::fetch, uop::add_reg_a_imm_1, JR_cc_e,
+                                                                .imm_0('b001), .flag(6'b010001)));
+        testvectors = push_vector(testvectors, cons_test_vector("JR_cc_e; P/V", uop::fetch, uop::add_reg_a_imm_1, JR_cc_e,
+                                                                .imm_0('b100), .flag(6'b010001)));
+
+        ->setup_done;
+
     end;
 
     initial begin
+        wait(setup_done.triggered);
+
         foreach (testvectors[i]) begin
             #10;
             intf.current_state = testvectors[i].curr_state;

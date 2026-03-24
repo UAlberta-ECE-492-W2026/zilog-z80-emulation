@@ -129,7 +129,6 @@ interface c_to_dp_intf();
         set_imm({{8{1'b0}},imm_0_out});
     endfunction; // imm_0_to_imm
 
-
     function automatic void set_default_outputs();
         write_back_sel = WB_MUX_NOP;
         ir_en = 0;
@@ -278,7 +277,8 @@ interface c_to_dp_intf();
                          );
 
     modport next_state_logic(
-                             input  current_state, mop_out,
+                             input current_state, mop_out, reset, f, raw_f,
+                                   imm_0_out,
                              import set_next_state
                              );
 endinterface; // c_to_dp_intf

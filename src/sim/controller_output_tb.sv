@@ -76,6 +76,7 @@ module controller_output_tb();
         testvectors.push_back(cons_test("add_reg_a_reg_b", uop::add_reg_a_reg_b));
         testvectors.push_back(cons_test("add_reg_a_imm_1", uop::add_reg_a_imm_1));
         testvectors.push_back(cons_test("sub_reg_a_imm_1", uop::sub_reg_a_imm_1));
+        testvectors.push_back(cons_test("dec_reg_b", uop::dec_reg_b));
         testvectors.push_back(cons_test("or_reg_a_reg_b", uop::or_reg_a_reg_b));
         testvectors.push_back(cons_test("rl_reg_a", uop::rl_reg_a));
 

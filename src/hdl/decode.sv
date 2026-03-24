@@ -1120,8 +1120,8 @@ module decode #(
             output_op = DJNZ_e;
             reg_a = PC;
             reg_b = B;
-            imm_0 = 0'HFF; // -1, possibly useful. Just add imm_0 and reg_a
-            imm_1 = {8'h00, op_1};
+            imm_0 = 8'b0; // imm_0 here encodes the cc command for NZ
+            imm_1 = {8'h00, op_1}; // e is passed through here
             instruction_length = 2;
 
 

@@ -3,9 +3,11 @@
 module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
     wire logic[2:0] j_cc;
 
+    /* verilator lint_off UNUSEDSIGNAL */
     function automatic void set_next_state(input uop::uop_t next_state);
         ctrl_intf.set_next_state(next_state);
     endfunction; // set_next_state
+    /* verilator lint_on UNUSEDSIGNAL */
 
 
     /* verilator lint_off UNUSEDSIGNAL */

@@ -11,7 +11,7 @@ module vertical_counter
 input logic clk,
 input logic reset, //! synchronous reset for stable startup
 input logic enable_vertical_counter, //! pulse from horizontal counter at end of each line
-output reg [15:0] vertical_count_value = 0
+output reg [15:0] vertical_count_value
 );
 
 always@(posedge clk) begin

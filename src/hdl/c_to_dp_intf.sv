@@ -75,9 +75,11 @@ interface c_to_dp_intf();
     /* verilator lint_on UNDRIVEN */
     /* verilator lint_on UNUSEDSIGNAL */
 
+    /* verilator lint_off UNUSEDSIGNAL */
     function automatic void set_next_state(input uop::uop_t state);
         next_state = state;
     endfunction; // set_next_state
+    /* verilator lint_on UNUSEDSIGNAL */
 
     /**
      method that denotes if the controller should latch the new mop output
@@ -97,6 +99,7 @@ interface c_to_dp_intf();
         alu_mux_b_sel = B_MUX_NOP;
     endfunction; // disable_alu
 
+    /* verilator lint_off UNUSEDSIGNAL */
     function automatic void enable_and_set_alu_opcode(alu_op aop,
                                                       alu_mux_a_enum mux_a = A_MUX_REG,
                                                       alu_mux_b_enum mux_b = B_MUX_IMM);
@@ -105,13 +108,14 @@ interface c_to_dp_intf();
         alu_mux_a_sel = mux_a;
         alu_mux_b_sel = mux_b;
     endfunction; // set_alu_opcode
+    /* verilator lint_on UNUSEDSIGNAL */
 
     function automatic void disable_reg_w();
         reg_w_en = 0;
         reg_w_sel = NONE;
     endfunction; // disable_reg_w
 
-
+    /* verilator lint_off UNUSEDSIGNAL */
     function automatic void enable_and_set_reg_w(reg_name rn);
         reg_w_en = 1;
         reg_w_sel = rn;
@@ -128,6 +132,7 @@ interface c_to_dp_intf();
     function automatic void imm_0_to_imm();
         set_imm({{8{1'b0}},imm_0_out});
     endfunction; // imm_0_to_imm
+    /* verilator lint_on UNUSEDSIGNAL */
 
 
     function automatic void set_default_outputs();
@@ -220,7 +225,7 @@ interface c_to_dp_intf();
                       // instruction decode
                       // some of these have corrosponding similarly named inputs from the controller
                       input  f,
-                      input  memory_out, // data or address depending on uop
+                      //input  memory_out, // data or address depending on uop
                       input  mop_out,
                       input  reg_a_sel_out,
                       input  reg_b_sel_out,
@@ -278,9 +283,14 @@ interface c_to_dp_intf();
                          );
 
     modport next_state_logic(
-                             input  current_state, mop_out,
+                             input  current_state, mop_out, reset,
                              import set_next_state
                              );
+    
+    modport memory_wrapper(
+        input mem_data_mux_sel, mem_mux_sel, mem_addr_buff_en, memory_out,
+        output memory_in, instruction_in 
+    );
 endinterface; // c_to_dp_intf
 
 /*

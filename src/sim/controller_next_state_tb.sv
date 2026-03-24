@@ -57,7 +57,7 @@ module controller_next_state_tb();
     endfunction; // cons_test_vector
 
 
-    typedef test_vector test_vectors[];
+    typedef test_vector test_vectors[$];
 
     test_vectors testvectors;
 
@@ -66,68 +66,61 @@ module controller_next_state_tb();
         $dumpvars();
     end
 
-    function automatic test_vectors push_vector (test_vectors v, test_vector test);
-        test_vectors ret_array = new [v.size() + 1] (v);
-        ret_array[v.size()] = test;
-        return ret_array;
-    endfunction // push_vector
-
     initial begin: test_definition
-        testvectors = new [0];
-        testvectors = push_vector(testvectors, cons_test_vector("invalid to reset",uop::invalid, uop::reset, PUSH_R, 1));
-        testvectors = push_vector(testvectors, cons_test_vector("reset to reset",uop::reset, uop::reset, ADD_R_R, 1));
-        testvectors = push_vector(testvectors, cons_test_vector("LD_R_R", uop::fetch, uop::ld_reg_a_reg_b, LD_R_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("LD_R_R2", uop::ld_reg_a_reg_b, uop::pc_next, LD_R_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("LD_R_nn1", uop::fetch, uop::read_mrbuff_reg_b_imm_0, LD_R_nn, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("LD_R_nn2", uop::read_mrbuff_reg_b_imm_0, uop::read16_reg_a_reg_b_imm_0, LD_R_nn, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("LD_R_nn3", uop::read16_reg_a_reg_b_imm_0, uop::pc_next, LD_R_nn, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("PUSH_R", uop::fetch, uop::sp_m1, PUSH_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("PUSH_R", uop::sp_m1, uop::buff_addr_reg_a, PUSH_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("PUSH_R", uop::buff_addr_reg_a, uop::write_reg_bH, PUSH_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("PUSH_R", uop::write_reg_bH, uop::sp_m1_2, PUSH_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("PUSH_R", uop::sp_m1_2, uop::buff_addr_reg_a_2, PUSH_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("PUSH_R", uop::buff_addr_reg_a_2, uop::write_reg_bL, PUSH_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("PUSH_R", uop::write_reg_bL, uop::pc_next, PUSH_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("POP_R", uop::fetch, uop::read_mrbuff_reg_b_imm_0, POP_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("POP_R", uop::read_mrbuff_reg_b_imm_0, uop::read16_reg_a_reg_b_imm_0, POP_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("POP_R", uop::sp_p2, uop::pc_next, POP_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("EX_DE_HL1", uop::fetch, uop::ex_de_hl, EX_DE_HL, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("EX_DE_HL2", uop::ex_de_hl, uop::pc_next, EX_DE_HL, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("ADD_R_R", uop::fetch, uop::add_reg_a_reg_b, ADD_R_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("ADD_R_R", uop::add_reg_a_reg_b, uop::pc_next, ADD_R_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("ADD_R_nn", uop::fetch, uop::add_reg_a_imm_1, ADD_R_nn, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("ADD_R_nn", uop::add_reg_a_imm_1, uop::pc_next, ADD_R_nn, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("SUB_R_nn", uop::fetch, uop::sub_reg_a_imm_1, SUB_R_nn, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("SUB_R_nn", uop::sub_reg_a_imm_1, uop::pc_next, SUB_R_nn, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("OR_R_R", uop::fetch, uop::or_reg_a_reg_b, OR_R_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("OR_R_R", uop::or_reg_a_reg_b, uop::pc_next, OR_R_R, 0));
-        testvectors = push_vector(testvectors, cons_test_vector("JP_nn", uop::fetch, uop::ld_reg_a_imm_1, JP_nn));
-        testvectors = push_vector(testvectors, cons_test_vector("JP_nn", uop::ld_reg_a_imm_1, uop::fetch, JP_nn));
-        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; NC", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
+        testvectors.push_back( cons_test_vector("invalid to reset",uop::invalid, uop::reset, PUSH_R, 1));
+        testvectors.push_back( cons_test_vector("reset to reset",uop::reset, uop::reset, ADD_R_R, 1));
+        testvectors.push_back( cons_test_vector("LD_R_R", uop::fetch, uop::ld_reg_a_reg_b, LD_R_R, 0));
+        testvectors.push_back( cons_test_vector("LD_R_R2", uop::ld_reg_a_reg_b, uop::pc_next, LD_R_R, 0));
+        testvectors.push_back( cons_test_vector("LD_R_nn1", uop::fetch, uop::read_mrbuff_reg_b_imm_0, LD_R_nn, 0));
+        testvectors.push_back( cons_test_vector("LD_R_nn2", uop::read_mrbuff_reg_b_imm_0, uop::read16_reg_a_reg_b_imm_0, LD_R_nn, 0));
+        testvectors.push_back( cons_test_vector("LD_R_nn3", uop::read16_reg_a_reg_b_imm_0, uop::pc_next, LD_R_nn, 0));
+        testvectors.push_back( cons_test_vector("PUSH_R", uop::fetch, uop::sp_m1, PUSH_R, 0));
+        testvectors.push_back( cons_test_vector("PUSH_R", uop::sp_m1, uop::buff_addr_reg_a, PUSH_R, 0));
+        testvectors.push_back( cons_test_vector("PUSH_R", uop::buff_addr_reg_a, uop::write_reg_bH, PUSH_R, 0));
+        testvectors.push_back( cons_test_vector("PUSH_R", uop::write_reg_bH, uop::sp_m1_2, PUSH_R, 0));
+        testvectors.push_back( cons_test_vector("PUSH_R", uop::sp_m1_2, uop::buff_addr_reg_a_2, PUSH_R, 0));
+        testvectors.push_back( cons_test_vector("PUSH_R", uop::buff_addr_reg_a_2, uop::write_reg_bL, PUSH_R, 0));
+        testvectors.push_back( cons_test_vector("PUSH_R", uop::write_reg_bL, uop::pc_next, PUSH_R, 0));
+        testvectors.push_back( cons_test_vector("POP_R", uop::fetch, uop::read_mrbuff_reg_b_imm_0, POP_R, 0));
+        testvectors.push_back( cons_test_vector("POP_R", uop::read_mrbuff_reg_b_imm_0, uop::read16_reg_a_reg_b_imm_0, POP_R, 0));
+        testvectors.push_back( cons_test_vector("POP_R", uop::sp_p2, uop::pc_next, POP_R, 0));
+        testvectors.push_back( cons_test_vector("EX_DE_HL1", uop::fetch, uop::ex_de_hl, EX_DE_HL, 0));
+        testvectors.push_back( cons_test_vector("EX_DE_HL2", uop::ex_de_hl, uop::pc_next, EX_DE_HL, 0));
+        testvectors.push_back( cons_test_vector("ADD_R_R", uop::fetch, uop::add_reg_a_reg_b, ADD_R_R, 0));
+        testvectors.push_back( cons_test_vector("ADD_R_R", uop::add_reg_a_reg_b, uop::pc_next, ADD_R_R, 0));
+        testvectors.push_back( cons_test_vector("ADD_R_nn", uop::fetch, uop::add_reg_a_imm_1, ADD_R_nn, 0));
+        testvectors.push_back( cons_test_vector("ADD_R_nn", uop::add_reg_a_imm_1, uop::pc_next, ADD_R_nn, 0));
+        testvectors.push_back( cons_test_vector("SUB_R_nn", uop::fetch, uop::sub_reg_a_imm_1, SUB_R_nn, 0));
+        testvectors.push_back( cons_test_vector("SUB_R_nn", uop::sub_reg_a_imm_1, uop::pc_next, SUB_R_nn, 0));
+        testvectors.push_back( cons_test_vector("OR_R_R", uop::fetch, uop::or_reg_a_reg_b, OR_R_R, 0));
+        testvectors.push_back( cons_test_vector("OR_R_R", uop::or_reg_a_reg_b, uop::pc_next, OR_R_R, 0));
+        testvectors.push_back( cons_test_vector("JP_nn", uop::fetch, uop::ld_reg_a_imm_1, JP_nn));
+        testvectors.push_back( cons_test_vector("JP_nn", uop::ld_reg_a_imm_1, uop::fetch, JP_nn));
+        testvectors.push_back( cons_test_vector("JP_cc_nn; NC", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
                                                                 .imm_0('b010), .flag(6'b00000)));
-        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; NC", uop::ld_reg_a_imm_1, uop::fetch, JP_cc_nn,
+        testvectors.push_back( cons_test_vector("JP_cc_nn; NC", uop::ld_reg_a_imm_1, uop::fetch, JP_cc_nn,
                                                                 .imm_0('b010), .flag(6'b00000)));
-        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; NC", uop::fetch, uop::pc_next, JP_cc_nn,
+        testvectors.push_back( cons_test_vector("JP_cc_nn; NC", uop::fetch, uop::pc_next, JP_cc_nn,
                                                                 .imm_0('b010), .flag(6'b00001)));
-        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; C", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
+        testvectors.push_back( cons_test_vector("JP_cc_nn; C", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
                                                                 .imm_0('b011), .flag(6'b00001)));
-        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; Z", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
+        testvectors.push_back( cons_test_vector("JP_cc_nn; Z", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
                                                                 .imm_0('b001), .flag(6'b010001)));
-        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; P/V", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
+        testvectors.push_back( cons_test_vector("JP_cc_nn; P/V", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
                                                                 .imm_0('b100), .flag(6'b010001)));
-        testvectors = push_vector(testvectors, cons_test_vector("JR_e", uop::fetch, uop::add_reg_a_imm_1, JR_e));
-        testvectors = push_vector(testvectors, cons_test_vector("JR_e", uop::add_reg_a_imm_1, uop::fetch, JR_e));
-        testvectors = push_vector(testvectors, cons_test_vector("JR_cc_e; NC", uop::fetch, uop::add_reg_a_imm_1, JR_cc_e,
+        testvectors.push_back( cons_test_vector("JR_e", uop::fetch, uop::add_reg_a_imm_1, JR_e));
+        testvectors.push_back( cons_test_vector("JR_e", uop::add_reg_a_imm_1, uop::fetch, JR_e));
+        testvectors.push_back( cons_test_vector("JR_cc_e; NC", uop::fetch, uop::add_reg_a_imm_1, JR_cc_e,
                                                                 .imm_0('b010), .flag(6'b00000)));
-        testvectors = push_vector(testvectors, cons_test_vector("JR_cc_e; NC", uop::add_reg_a_imm_1, uop::fetch, JR_cc_e,
+        testvectors.push_back( cons_test_vector("JR_cc_e; NC", uop::add_reg_a_imm_1, uop::fetch, JR_cc_e,
                                                                 .imm_0('b010), .flag(6'b00000)));
-        testvectors = push_vector(testvectors, cons_test_vector("JR_cc_e; NC", uop::fetch, uop::pc_next, JR_cc_e,
+        testvectors.push_back( cons_test_vector("JR_cc_e; NC", uop::fetch, uop::pc_next, JR_cc_e,
                                                                 .imm_0('b010), .flag(6'b00001)));
-        testvectors = push_vector(testvectors, cons_test_vector("JR_cc_e; C", uop::fetch, uop::add_reg_a_imm_1, JR_cc_e,
+        testvectors.push_back( cons_test_vector("JR_cc_e; C", uop::fetch, uop::add_reg_a_imm_1, JR_cc_e,
                                                                 .imm_0('b011), .flag(6'b00001)));
-        testvectors = push_vector(testvectors, cons_test_vector("JR_cc_e; Z", uop::fetch, uop::add_reg_a_imm_1, JR_cc_e,
+        testvectors.push_back( cons_test_vector("JR_cc_e; Z", uop::fetch, uop::add_reg_a_imm_1, JR_cc_e,
                                                                 .imm_0('b001), .flag(6'b010001)));
-        testvectors = push_vector(testvectors, cons_test_vector("JR_cc_e; P/V", uop::fetch, uop::add_reg_a_imm_1, JR_cc_e,
+        testvectors.push_back( cons_test_vector("JR_cc_e; P/V", uop::fetch, uop::add_reg_a_imm_1, JR_cc_e,
                                                                 .imm_0('b100), .flag(6'b010001)));
 
         ->setup_done;

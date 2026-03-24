@@ -110,6 +110,10 @@ module controller_next_state_tb();
                                                                 .imm_0('b010), .flag(6'b00001)));
         testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; C", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
                                                                 .imm_0('b011), .flag(6'b00001)));
+        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; Z", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
+                                                                .imm_0('b001), .flag(6'b010001)));
+        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; P/V", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
+                                                                .imm_0('b100), .flag(6'b010001)));
     end;
 
     initial begin

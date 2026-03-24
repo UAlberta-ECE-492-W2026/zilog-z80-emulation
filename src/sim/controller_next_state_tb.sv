@@ -102,8 +102,14 @@ module controller_next_state_tb();
         testvectors = push_vector(testvectors, cons_test_vector("OR_R_R", uop::or_reg_a_reg_b, uop::pc_next, OR_R_R, 0));
         testvectors = push_vector(testvectors, cons_test_vector("JP_nn", uop::fetch, uop::ld_reg_a_imm_1, JP_nn));
         testvectors = push_vector(testvectors, cons_test_vector("JP_nn", uop::ld_reg_a_imm_1, uop::fetch, JP_nn));
-        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
+        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; NC", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
                                                                 .imm_0('b010), .flag(6'b00000)));
+        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; NC", uop::ld_reg_a_imm_1, uop::fetch, JP_cc_nn,
+                                                                .imm_0('b010), .flag(6'b00000)));
+        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; NC", uop::fetch, uop::pc_next, JP_cc_nn,
+                                                                .imm_0('b010), .flag(6'b00001)));
+        testvectors = push_vector(testvectors, cons_test_vector("JP_cc_nn; C", uop::fetch, uop::ld_reg_a_imm_1, JP_cc_nn,
+                                                                .imm_0('b011), .flag(6'b00001)));
     end;
 
     initial begin
@@ -114,6 +120,8 @@ module controller_next_state_tb();
             expected = testvectors[i].expected_value;
             intf.reset = testvectors[i].reset_sig;
             intf.f = testvectors[i].flag;
+            intf.imm_0_out = testvectors[i].imm_0;
+            intf.imm_1_out = testvectors[i].imm_1;
             curr_test = testvectors[i].test_name;
             #1;
             ->vector_applied;

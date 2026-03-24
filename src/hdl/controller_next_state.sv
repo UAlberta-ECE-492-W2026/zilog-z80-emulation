@@ -28,7 +28,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
 
     function automatic logic jump_conditional_value_processing(logic [2:0] jump_cc,
                                                                logic      flag_val);
-        return jump_cc[0] ^ flag_val;
+        return jump_cc[0] ~^ flag_val;
     endfunction; // jump_conditional_value_processing
 
     function automatic logic jump_conditional(logic [2:0] jump_cc,
@@ -77,8 +77,10 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   HALT: set_next_state(uop::fetch);
                   RL_R: set_next_state(uop::rl_reg_a);
                   JP_nn: set_next_state(uop::ld_reg_a_imm_1);
-                  JP_cc_nn: set_next_state( choose_next_jump_state(j_cc, ctrl_intf.f, uop::ld_reg_a_imm_1,
-                                                   uop::pc_next) );
+                  JP_cc_nn: set_next_state(choose_next_jump_state(j_cc,
+                                                                  ctrl_intf.f,
+                                                                  uop::ld_reg_a_imm_1,
+                                                                  uop::pc_next));
                   JR_e: set_next_state(uop::add_reg_a_imm_1);
                   JR_cc_e: set_next_state( choose_next_jump_state(j_cc,
                                                   ctrl_intf.f,

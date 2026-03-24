@@ -26,7 +26,7 @@ module register_file
     input  wire [5:0]   f_reset,
     input  wire [5:0]   f_toggle,
     input  wire         f_w_en, // write enable for flags. note that a reg write to f can still happen if f_w_en = 0
-    output wire [5:0]   f
+    output wire [5:0]   f // S Z H P/V N C
 );
     reg [7:0] main_reg_set [0:7]; // In order A F B C D E H L
     reg [7:0] alt_reg_set [0:7]; // Same as above, but alternate bank

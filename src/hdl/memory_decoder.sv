@@ -3,56 +3,46 @@
 // This module selects between the ROM and the RAM(s)
 module memory_decoder
 (
-    input logic [15:0] address,  // Address bus for memory Read/Write
-    input logic WR,  // Write enable control for memory
-    input logic RD,  // Read enable control for memory
-    input logic MREQ,  // Memory request from Z80
 
-    output logic WE_RAM,  // Write enable for the RAM
-    output logic RD_RAM,  // Read enable for the RAM
-    output logic RD_ROM,  // Read enable for the ROM
-    output logic CS_ROM,  // Chip select for ROM
-    output logic CS_RAM   // Chip select for RAM
+    // TODO: remove ROM and make it to spec of lucid chart and remove chip select
+    input logic [15:0] address,  // Address bus for memory Read/Write
+    input logic w_en,  // Write enable control for memory
+    input logic r_en,  // Read enable control for memory
+
+    output logic w_en_char_RAM,  // Write enable for the RAM
+    output logic r_en_char_RAM,  // Read enable for the RAM
+
+    output logic w_en_program_RAM,
+    output logic r_en_program_RAM,
+
+    output logic w_en_IO,
+    output logic r_en_IO
 );
 
 always_comb begin
 
-    WE_RAM = 0;
-    RD_RAM = 0;
-    RD_ROM = 0;
-    CS_ROM = 0;
-    CS_RAM = 0;
+    w_en_char_RAM = 0;
+    r_en_char_RAM = 0;
+    w_en_program_RAM = 0;
+    r_en_program_RAM = 0;
+    w_en_IO = 0;
+    r_en_IO = 0;
 
-    if (MREQ) begin
 
-        if(address <= 16'h06FF) begin  // Memory location for font ROM
-            CS_ROM = 1;
-            if (RD) begin
-                RD_ROM = 1;
-            end
+        if(address <= 16'h06FF) begin  // Memory location for program RAM
+            if (w_en) w_en_program_RAM = 1;
+            if (r_en) r_en_program_RAM = 1;
         end
 
-        else if(address >= 16'h0700 && 16'h0CFF >= address) begin  // Memory location for char RAM
-            CS_RAM = 1;
-            if (RD) begin
-                RD_RAM = 1;
-            end
-            if (WR) begin
-                WE_RAM = 1;
-            end
+        else if(address <= 16'h0CFF) begin  // Memory location for char RAM
+            if (w_en) w_en_char_RAM = 1;
+            if (r_en) r_en_char_RAM = 1;
         end
 
-        else if(address >= 16'h0D00) begin  // Memory location for Keyboard IO RAM
-            CS_RAM = 1;
-            if (RD) begin
-                RD_RAM = 1;
-            end
-            if (WR) begin
-                WE_RAM = 1;
-            end
+        else if(address <= 16'h0DFF) begin
+            if (w_en) w_en_IO = 1;
+            if (r_en) r_en_IO = 1;
         end
-
-    end
 
 end
 

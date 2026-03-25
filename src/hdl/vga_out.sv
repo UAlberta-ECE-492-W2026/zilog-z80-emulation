@@ -110,7 +110,7 @@ module vga_out
         .clk(pixel_clk),
         .data_out(data_out_ram),
         .address(address_ram),
-        .WE(WE_ram),
+        .w_en(WE_ram),
         .data_in(data_in_ram)
     );
     

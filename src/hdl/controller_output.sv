@@ -3,7 +3,9 @@
 `include "mux_enums.sv"
 
 /**
- module that provides the signal output logic for the controller.
+ * module that provides the signal output logic for the controller.
+ * NOTE: alu_16b_mode is usually set by the output value from the decoder,
+ * so this module should not be changing those values
  */
 module controller_output (
                           c_to_dp_intf.output_maker intf

@@ -54,7 +54,10 @@ package uop;
                         /* arithmetic */
                         add_reg_a_reg_b,
                         add_reg_a_imm_1,
+                        sub_reg_a_reg_b,
                         sub_reg_a_imm_1,
+                        sbc_reg_a_reg_b,
+                        sbc_reg_a_imm_1,
                         dec_reg_b,
 
                         /* logical */

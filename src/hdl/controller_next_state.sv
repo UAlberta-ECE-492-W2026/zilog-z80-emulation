@@ -70,7 +70,9 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   EX_DE_HL: set_next_state(uop::ex_de_hl);
                   ADD_R_R: set_next_state(uop::add_reg_a_reg_b);
                   ADD_R_nn: set_next_state(uop::add_reg_a_imm_1);
+                  SUB_R_R: set_next_state(uop::sub_reg_a_reg_b);
                   SUB_R_nn: set_next_state(uop::sub_reg_a_imm_1);
+                  SBC_R_R: set_next_state(uop::sbc_reg_a_reg_b);
                   OR_R_R: set_next_state(uop::or_reg_a_reg_b);
                   INC_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
                   NOP: set_next_state(uop::pc_next);
@@ -247,6 +249,11 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             uop::sub_reg_a_imm_1: begin
                 case(ctrl_intf.mop_out)
                   default: set_next_state(uop::pc_next);
+                endcase; // case (ctrl_intf.mop_out)
+            end
+            uop::sbc_reg_a_reg_b: begin
+                case(ctrl_intf.mop_out)
+                  default: set_next_state(uop:pc_next);
                 endcase; // case (ctrl_intf.mop_out)
             end
             uop::dec_reg_b: begin

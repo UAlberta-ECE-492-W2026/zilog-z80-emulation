@@ -192,10 +192,24 @@ module controller_output (
                 intf.write_back_sel = WB_MUX_ALU;
             end
             uop::adc_reg_a_reg_b: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.reg_b_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_ADC,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_REG));
                 intf.forward_decode_16b_alu();
+                intf.write_back_sel = WB_MUX_ALU;
             end
             uop::sbc_reg_a_reg_b: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.reg_b_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_SBC,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_REG));
                 intf.forward_decode_16b_alu();
+                intf.write_back_sel = WB_MUX_ALU;
             end
             uop::add_reg_a_imm_1: begin
                 intf.reg_a_sel = intf.reg_a_sel_out;

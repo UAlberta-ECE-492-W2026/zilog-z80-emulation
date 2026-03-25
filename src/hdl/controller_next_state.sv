@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
 module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
-    import uop::*;
+    wire logic[2:0] j_cc;
 
     /* verilator lint_off UNUSEDSIGNAL */
     function automatic void set_next_state(input uop::uop_t next_state);
@@ -9,7 +9,51 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
     endfunction; // set_next_state
     /* verilator lint_on UNUSEDSIGNAL */
 
+
+    /* verilator lint_off UNUSEDSIGNAL */
+    /* jump helper functions */
+    function automatic logic jump_flag_lookup(logic[2:0] jump_cc, logic[5:0] flag);
+        if (jump_cc == 3'b000 || jump_cc == 3'b001) begin /* zero flag stuff */
+            return flag[4];
+        end else if (jump_cc == 3'b010 || jump_cc == 3'b011 ) begin /* carry flag */
+            return flag[0];
+        end else if (jump_cc == 3'b100 || jump_cc == 3'b101) begin /* parity/overflow */
+            return flag[2];
+        end else if (jump_cc == 3'b110 || jump_cc == 3'b111) begin /* sign flag */
+            return flag[5];
+        end else begin
+            return 0;
+        end
+    endfunction; // jump_flag_lookup
+
+    function automatic logic jump_conditional_value_processing(logic [2:0] jump_cc,
+                                                               logic      flag_val);
+        return jump_cc[0] ~^ flag_val;
+    endfunction; // jump_conditional_value_processing
+
+    function automatic logic jump_conditional(logic [2:0] jump_cc,
+                                              logic [5:0] flag );
+        return jump_conditional_value_processing(jump_cc,
+                                          jump_flag_lookup(jump_cc,
+                                                           flag));
+    endfunction; // jump_conditional
+
+    function automatic uop::uop_t choose_next_jump_state(logic [2:0] jump_cc,
+                                                         logic [5:0] flag,
+                                                         uop::uop_t triggered_state,
+                                                         uop::uop_t missed_state=uop::pc_next);
+        if (jump_conditional(jump_cc, flag))
+          return triggered_state;
+        else
+          return missed_state;
+    endfunction; // choose_next_jump_state
+
+    /* verilator lint_on UNUSEDSIGNAL */
+
     uop::uop_t curr_state = ctrl_intf.current_state;
+
+    /* concurrent assignment */
+    assign j_cc = ctrl_intf.imm_0_out[2:0];
 
     always_comb begin: next_state_block
         set_next_state(curr_state);
@@ -33,11 +77,17 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   HALT: set_next_state(uop::fetch);
                   RL_R: set_next_state(uop::rl_reg_a);
                   JP_nn: set_next_state(uop::ld_reg_a_imm_1);
-                  JP_cc_nn: set_next_state(uop::pc_next);
-                  JR_e: set_next_state(uop::pc_next);
-                  JR_cc_e: set_next_state(uop::pc_next);
+                  JP_cc_nn: set_next_state(choose_next_jump_state(j_cc,
+                                                                  ctrl_intf.f,
+                                                                  uop::ld_reg_a_imm_1,
+                                                                  uop::pc_next));
+                  JR_e: set_next_state(uop::add_reg_a_imm_1);
+                  JR_cc_e: set_next_state( choose_next_jump_state(j_cc,
+                                                  ctrl_intf.f,
+                                                  uop::add_reg_a_imm_1,
+                                                  uop::pc_next) );
                   JP_R: set_next_state(uop::read_mrbuff_reg_b_imm_0);
-                  DJNZ_e: set_next_state(uop::pc_next);
+                  DJNZ_e: set_next_state(uop::dec_reg_b);
                   CALL_nn: set_next_state(uop::sp_m1);
                   RET: set_next_state(uop::read_mrbuff_reg_b_imm_0);
                   default: set_next_state(uop::invalid);
@@ -59,7 +109,8 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             end
             uop::ld_reg_a_imm_1: begin
                 case(ctrl_intf.mop_out)
-                  JP_nn: set_next_state(uop::invalid);
+                  JP_nn: set_next_state(uop::fetch);
+                  JP_cc_nn: set_next_state(uop::fetch);
                   default: set_next_state(uop::invalid);
                 endcase; // case (curr_state)
             end
@@ -188,12 +239,23 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             end
             uop::add_reg_a_imm_1: begin
                 case(ctrl_intf.mop_out)
+                  JR_e: set_next_state(uop::fetch);
+                  JR_cc_e: set_next_state(uop::fetch);
                   default: set_next_state(uop::pc_next);
                 endcase; // case (ctrl_intf.mop_out)
             end
             uop::sub_reg_a_imm_1: begin
                 case(ctrl_intf.mop_out)
                   default: set_next_state(uop::pc_next);
+                endcase; // case (ctrl_intf.mop_out)
+            end
+            uop::dec_reg_b: begin
+                case(ctrl_intf.mop_out)
+                  DJNZ_e: set_next_state( choose_next_jump_state(j_cc,
+                                                 ctrl_intf.f,
+                                                 uop::add_reg_a_imm_1,
+                                                 uop::pc_next) );
+                  default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end
 

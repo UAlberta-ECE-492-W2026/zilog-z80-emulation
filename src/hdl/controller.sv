@@ -3,59 +3,37 @@
 
 /** Module for the controller of the datapath controller architecture.
  */
-module controller (output wire [3:0] aluop,
-                   output wire       wb_signal,
-                   output            uop current_uop, /* debug output */
-
-                   input             mop micro_op,
-                   input wire        reset, /* active high reset */
-                   input wire        clk
-   );
+module controller (c_to_dp_intf.controller intf);
     import uop::*;
-   /* parameters */
+    /* parameters */
 
-   /* callables */
+    /* callables */
 
-   /* declaration ***********************************************************/
+    /* declaration ***********************************************************/
     mop current_mop;
     uop::uop_t current_state;
-    uop::uop_t next_state;
-    reg [3:0] aluop_reg;
 
 
-   /* instantiation *********************************************************/
-   /* for submodule instantiation */
+    /* dataflow **************************************************************/
 
-   /* dataflow **************************************************************/
+    assign intf.current_state = current_state;
 
-   assign aluop = aluop_reg;
-
-   /* behavioural ***********************************************************/
+    /* behavioural ***********************************************************/
 
 
     /* state driver */
-    always_ff @(posedge clk) begin: flip_flop_driver_block
+    always_ff @(posedge intf.clk) begin: flip_flop_driver_block
         /* synchronous resets are more reliable, and reduces the chance of
          metastability. */
-        if (reset) current_state <= RESET_STATE;
+        if (intf.reset) current_state <= uop::reset;
         else begin
             /* we are not doing a reset */
-            current_state <= next_state;
+            current_state <= intf.next_state;
             /* TODO: Verify the correctness of this assignment */
-            current_mop = internal_bus.latch_mop() ? internal_bus.out_mop : current_mop;
+            current_mop <= intf.latch_mop() ? intf.mop_out : current_mop;
         end;
     end;
 
-    /* interface ***/
-    c_to_dp_intf internal_bus;
-
     /* structural **********************************************************/
-    controller_next_state next_state_logic (
-                                            .ctrl_intf(internal_bus),
-                                            .reset_sig(reset)
-                                            );
 
-    controller_output output_logic(
-                                   .ctrl_intf(internal_bus)
-                                   );
 endmodule; // controller

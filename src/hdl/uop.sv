@@ -55,6 +55,7 @@ package uop;
                         add_reg_a_reg_b,
                         add_reg_a_imm_1,
                         sub_reg_a_imm_1,
+                        dec_reg_b,
 
                         /* logical */
                         or_reg_a_reg_b,

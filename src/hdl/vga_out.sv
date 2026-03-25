@@ -16,18 +16,28 @@ module vga_out
 (
     input  logic clk,              //! 125 MHz pixel clock from Zybo z-7
     input  logic reset,            //! synchronous reset for counters
+
+    // display driving outputs
     output logic hsync,            //! horizontal sync (active LOW)
     output logic vsync,            //! vertical sync (active LOW)
     output logic [3:0] red,        //! red channel (4-bit)
     output logic [3:0] green,      //! green channel (4-bit)
-    output logic [3:0] blue        //! blue channel (4-bit)
+    output logic [3:0] blue,        //! blue channel (4-bit)
+
+    // char ram interfacing
+    /* verilator lint_off UNDRIVEN */
+    output logic[15:0] char_ram_address,
+    /* verilator lint_on UNDRIVEN */
+    /* verilator lint_off UNUSEDSIGNAL */
+    input logic[7:0] char_ram_data
+    /* verilator lint_on UNUSEDSIGNAL */
 );
 
     // Clock divider to drive the external counters to the module
     logic [2:0] div_count;
     logic pixel_clk;
 
-    always_ff @(posedge clk or posedge reset) begin
+    always_ff @(posedge clk) begin
         if (reset) begin
             div_count <= 0;
             pixel_clk <= 0;
@@ -46,6 +56,7 @@ module vga_out
 
     // TODO: make these not local
     //! VGA timing parameters
+    /* verilator lint_off UNUSEDPARAM */
     localparam H_VISIBLE = 1920;
     localparam H_FRONT   = 88;
     localparam H_SYNC    = 44;
@@ -60,6 +71,7 @@ module vga_out
     
     localparam CHAR_ROWS = V_VISIBLE / 8;
     localparam CHAR_COLL = H_VISIBLE / 8;
+    /* verilator lint_on UNUSEDPARAM */
 
     //! Signals from external modules
     logic enable_vertical_counter;           
@@ -94,7 +106,7 @@ module vga_out
         .address(address_rom)
     );
 
-    char_ram char_ram (
+    char_ram  #()char_ram (
         .clk(pixel_clk),
         .data_out(data_out_ram),
         .address(address_ram),
@@ -122,8 +134,8 @@ module vga_out
     assign y = vertical_count_value[15:0];
 
     //! Dividing by 8 to determine character cell position
-    logic [7:0] col;   
-    logic [7:0] row;   
+    logic [15:0] col;   
+    logic [15:0] row;   
     assign col = x >> 3;
     assign row = y >> 3;
 
@@ -137,9 +149,7 @@ module vga_out
     logic [15:0] char_address;
     logic [7:0]  ascii;
 
-
-    // TODO: THIS IS USED AS THE OUTPUT TO THE CHAR RAM
-    assign char_address = row * CHAR_COLL + {8'b0,col};  //! row*80 + col
+    assign char_address = row * CHAR_COLL + col;  //! row*80 + col
 
     assign address_ram = char_address;  //!send address to character RAM
     assign ascii = visible ? data_out_ram : 8'd0;  //!ASCII returned from RAM
@@ -148,7 +158,7 @@ module vga_out
     logic pixel_on;  //!pixel enable signal
     logic [10:0] font_address;
 
-    assign font_address = (ascii << 3) + py;
+    assign font_address = (ascii << 3) + {8'h00, py};
 
     assign address_rom = font_address;  //! send address to font ROM
     assign font_row = data_out_rom[7:0];  //! bitmap row returned from ROM

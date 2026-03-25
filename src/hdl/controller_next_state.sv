@@ -63,12 +63,14 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             uop::fetch: begin
                 case (ctrl_intf.mop_out)
                   LD_R_R: set_next_state(uop::ld_reg_a_reg_b);
-                  LD_R_nn: set_next_state(uop::ld_reg_a_reg_b);
+                  LD_R_nn: set_next_state(uop::ld_reg_a_imm_1);
                   LD_R_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0);
                   PUSH_R: set_next_state(uop::sp_m1);
                   POP_R: set_next_state(uop::read_mrbuff_reg_b_imm_0);
                   EX_DE_HL: set_next_state(uop::ex_de_hl);
                   ADD_R_R: set_next_state(uop::add_reg_a_reg_b);
+                  ADC_R_R: set_next_state(uop::adc_reg_a_reg_b);
+                  ADC_R_nn: set_next_state(uop::adc_reg_a_imm_1);
                   ADD_R_nn: set_next_state(uop::add_reg_a_imm_1);
                   SUB_R_R: set_next_state(uop::sub_reg_a_reg_b);
                   SUB_R_nn: set_next_state(uop::sub_reg_a_imm_1);
@@ -246,6 +248,17 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   default: set_next_state(uop::pc_next);
                 endcase; // case (ctrl_intf.mop_out)
             end
+            uop::adc_reg_a_imm_1: begin
+                case(ctrl_intf.mop_out)
+                  default: set_next_state(uop::pc_next);
+                endcase;
+            end
+            uop::adc_reg_a_reg_b: begin
+                case(ctrl_intf.mop_out)
+                  default: set_next_state(uop::pc_next);
+                endcase;
+            end
+
             uop::sub_reg_a_imm_1: begin
                 case(ctrl_intf.mop_out)
                   default: set_next_state(uop::pc_next);

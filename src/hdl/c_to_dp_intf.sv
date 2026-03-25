@@ -153,6 +153,7 @@ interface c_to_dp_intf();
         disable_alu();
         o_buff_en = 0;
         alu_16b_mode = 0;
+        update_flags = update_flags_out;
         write_back_sel = WB_MUX_NOP;
         mem_read_buff_en = 0;
         mem_addr_buff_en = 0;

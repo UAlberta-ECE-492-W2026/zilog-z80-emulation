@@ -92,6 +92,8 @@ module controller_next_state_tb();
         testvectors.push_back( cons_test_vector("ADD_R_nn", uop::add_reg_a_imm_1, uop::pc_next, ADD_R_nn, 0));
         testvectors.push_back( cons_test_vector("SUB_R_nn", uop::fetch, uop::sub_reg_a_imm_1, SUB_R_nn, 0));
         testvectors.push_back( cons_test_vector("SUB_R_nn", uop::sub_reg_a_imm_1, uop::pc_next, SUB_R_nn, 0));
+        testvectors.push_back( cons_test_vector("SBC_R_R", uop::fetch, uop::sbc_reg_a_reg_b, SBC_R_R, 0));
+        testvectors.push_back( cons_test_vector("SBC_R_R", uop::sbc_reg_a_reg_b, uop::pc_next, SBC_R_R, 0));
         testvectors.push_back( cons_test_vector("OR_R_R", uop::fetch, uop::or_reg_a_reg_b, OR_R_R, 0));
         testvectors.push_back( cons_test_vector("OR_R_R", uop::or_reg_a_reg_b, uop::pc_next, OR_R_R, 0));
         testvectors.push_back( cons_test_vector("JP_nn", uop::fetch, uop::ld_reg_a_imm_1, JP_nn));

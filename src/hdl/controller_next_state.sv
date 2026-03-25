@@ -253,7 +253,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             end
             uop::sbc_reg_a_reg_b: begin
                 case(ctrl_intf.mop_out)
-                  default: set_next_state(uop:pc_next);
+                  default: set_next_state(uop::pc_next);
                 endcase; // case (ctrl_intf.mop_out)
             end
             uop::dec_reg_b: begin

@@ -94,14 +94,11 @@ module vga_out
         .address(address_rom)
     );
 
-    char_ram  #(
-        .CHAR_ROWS(CHAR_ROWS),
-        .CHAR_COLL(CHAR_COLL)
-    )char_ram (
+    char_ram char_ram (
         .clk(pixel_clk),
         .data_out(data_out_ram),
         .address(address_ram),
-        .WE(WE_ram),
+        .w_en(WE_ram),
         .data_in(data_in_ram)
     );
     
@@ -140,6 +137,8 @@ module vga_out
     logic [15:0] char_address;
     logic [7:0]  ascii;
 
+
+    // TODO: THIS IS USED AS THE OUTPUT TO THE CHAR RAM
     assign char_address = row * CHAR_COLL + {8'b0,col};  //! row*80 + col
 
     assign address_ram = char_address;  //!send address to character RAM

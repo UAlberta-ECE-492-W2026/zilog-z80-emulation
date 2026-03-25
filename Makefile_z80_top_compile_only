@@ -1,0 +1,17 @@
+.PHONY: clean waves
+
+
+obj_dir/Vz80_top_tb_compile_only: ./src/sim/z80_top_tb_compile_only.sv ./src/hdl/z80_top.sv
+	verilator --trace-vcd --binary -j 0 -Wall -cc $^ --top-module z80_top_tb_compile_only --timing +incdir+./src/enum +incdir+./src/hdl
+
+out/sim:
+	mkdir -p ./out/sim
+
+.stamp.run_register_file: obj_dir/Vz80_top_tb out/sim
+	./$<
+
+waves: .stamp.run_register_file
+	gtkwave out/sim/z80_top_tb.vcd
+
+clean:
+	rm -rf ./obj_dir/ ./out

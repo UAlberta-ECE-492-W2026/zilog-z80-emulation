@@ -37,7 +37,7 @@ module vga_out
     logic [2:0] div_count;
     logic pixel_clk;
 
-    always_ff @(posedge clk or posedge reset) begin
+    always_ff @(posedge clk) begin
         if (reset) begin
             div_count <= 0;
             pixel_clk <= 0;

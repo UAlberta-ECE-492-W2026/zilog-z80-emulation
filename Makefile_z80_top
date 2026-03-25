@@ -1,7 +1,7 @@
 .PHONY: clean waves
 
 
-obj_dir/Vz80_top_tb: ./src/sim/z80_top_tb.sv ./src/hdl/z80_top.sv
+obj_dir/Vz80_top_tb: ./src/sim/z80_top_tb.sv
 	verilator --trace-vcd --binary -j 0 -Wall -cc $^ --top-module z80_top_tb --timing +incdir+./src/enum +incdir+./src/hdl
 
 out/sim:

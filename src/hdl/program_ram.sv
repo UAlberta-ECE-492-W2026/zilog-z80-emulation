@@ -2,7 +2,7 @@
 
 // the main RAM of the system
 
-module char_ram #()(
+module program_ram #()(
     input logic         clk,
     input logic         reset,
     input logic         w_en,

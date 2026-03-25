@@ -97,7 +97,7 @@ module datapath(
         .f_toggle(f_toggle | alu_f_toggle),
         .f_w_en(intf.f_w_en),
         .f(intf.f)
-            `ifdef Z80_TOP_TESTING
+         `ifdef Z80_TOP_TESTING
         ,
         .debug_main_reg_set(debug_main_reg_set),
         .debug_special_reg_set(debug_special_reg_set)

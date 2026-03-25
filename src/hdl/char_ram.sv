@@ -9,14 +9,14 @@ module char_ram #()(
     /* verilator lint_off UNUSEDSIGNAL */
     input  logic [15:0] address,
     /* verilator lint_on UNUSEDSIGNAL */
-    input  logic WE,
+    input  logic w_en,
     input  logic [7:0] data_in
 );
 localparam total_chars = 80*60;
 logic [7:0] RW[0:total_chars - 1];
 
 always_ff @(posedge clk) begin
-    if (WE)
+    if (w_en)
         RW[address[12:0]] <= data_in;
 
     data_out <= RW[address[12:0]];

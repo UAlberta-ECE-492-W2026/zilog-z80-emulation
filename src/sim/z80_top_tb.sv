@@ -18,7 +18,7 @@ task display_input_output_expected_z_80_top(input
 
     );
 
-    $write(" %2d | %h | %h | %h | %h | %h | %h | %h \n", i, instruction, af, bc, ix, sp, pc, test_ram);
+    $write(" %2d |   %h | %h | %h | %h | %h | %h | %h \n", i, instruction, af, bc, ix, sp, pc, test_ram);
 
     $write("    |          | %h | %h | %h | %h | %h | %h |", expected_af, expected_bc, expected_ix, expected_sp, expected_pc, expected_test_ram);
 endtask
@@ -101,7 +101,7 @@ module z80_top_tb #() ();
     /* verilator lint_on UNUSEDSIGNAL */
 
     initial begin
-        $dumpfile("out/sim/datapath_tb.vcd");
+        $dumpfile("out/sim/z80_top_tb.vcd");
         $dumpvars();
 
         testvectors.push_back('{32'h00000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 64'h0000000000000000}); // NOP
@@ -111,10 +111,10 @@ module z80_top_tb #() ();
 
         reset_tb();
 
-        $display("");
+        $display("idx | instruction |   AF |   BC |   IX |   SP |   PC | memory    ");
 
         for (int i = 0; i < $size(testvectors); ++i) begin
-            instruction              = testvectors[i].instruction;
+            instruction = testvectors[i].instruction;
 
             #1
             display_input_output_expected_z_80_top(

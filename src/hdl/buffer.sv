@@ -12,7 +12,7 @@ module buffer #(
     reg [width-1:0] r;
 
     assign out = r;
-    always_ff @(clk, reset) begin
+    always_ff @(posedge clk or posedge reset) begin
         if (w == 1 && reset == 0) begin
             r <= in;
         end else if(reset == 1) begin

@@ -35,6 +35,9 @@ module z80_top_for_testing #(
     assign LEDs = 4'b1111;
 
     c_to_dp_intf intf();
+    assign intf.clk = clk;
+    assign intf.reset =  buttons[0];
+
     controller #() controller (intf);
     controller_next_state next_state_logic(.ctrl_intf(intf));
     controller_output output_logic(.intf(intf));

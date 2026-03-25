@@ -2,7 +2,7 @@
 
 
 obj_dir/Vz80_top_tb: ./src/sim/z80_top_tb.sv
-	verilator --trace-vcd --binary -j 0 -Wall -cc $^ --top-module z80_top_tb --timing +incdir+./src/enum +incdir+./src/hdl
+	verilator --trace-vcd --trace-structs --no-trace-top --binary -j 0 -Wall -cc $^ --top-module z80_top_tb --timing +incdir+./src/enum +incdir+./src/hdl
 
 out/sim:
 	mkdir -p ./out/sim

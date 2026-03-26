@@ -270,7 +270,7 @@ interface c_to_dp_intf();
                                 mem_w_en,
 
                          input  current_state, reset, reg_a_sel_out,
-                                reg_b_sel_out,
+                                reg_b_sel_out, imm_0_out, imm_1_out,
                          import disable_alu,
                          import enable_and_set_alu_opcode,
                          import set_default_outputs,

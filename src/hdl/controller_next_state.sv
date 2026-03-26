@@ -116,14 +116,14 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             end
             uop::ld_reg_a_imm_1: begin
                 case(ctrl_intf.mop_out)
-                  JP_nn: set_next_state(uop::fetch);
-                  JP_cc_nn: set_next_state(uop::fetch);
+                  JP_nn, JP_cc_nn: set_next_state(uop::fetch);
+                  LD_R_nn: set_next_state(uop::pc_next);
                   default: set_next_state(uop::invalid);
                 endcase; // case (curr_state)
             end
             uop::ld_reg_b_imm_1: begin
                 case(ctrl_intf.mop_out)
-                  CALL_nn: set_next_state(uop::invalid);
+                  CALL_nn: set_next_state(uop::fetch);
                   default: set_next_state(uop::invalid);
                 endcase; // case (curr_state)
             end

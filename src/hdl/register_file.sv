@@ -121,6 +121,12 @@ module register_file
     endfunction
     // verilator lint_on UNUSEDSIGNAL
 
+    // register read
+    always_comb begin
+        reg_a = read_from_reg_file(reg_a_sel);
+        reg_b = read_from_reg_file(reg_b_sel);
+    end
+
     // async reset. not sure if this is a good idea
     always_ff @(posedge reset or posedge clk) begin
         //reset
@@ -131,8 +137,6 @@ module register_file
 
         // read/write and flag update
         end else begin
-            reg_a <= read_from_reg_file(reg_a_sel);
-            reg_b <= read_from_reg_file(reg_b_sel);
 
             if (reg_w_en == 1'b1) begin
                 write_to_reg_file(reg_w_sel, reg_w_data);

@@ -3,7 +3,9 @@
 `include "mux_enums.sv"
 
 /**
- module that provides the signal output logic for the controller.
+ * module that provides the signal output logic for the controller.
+ * NOTE: alu_16b_mode is usually set by the output value from the decoder,
+ * so this module should not be changing those values
  */
 module controller_output (
                           c_to_dp_intf.output_maker intf
@@ -186,7 +188,27 @@ module controller_output (
                 intf.enable_and_set_alu_opcode(ALU_ADD,
                                                .mux_a(A_MUX_REG),
                                                .mux_b(B_MUX_REG));
-                intf.alu_16b_mode = 1;
+                intf.forward_decode_16b_alu();
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::adc_reg_a_reg_b: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.reg_b_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_ADC,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_REG));
+                intf.forward_decode_16b_alu();
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::sbc_reg_a_reg_b: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.reg_b_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_SBC,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_REG));
+                intf.forward_decode_16b_alu();
                 intf.write_back_sel = WB_MUX_ALU;
             end
             uop::add_reg_a_imm_1: begin
@@ -196,7 +218,7 @@ module controller_output (
                 intf.enable_and_set_alu_opcode(ALU_ADD,
                                                .mux_a(A_MUX_REG),
                                                .mux_b(B_MUX_IMM));
-                intf.alu_16b_mode = 1;
+                intf.forward_decode_16b_alu();
                 intf.write_back_sel = WB_MUX_ALU;
             end
             uop::sub_reg_a_imm_1: begin
@@ -206,7 +228,7 @@ module controller_output (
                 intf.enable_and_set_alu_opcode(ALU_SUB,
                                                .mux_a(A_MUX_REG),
                                                .mux_b(B_MUX_IMM));
-                intf.alu_16b_mode = 1;
+                intf.forward_decode_16b_alu();
                 intf.write_back_sel = WB_MUX_ALU;
             end
             uop::dec_reg_b: begin

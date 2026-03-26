@@ -741,58 +741,80 @@ module decode #(
             reg_a = HL;
             reg_b = reg_from_dd(op_0[5:4]); // 'ss' is used in the spec, but it acts the same as dd
             update_flags = 6'b0010101;
+            use_16b_alu = 1;
+
         end else if (op_0 == 8'hED && op_1[7:6] == 2'b01 && op_1[3:0] == 4'b1010) begin // ADC HL, ss
             output_op = ADC_R_R;
             reg_a = HL;
             reg_b = reg_from_dd(op_1[5:4]);
             update_flags = 6'b111111;
             instruction_length = 2;
+            use_16b_alu = 1;
+
         end else if (op_0 == 8'hED && op_1[7:6] == 2'b01 && op_1[3:0] == 4'b0010) begin // SBC HL, ss
             output_op = SBC_R_R;
             reg_a = HL;
             reg_b = reg_from_dd(op_1[5:4]);
             update_flags = 6'b111111;
             instruction_length = 2;
+            use_16b_alu = 1;
+
         end else if (op_0 == 8'hDD && op_1[7:6] == 2'b00 && op_1[3:0] == 4'b1001) begin // ADD IX, pp
             output_op = ADD_R_R;
             reg_a = IX;
             reg_b = reg_from_pp(op_1[5:4]);
             update_flags = 6'b001011;
             instruction_length = 2;
+            use_16b_alu = 1;
+
         end else if (op_0 == 8'hFD && op_1[7:6] == 2'b00 && op_1[3:0] == 4'b1001) begin // ADD IY, rr
             output_op = SBC_R_R;
             reg_a = IY;
             reg_b = reg_from_rr(op_1[5:4]);
             update_flags = 6'b001011;
             instruction_length = 2;
+            use_16b_alu = 1;
+
         end else if (op_0[7:6] == 2'b00 && op_0[3:0] == 4'b0011) begin // INC ss
             output_op = ADD_R_nn;
             reg_a = reg_from_dd(op_0[5:4]);
             imm_1 = 16'h01;
+            use_16b_alu = 1;
+
         end else if (op_0 == 8'hDD && op_1 == 8'h23) begin // INC IX
             output_op = ADD_R_nn;
             reg_a = IX;
             imm_1 = 16'h01;
             instruction_length = 2;
+            use_16b_alu = 1;
+
         end else if (op_0 == 8'hFD && op_1 == 8'h23) begin // INC IY
             output_op = ADD_R_nn;
             reg_a = IY;
             imm_1 = 16'h01;
             instruction_length = 2;
+            use_16b_alu = 1;
+
         end else if (op_0[7:6] == 2'b00 && op_0[3:0] == 4'b1011) begin // DEC ss
             output_op = SUB_R_nn;
             reg_a = reg_from_dd(op_0[5:4]);
             imm_1 = 16'h01;
+            use_16b_alu = 1;
+
         end else if (op_0 == 8'hDD && op_1 == 8'h2B) begin // DEC IX
             output_op = SUB_R_nn;
             reg_a = IX;
             imm_1 = 16'h01;
             instruction_length = 2;
+            use_16b_alu = 1;
+
         end else if (op_0 == 8'hFD && op_1 == 8'h2B) begin // DEC IY
             output_op = SUB_R_nn;
             reg_a = IY;
             imm_1 = 16'h01;
             instruction_length = 2;
+            use_16b_alu = 1;
+
 
         /* Shift and Rotate *************************************************/
         end else if (op_0 == 8'h07) begin // RLCA

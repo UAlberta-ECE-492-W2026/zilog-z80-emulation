@@ -61,6 +61,9 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
         else
           case (curr_state)
             uop::fetch: begin
+              set_next_state(uop::commit_fetch);
+            end
+            uop::commit_fetch: begin
                 case (ctrl_intf.mop_out)
                   LD_R_R: set_next_state(uop::ld_reg_a_reg_b);
                   LD_R_nn: set_next_state(uop::ld_reg_a_imm_1);

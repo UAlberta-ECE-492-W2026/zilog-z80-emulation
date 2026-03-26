@@ -13,6 +13,7 @@ package uop;
 
                         nop,
                         fetch,
+                        commit_fetch,
 
                         /* PC ops */
                         pc_m2,

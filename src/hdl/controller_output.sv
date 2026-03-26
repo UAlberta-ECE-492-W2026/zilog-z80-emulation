@@ -89,6 +89,7 @@ module controller_output (
                                                .mux_a(A_MUX_REG),
                                                .mux_b(B_MUX_INSTRUCTION_LENGTH));
                 intf.alu_16b_mode = 1;
+                intf.reg_a_sel = PC;
                 intf.write_back_sel = WB_MUX_ALU;
             end
             uop::ld_reg_a_reg_b: begin

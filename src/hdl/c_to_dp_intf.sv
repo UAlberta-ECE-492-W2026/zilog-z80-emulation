@@ -160,8 +160,9 @@ interface c_to_dp_intf();
         mem_mux_sel = MEM_MUX_NOP;
         mem_w_en = 0;
         mem_r_en = 0;
-        imm_in = 0; // TODO: Determine if this is a safe default
+        imm_in = 0;
         mem_data_mux_sel = MEM_DATA_MUX_NOP;
+        instruction_length = instruction_length_out;
     endfunction; // set_output_default
 
     modport datapath (input  clk, reset,

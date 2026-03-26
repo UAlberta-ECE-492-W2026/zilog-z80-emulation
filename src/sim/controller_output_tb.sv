@@ -74,6 +74,8 @@ module controller_output_tb();
         testvectors.push_back(cons_test("ex_de_hl", uop::ex_de_hl));
         testvectors.push_back(cons_test("ex_af_afp", uop::ex_af_afp));
         testvectors.push_back(cons_test("add_reg_a_reg_b", uop::add_reg_a_reg_b));
+        testvectors.push_back(cons_test("adc_reg_a_reg_b", uop::adc_reg_a_reg_b));
+        testvectors.push_back(cons_test("sbc_reg_a_reg_b", uop::sbc_reg_a_reg_b));
         testvectors.push_back(cons_test("add_reg_a_imm_1", uop::add_reg_a_imm_1));
         testvectors.push_back(cons_test("sub_reg_a_imm_1", uop::sub_reg_a_imm_1));
         testvectors.push_back(cons_test("dec_reg_b", uop::dec_reg_b));

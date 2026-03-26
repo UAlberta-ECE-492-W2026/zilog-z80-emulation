@@ -16,16 +16,18 @@ module controller_next_state_tb();
      failed.
      */
     function void display_input_output_expected(input string test_name,
-                                                    uop::uop_t current_state,
-                                                    next_state,
-                                                    expected_value,
-                                       reg          reset_v,
-                                       pass_test);
+                                                             uop::uop_t current_state,
+                                                             next_state,
+                                                             expected_value,
+                                                mop current_mop,
+                                                logic        reset_v,
+                                                             pass_test);
         $display("test name: %s : %s", test_name, pass_test ? "PASS" : "FAIL");
         $display("    time          : %0t", $time);
         $display("    current_state : %s", current_state.name);
         $display("    next_state    : %s", next_state.name);
         $display("    expected_value: %s", expected_value.name);
+        $display("    current mop   : %s", current_mop.name);
         $display("    reset_v: %b", reset_v);
     endfunction // display_input_output_expected
 
@@ -71,9 +73,11 @@ module controller_next_state_tb();
         testvectors.push_back( cons_test_vector("reset to reset",uop::reset, uop::reset, ADD_R_R, 1));
         testvectors.push_back( cons_test_vector("LD_R_R", uop::fetch, uop::ld_reg_a_reg_b, LD_R_R, 0));
         testvectors.push_back( cons_test_vector("LD_R_R2", uop::ld_reg_a_reg_b, uop::pc_next, LD_R_R, 0));
-        testvectors.push_back( cons_test_vector("LD_R_nn1", uop::fetch, uop::read_mrbuff_reg_b_imm_0, LD_R_nn, 0));
-        testvectors.push_back( cons_test_vector("LD_R_nn2", uop::read_mrbuff_reg_b_imm_0, uop::read16_reg_a_reg_b_imm_0, LD_R_nn, 0));
-        testvectors.push_back( cons_test_vector("LD_R_nn3", uop::read16_reg_a_reg_b_imm_0, uop::pc_next, LD_R_nn, 0));
+        testvectors.push_back( cons_test_vector("LD_R_nn1", uop::fetch, uop::ld_reg_a_imm_1, LD_R_nn, 0));
+        testvectors.push_back( cons_test_vector("LD_R_nn2", uop::ld_reg_a_imm_1, uop::pc_next, LD_R_nn, 0));
+        testvectors.push_back( cons_test_vector("LD_R_mRd1", uop::fetch, uop::read_mrbuff_reg_b_imm_0, LD_R_mRd, 0));
+        testvectors.push_back( cons_test_vector("LD_R_mRd2", uop::read_mrbuff_reg_b_imm_0, uop::read16_reg_a_reg_b_imm_0, LD_R_mRd, 0));
+        testvectors.push_back( cons_test_vector("LD_R_mRd3", uop::read16_reg_a_reg_b_imm_0, uop::pc_next, LD_R_mRd, 0));
         testvectors.push_back( cons_test_vector("PUSH_R", uop::fetch, uop::sp_m1, PUSH_R, 0));
         testvectors.push_back( cons_test_vector("PUSH_R", uop::sp_m1, uop::buff_addr_reg_a, PUSH_R, 0));
         testvectors.push_back( cons_test_vector("PUSH_R", uop::buff_addr_reg_a, uop::write_reg_bH, PUSH_R, 0));
@@ -88,10 +92,16 @@ module controller_next_state_tb();
         testvectors.push_back( cons_test_vector("EX_DE_HL2", uop::ex_de_hl, uop::pc_next, EX_DE_HL, 0));
         testvectors.push_back( cons_test_vector("ADD_R_R", uop::fetch, uop::add_reg_a_reg_b, ADD_R_R, 0));
         testvectors.push_back( cons_test_vector("ADD_R_R", uop::add_reg_a_reg_b, uop::pc_next, ADD_R_R, 0));
+        testvectors.push_back( cons_test_vector("ADC_R_R", uop::fetch, uop::adc_reg_a_reg_b, ADC_R_R, 0));
+        testvectors.push_back( cons_test_vector("ADC_R_R", uop::adc_reg_a_reg_b, uop::pc_next, ADC_R_R, 0));
+        testvectors.push_back( cons_test_vector("ADC_R_nn", uop::fetch, uop::adc_reg_a_imm_1, ADC_R_nn, 0));
+        testvectors.push_back( cons_test_vector("ADC_R_nn", uop::adc_reg_a_imm_1, uop::pc_next, ADC_R_nn, 0));
         testvectors.push_back( cons_test_vector("ADD_R_nn", uop::fetch, uop::add_reg_a_imm_1, ADD_R_nn, 0));
         testvectors.push_back( cons_test_vector("ADD_R_nn", uop::add_reg_a_imm_1, uop::pc_next, ADD_R_nn, 0));
         testvectors.push_back( cons_test_vector("SUB_R_nn", uop::fetch, uop::sub_reg_a_imm_1, SUB_R_nn, 0));
         testvectors.push_back( cons_test_vector("SUB_R_nn", uop::sub_reg_a_imm_1, uop::pc_next, SUB_R_nn, 0));
+        testvectors.push_back( cons_test_vector("SBC_R_R", uop::fetch, uop::sbc_reg_a_reg_b, SBC_R_R, 0));
+        testvectors.push_back( cons_test_vector("SBC_R_R", uop::sbc_reg_a_reg_b, uop::pc_next, SBC_R_R, 0));
         testvectors.push_back( cons_test_vector("OR_R_R", uop::fetch, uop::or_reg_a_reg_b, OR_R_R, 0));
         testvectors.push_back( cons_test_vector("OR_R_R", uop::or_reg_a_reg_b, uop::pc_next, OR_R_R, 0));
         testvectors.push_back( cons_test_vector("JP_nn", uop::fetch, uop::ld_reg_a_imm_1, JP_nn));
@@ -150,11 +160,12 @@ module controller_next_state_tb();
     always begin
         @vector_applied;
         display_input_output_expected(curr_test,
-                                          intf.current_state,
-                                          intf.next_state,
-                                          expected,
-                                          intf.reset,
-                                          intf.next_state == expected);
+                                      intf.current_state,
+                                      intf.next_state,
+                                      expected,
+                                      intf.mop_out,
+                                      intf.reset,
+                                      intf.next_state == expected);
     end
 
     c_to_dp_intf intf();

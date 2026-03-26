@@ -129,6 +129,15 @@ interface c_to_dp_intf();
         set_imm(imm_1_out);
     endfunction; // imm_1_to_imm
 
+    /**
+     * this function will forward the 16b alu status from the decoder to the
+     * databus control signal
+     */
+    function automatic void forward_decode_16b_alu();
+        alu_16b_mode = use_16b_alu_out;
+    endfunction; // forward_decode_16b_alu
+
+
     function automatic void imm_0_to_imm();
         set_imm({{8{1'b0}},imm_0_out});
     endfunction; // imm_0_to_imm
@@ -144,6 +153,7 @@ interface c_to_dp_intf();
         disable_alu();
         o_buff_en = 0;
         alu_16b_mode = 0;
+        update_flags = update_flags_out;
         write_back_sel = WB_MUX_NOP;
         mem_read_buff_en = 0;
         mem_addr_buff_en = 0;
@@ -278,7 +288,8 @@ interface c_to_dp_intf();
                          import disable_reg_w,
                          import set_imm,
                          import imm_1_to_imm,
-                         import imm_0_to_imm
+                         import imm_0_to_imm,
+                         import forward_decode_16b_alu
                          );
 
     modport next_state_logic(

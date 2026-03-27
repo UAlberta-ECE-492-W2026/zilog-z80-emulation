@@ -248,7 +248,7 @@ module decode #(
             reg_a = IX;
             imm_1 = {op_3, op_2};
             instruction_length = 4;
-        end else if (op_0 == 8'hDD && op_1 == 8'h21) begin // LD IY, nn
+        end else if (op_0 == 8'hFD && op_1 == 8'h21) begin // LD IY, nn
             output_op = LD_R_nn;
             reg_a = IY;
             imm_1 = {op_3, op_2};
@@ -302,7 +302,7 @@ module decode #(
             reg_a = SP;
             reg_b = IX;
             instruction_length = 2;
-        end else if (op_0 == 8'hFD && op_1 == 8'hF9) begin // LD SP, IX
+        end else if (op_0 == 8'hFD && op_1 == 8'hF9) begin // LD SP, IY
             output_op = LD_R_R;
             reg_a = SP;
             reg_b = IY;

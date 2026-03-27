@@ -25,17 +25,19 @@ module  alu_status #(
     input wire [alu_width-1:0] a,
     input wire [alu_width-1:0] b,
     input wire [alu_width-1:0] op_result,
-    input wire [alu_width:0] result_buffer,
+    input wire [alu_width:0]   result_buffer,
     input wire [1:0] opcode,
    	// op_sign == 1 : negative
    	// op_sign == 0 : positive
-   	input wire                 op_sign);
-
+   	input wire                 op_sign
+);
    	parameter upper_bit=alu_width-1;
 
    	/* the following are the opcodes for the ALU status system */
    	parameter NUMERIC_OP = 'b0000;
-   	parameter SHIFT_OP = 'b1;
+   	parameter SHIFT_OP = 'b01;
+    parameter ROTATE_OP = 'b10;  // RL/RR
+    parameter BCD_ROTATE_OP = 'b11;  // RLD/RRD
 
    	/* function that does overflow_check bit logic */
 	/* verilator lint_off UNUSEDSIGNAL */
@@ -55,19 +57,19 @@ module  alu_status #(
    	reg pv_var;
    	reg s_var;
    	reg z_var;
-   reg      n_var;
-   wire     uppermost_buffer_bit;
-   wire     lowest_buffer_bit;
+    reg      n_var;
+    wire     uppermost_buffer_bit;
+    wire     lowest_buffer_bit;
 
    	assign z = z_var; // bit is very multi-functional
    	assign c = c_var;
    	assign n = n_var;
    	assign pv = pv_var;
-   	assign h = half_buffer[4];
+   	assign h = (opcode == NUMERIC_OP) ? half_buffer[4] : 1'b0;
    	assign s = s_var;
 
-   assign uppermost_buffer_bit = result_buffer[alu_width];
-   assign lowest_buffer_bit = result_buffer[0];
+    assign uppermost_buffer_bit = result_buffer[alu_width];
+    assign lowest_buffer_bit = result_buffer[0];
 
    	always_comb begin
       	c_var = 0;
@@ -99,6 +101,20 @@ module  alu_status #(
                c_var = (op_sign == 0) ? uppermost_buffer_bit
                        : lowest_buffer_bit;
 			end
+            ROTATE_OP: begin
+                // Carry from bit 7 for RL, bit 0 for RR.
+                c_var  = (op_sign == 0) ? result_buffer[8] : result_buffer[0];
+                // Flags are based on the 8-bit rotated result only.
+                pv_var = ~(^op_result[7:0]);
+                s_var  = op_result[7];
+                z_var  = (op_result[7:0] == 8'h00);
+            end
+            BCD_ROTATE_OP: begin
+                c_var = uppermost_buffer_bit;  // carry unchanged
+                pv_var = ~(^op_result[upper_bit -: 8]);  // only upper of accum
+                s_var = op_result[upper_bit];
+                z_var = (op_result[upper_bit -: 8] == 8'h00 ? 1 : 0);
+            end
         	default: begin
            	end
         endcase

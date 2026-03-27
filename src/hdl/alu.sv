@@ -35,6 +35,8 @@ module  alu #(
     /* status opcodes */
     parameter NUMERIC_OP = 'b0000;
     parameter SHIFT_OP = 'b1;
+	parameter ROTATE_OP = 'b10;  // RL/RR
+	parameter BCD_ROTATE_OP = 'b11;  // RLD/RRD
 
 
     wire signed [upper_bit:0] signed_a;
@@ -49,7 +51,9 @@ module  alu #(
     wire               s_var;
     reg [1:0]          status_opcode;
     reg                status_sign;
-	reg [upper_bit:0] status_b;
+	reg [upper_bit:0]  status_b;
+	reg [7:0]		   acc_rotated;  // updated accumulator RLD/RRD
+	reg [7:0]		   mem_rotated;  // updated memory byte RLD/RRD
 
     /* function that does parity bit logic */ // unused, commented out for now
     //function reg parity(reg first_op, second_op, result);
@@ -77,6 +81,9 @@ module  alu #(
 		tmp = 0; // default set to 0 to prevent generation of a latch
 		status_sign = 0;
 		status_b = b;
+		out_var = 0;  // stop latch interference
+		acc_rotated = 8'h00;
+		mem_rotated = 8'h00;
 
         case (opcode)
         	ALU_ADD: begin
@@ -150,6 +157,56 @@ module  alu #(
            		out_var = (a >> (b % a_size[upper_bit:0]))
             		| (a << (a_size - {{(32 - b_size){1'b0}},(b % a_size[upper_bit:0])}));
         	end
+            ALU_RL: begin
+                status_opcode = ROTATE_OP;
+                // RL is always 8-bit
+                out_var = '0;
+                out_var[7:0] = {a[6:0], carry_in};
+                // carry-out  from original bit 7
+                tmp = '0;
+                tmp[8]   = a[7];
+                tmp[7:0] = out_var[7:0];
+            end
+            ALU_RR: begin
+                status_opcode = ROTATE_OP;
+                // RR is always 8-bit
+                out_var = '0;
+                out_var[7:0] = {carry_in, a[7:1]};
+                // carry-out from original bit 0
+                tmp = '0;
+                tmp[8:1] = out_var[7:0];
+                tmp[0]   = a[0];
+
+                status_sign = 1;
+            end
+            ALU_RLD: begin
+                status_opcode = BCD_ROTATE_OP;
+                if (alu_width >= 16) begin
+                    acc_rotated = {a[7:4], b[7:4]};
+                    mem_rotated = {b[3:0], a[3:0]};
+                    // packed result: upper byte = new A, lower byte = new memory byte
+                    out_var = '0;
+                    out_var = ({{(alu_width-8){1'b0}}, acc_rotated} << 8)
+                            |  {{(alu_width-8){1'b0}}, mem_rotated};
+                    tmp = '0;
+                    tmp[upper_bit:0]   = out_var;
+                    tmp[upper_bit + 1] = carry_in;
+                end
+            end
+            ALU_RRD: begin
+                status_opcode = BCD_ROTATE_OP;
+                if (alu_width >= 16) begin
+                    acc_rotated = {a[7:4], b[3:0]};
+                    mem_rotated = {a[3:0], b[7:4]};
+                    // packed result: upper byte = new A, lower byte = new memory byte
+                    out_var = '0;
+                    out_var = ({{(alu_width-8){1'b0}}, acc_rotated} << 8)
+                            |  {{(alu_width-8){1'b0}}, mem_rotated};
+                    tmp = '0;
+                    tmp[upper_bit:0]   = out_var;
+                    tmp[upper_bit + 1] = carry_in;
+                end
+            end
         	ALU_INC:begin
            		tmp = a + 1;
            		out_var = tmp[upper_bit:0];
@@ -171,18 +228,20 @@ module  alu #(
         endcase
    	end // always_comb
 
-   	alu_status #(.alu_width(alu_width))
-   	status_system (.c(c_var),
-                       .n(n_var),
-                       .pv(pv_var),
-                       .h(h_var),
-                       .s(s_var),
-                       .z(z_var),
-                       .a(a),
-                       .b(status_b),
-                       .op_result(out_var),
-                       .result_buffer(tmp),
-                       .opcode(status_opcode),
-                       .op_sign(status_sign));
+    alu_status #(.alu_width(alu_width))
+    status_system (
+        .c(c_var),
+        .n(n_var),
+        .pv(pv_var),
+        .h(h_var),
+        .s(s_var),
+        .z(z_var),
+        .a(a),
+        .b(status_b),
+        .op_result(out_var),
+        .result_buffer(tmp),
+        .opcode(status_opcode),
+        .op_sign(status_sign)
+    );
 
 endmodule

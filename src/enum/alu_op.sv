@@ -25,7 +25,11 @@ typedef enum [4:0] {
     ALU_SETBIT,
     ALU_RESBIT,
     ALU_PASS_A,
-    ALU_PASS_B
+    ALU_PASS_B,
+    ALU_RL,
+    ALU_RR,
+    ALU_RLD,
+    ALU_RRD
 } alu_op;
 /* verilator lint_on UNDRIVEN */
 /* verilator lint_on UNUSEDSIGNAL */

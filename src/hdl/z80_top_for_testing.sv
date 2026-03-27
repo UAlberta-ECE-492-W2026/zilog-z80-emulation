@@ -11,6 +11,7 @@ module z80_top_for_testing #(
     output logic [3:0] red,        //! red channel (4-bit)
     output logic [3:0] green,      //! green channel (4-bit)
     output logic [3:0] blue,        //! blue channel (4-bit)
+    output uop::uop_t state,
 
     // debug inputs and outputs. TODO: attach these to something
     /* verilator lint_off UNUSEDSIGNAL */
@@ -29,6 +30,8 @@ module z80_top_for_testing #(
     input logic [31:0] instruction,
     output logic [7:0] test_ram [0:7]
 );
+    import uop::*;
+    
     logic[15:0] char_ram_address;
     logic[7:0] char_ram_data;
 
@@ -37,6 +40,8 @@ module z80_top_for_testing #(
     c_to_dp_intf intf();
     assign intf.clk = clk;
     assign intf.reset =  buttons[0];
+
+    assign state = intf.current_state;
 
     controller #() controller (intf);
     controller_next_state next_state_logic(.ctrl_intf(intf));

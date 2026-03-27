@@ -128,7 +128,10 @@ module z80_top_tb #() ();
         testvectors.push_back('{32'h7c000000, 16'h5600, 16'hbeef, 16'h1337, 16'h1337, 16'h0028, 64'h0000000000000000}); // ld        a,h
         testvectors.push_back('{32'h21998800, 16'h1200, 16'hbeef, 16'h1337, 16'h1337, 16'h0029, 64'h0000000000000000}); // ld        hl,$8899
         testvectors.push_back('{32'hf9000000, 16'h1200, 16'hbeef, 16'h1337, 16'h1337, 16'h002C, 64'h0000000000000000}); // ld        sp,hl
-        testvectors.push_back('{32'h00000000, 16'h1200, 16'hbeef, 16'h1337, 16'h8899, 16'h002D, 64'h0000000000000000}); // NOP
+        testvectors.push_back('{32'h80000000, 16'h1200, 16'hbeef, 16'h1337, 16'h8899, 16'h002D, 64'h0000000000000000}); // add       b
+        testvectors.push_back('{32'hd6010000, 16'hd000, 16'hbeef, 16'h1337, 16'h8899, 16'h002E, 64'h0000000000000000}); // sub       $01
+        testvectors.push_back('{32'hb0000000, 16'hcf00, 16'hbeef, 16'h1337, 16'h8899, 16'h0030, 64'h0000000000000000}); // or        b
+        testvectors.push_back('{32'h00000000, 16'hff00, 16'hbeef, 16'h1337, 16'h8899, 16'h0031, 64'h0000000000000000}); // NOP
 
         reset_tb();
 

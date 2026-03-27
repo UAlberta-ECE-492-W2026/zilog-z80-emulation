@@ -25,7 +25,7 @@ endtask
 /* verilator lint_on UNUSEDSIGNAL */
 
 module z80_top_tb #() ();
-    import uop::*;
+    //import uop::*;
     // display driving outputs. not tested here
     /* verilator lint_off UNUSEDSIGNAL */
     logic hsync;
@@ -138,7 +138,7 @@ module z80_top_tb #() ();
         $display("idx | instruction |   AF |   BC |   IX |   SP |   PC | memory    ");
 
         for (int i = 0; i < $size(testvectors); ++i) begin
-            @(state == fetch && ! clk);
+            @(state == uop::fetch && ! clk);
             instruction = testvectors[i].instruction;
             
             display_input_output_expected_z_80_top(

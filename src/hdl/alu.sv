@@ -159,20 +159,20 @@ module  alu #(
         	end
             ALU_RL: begin
                 status_opcode = ROTATE_OP;
-                // Only rotate low byte
+                // RL is always 8-bit
                 out_var = '0;
                 out_var[7:0] = {a[6:0], carry_in};
-                // For left rotate, carry comes from bit 7 of low byte
+                // carry-out  from original bit 7
                 tmp = '0;
                 tmp[8]   = a[7];
                 tmp[7:0] = out_var[7:0];
             end
             ALU_RR: begin
                 status_opcode = ROTATE_OP;
-                // Only rotate low byte
+                // RR is always 8-bit
                 out_var = '0;
                 out_var[7:0] = {carry_in, a[7:1]};
-                // For right rotate, carry comes from bit 0 of low byte
+                // carry-out from original bit 0
                 tmp = '0;
                 tmp[8:1] = out_var[7:0];
                 tmp[0]   = a[0];
@@ -182,21 +182,29 @@ module  alu #(
             ALU_RLD: begin
                 status_opcode = BCD_ROTATE_OP;
                 if (alu_width >= 16) begin
-                    acc_rotated = {a[7:4], b[7:4]};  // new A
-                    mem_rotated = {b[3:0], a[3:0]};  // new (HL)
-                    out_var = '0;  // clear full result first
-                    out_var[15:0] = {acc_rotated, mem_rotated};  // [15:8]=A, [7:0]=mem
-                    tmp = {carry_in, out_var};  // preserve carry in tmp[upper_bit+1]
+                    acc_rotated = {a[7:4], b[7:4]};
+                    mem_rotated = {b[3:0], a[3:0]};
+                    // packed result: upper byte = new A, lower byte = new memory byte
+                    out_var = '0;
+                    out_var = ({{(alu_width-8){1'b0}}, acc_rotated} << 8)
+                            |  {{(alu_width-8){1'b0}}, mem_rotated};
+                    tmp = '0;
+                    tmp[upper_bit:0]   = out_var;
+                    tmp[upper_bit + 1] = carry_in;
                 end
             end
             ALU_RRD: begin
                 status_opcode = BCD_ROTATE_OP;
                 if (alu_width >= 16) begin
-                    acc_rotated = {a[7:4], b[3:0]};  // new A
-                    mem_rotated = {a[3:0], b[7:4]};  // new (HL)
-                    out_var = '0;  // clear full result first
-                    out_var[15:0] = {acc_rotated, mem_rotated};  // [15:8]=A, [7:0]=mem
-                    tmp = {carry_in, out_var};  // preserve carry
+                    acc_rotated = {a[7:4], b[3:0]};
+                    mem_rotated = {a[3:0], b[7:4]};
+                    // packed result: upper byte = new A, lower byte = new memory byte
+                    out_var = '0;
+                    out_var = ({{(alu_width-8){1'b0}}, acc_rotated} << 8)
+                            |  {{(alu_width-8){1'b0}}, mem_rotated};
+                    tmp = '0;
+                    tmp[upper_bit:0]   = out_var;
+                    tmp[upper_bit + 1] = carry_in;
                 end
             end
         	ALU_INC:begin

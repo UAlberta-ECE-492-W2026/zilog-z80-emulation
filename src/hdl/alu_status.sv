@@ -31,7 +31,7 @@ module  alu_status #(
    	// op_sign == 0 : positive
    	input wire                 op_sign
 );
-   	parameter upper_bit=alu_width-1;
+   	localparam integer upper_bit = alu_width - 1;
 
    	/* the following are the opcodes for the ALU status system */
    	parameter NUMERIC_OP = 'b0000;
@@ -58,6 +58,7 @@ module  alu_status #(
    	reg s_var;
    	reg z_var;
     reg      n_var;
+    reg [7:0] bcd_acc;
     wire     uppermost_buffer_bit;
     wire     lowest_buffer_bit;
 
@@ -77,7 +78,7 @@ module  alu_status #(
       	half_buffer = 0;
       	s_var = 0;
       	z_var = 0;
-           n_var = 0;
+        n_var = 0;
 
 
       	case (opcode)
@@ -102,18 +103,22 @@ module  alu_status #(
                        : lowest_buffer_bit;
 			end
             ROTATE_OP: begin
-                // Carry from bit 7 for RL, bit 0 for RR.
+				// Carry from bit 7 for RL -> bit 0 for RR.
                 c_var  = (op_sign == 0) ? result_buffer[8] : result_buffer[0];
-                // Flags are based on the 8-bit rotated result only.
                 pv_var = ~(^op_result[7:0]);
                 s_var  = op_result[7];
                 z_var  = (op_result[7:0] == 8'h00);
             end
             BCD_ROTATE_OP: begin
-                c_var = uppermost_buffer_bit;  // carry unchanged
-                pv_var = ~(^op_result[upper_bit -: 8]);  // only upper of accum
-                s_var = op_result[upper_bit];
-                z_var = (op_result[upper_bit -: 8] == 8'h00 ? 1 : 0);
+                // RLD/RRD preserve carry
+                c_var = uppermost_buffer_bit;
+                // updated A = upper byte of packed result
+                bcd_acc = 8'(op_result >> 8);  // cast type
+                // flags updated A only
+                pv_var = ~(^bcd_acc);
+                s_var  = bcd_acc[7];
+                z_var  = (bcd_acc == 8'h00);
+                n_var  = 0;
             end
         	default: begin
            	end

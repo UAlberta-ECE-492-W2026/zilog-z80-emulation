@@ -23,7 +23,7 @@ endtask
 /* verilator lint_on UNUSEDSIGNAL */
 
 module z80_top_tb #() ();
-    parameter clock_period = 20;
+    parameter clock_period = 10;
 
     // display driving outputs. not tested here
     /* verilator lint_off UNUSEDSIGNAL */
@@ -212,7 +212,6 @@ module z80_top_tb #() ();
                 all_pass = 0;
             end
             $display("");
-            #10;
         end
         
         if (all_pass == 1) begin

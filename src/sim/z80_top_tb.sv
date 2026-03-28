@@ -23,7 +23,7 @@ endtask
 /* verilator lint_on UNUSEDSIGNAL */
 
 module z80_top_tb #() ();
-    parameter clock_period = 10;
+    parameter clock_period = 20;
 
     // display driving outputs. not tested here
     /* verilator lint_off UNUSEDSIGNAL */
@@ -79,7 +79,7 @@ module z80_top_tb #() ();
     //! Clock pulse period of 10ns
     initial begin
         clk = 0;
-        forever #clock_period clk = ~clk;
+        forever #( clock_period / 2 ) clk = ~clk;
     end
 
     z80_top_for_testing #() dut (
@@ -117,7 +117,7 @@ module z80_top_tb #() ();
             ->frame_start;
             test_frame_state = 1;
             @(posedge clk);
-            #( clock_period / 4 );
+            #( clock_period / 8 );
             test_frame_state = 2;
             @(state == uop::fetch);
             ->frame_end;

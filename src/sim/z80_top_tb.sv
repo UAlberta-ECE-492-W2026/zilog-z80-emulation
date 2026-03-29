@@ -55,7 +55,10 @@ module z80_top_tb #() ();
     event frame_start;
     event frame_end;
 
+    /* test meta data */
     logic [1:0] test_frame_state;
+    logic [31:0] test_idx;
+
 
     // clock
     logic clk;
@@ -175,6 +178,7 @@ module z80_top_tb #() ();
             /* application of the test vector in the fetch region */
             @frame_start;
             instruction = testvectors[i].instruction;
+            test_idx = i;
 
             /* assertion region of the testbench */
             @frame_end;

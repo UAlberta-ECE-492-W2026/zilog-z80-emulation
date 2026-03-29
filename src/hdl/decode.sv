@@ -1111,6 +1111,7 @@ module decode #(
             instruction_length = 3;
         end else if (op_0 == 8'h18) begin // JR e
             output_op = JR_e;
+            use_16b_alu = 1;
             reg_a = PC;
             /* NOTE: op_1 is actually e - 2, so to extract e out, we have to
              add 2 to the value */
@@ -1118,24 +1119,28 @@ module decode #(
             instruction_length = 2;
         end else if (op_0 == 8'h38) begin // JR C e
             output_op = JR_cc_e;
+            use_16b_alu = 1;
             reg_a = PC;
             imm_0 = 8'b00000011;
             imm_1 = imm_1_e_from_op_byte(op_1);
             instruction_length = 2;
         end else if (op_0 == 8'h30) begin // JR NC e
             output_op = JR_cc_e;
+            use_16b_alu = 1;
             reg_a = PC;
             imm_0 = 8'b00000010;
             imm_1 = imm_1_e_from_op_byte(op_1);
             instruction_length = 2;
         end else if (op_0 == 8'h28) begin // JR Z e
             output_op = JR_cc_e;
+            use_16b_alu = 1;
             reg_a = PC;
             imm_0 = 8'b00000001;
             imm_1 = imm_1_e_from_op_byte(op_1);
             instruction_length = 2;
         end else if (op_0 == 8'h20) begin // JR NZ e
             output_op = JR_cc_e;
+            use_16b_alu = 1;
             reg_a = PC;
             imm_0 = 8'b00000000;
             imm_1 = imm_1_e_from_op_byte(op_1);

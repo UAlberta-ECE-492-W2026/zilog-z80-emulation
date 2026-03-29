@@ -63,7 +63,7 @@ module controller_output (
                 intf.alu_16b_mode = 1;
                 intf.write_back_sel = WB_MUX_ALU;
             end
-            uop::sp_m1: begin
+            uop::sp_m1, uop::sp_m1_2: begin
                 intf.reg_a_sel = SP;
                 intf.enable_and_set_reg_w(SP);
                 intf.enable_and_set_alu_opcode(ALU_ADD,
@@ -115,7 +115,7 @@ module controller_output (
                 intf.alu_16b_mode = 1;
                 intf.write_back_sel = WB_MUX_ALU;
             end
-            uop::buff_addr_reg_a: begin
+            uop::buff_addr_reg_a, uop::buff_addr_reg_a: begin
                 intf.reg_a_sel = intf.reg_a_sel_out;
                 intf.enable_and_set_alu_opcode(ALU_PASS_A, .mux_a(A_MUX_REG));
                 intf.alu_16b_mode = 1;

@@ -155,14 +155,15 @@ module z80_top_tb #() ();
         testvectors.push_back('{32'hb0000000, 16'hff00, 16'hbeef, 16'h1337, 16'h8899, 16'h0031, 64'h0000000000000000}); // or        b
         testvectors.push_back('{32'hc34d0000, 16'hff00, 16'hbeef, 16'h1337, 16'h8899, 16'h004d, 64'h0000000000000000}); // JP        $4d
         testvectors.push_back('{32'h00000000, 16'hff00, 16'hbeef, 16'h1337, 16'h8899, 16'h004e, 64'h0000000000000000}); // NOP
-        testvectors.push_back('{32'h310f0000, 16'hff00, 16'hbeef, 16'h1337, 16'h000f, 16'h0051, 64'h0000000000000000}); // ld        sp,$000f
-        testvectors.push_back('{32'hf5000000, 16'hff00, 16'hbeef, 16'h1337, 16'h000d, 16'h0052, 64'h0000000000000000}); // push      af
-        testvectors.push_back('{32'hdde50000, 16'hff00, 16'hbeef, 16'h1337, 16'h000b, 16'h0054, 64'h0000000000000000}); // push      ix
-        testvectors.push_back('{32'hfde50000, 16'hff00, 16'hbeef, 16'h1337, 16'h0009, 16'h0056, 64'h0000000000000000}); // push      iy
-        testvectors.push_back('{32'hdde10000, 16'hff00, 16'hbeef, 16'h1337, 16'h000b, 16'h0058, 64'h0000000000000000}); // pop       ix
-        testvectors.push_back('{32'hfde10000, 16'hff00, 16'hbeef, 16'h1337, 16'h000d, 16'h005a, 64'h0000000000000000}); // pop       iy
-        testvectors.push_back('{32'hc1000000, 16'hff00, 16'hbeef, 16'h1337, 16'h000f, 16'h005b, 64'h0000000000000000}); // pop       bc
-        testvectors.push_back('{32'h76000000, 16'hff00, 16'hbeef, 16'h1337, 16'h000f, 16'h004e, 64'h0000000000000000}); // HALT
+        testvectors.push_back('{32'h31100000, 16'hff00, 16'hbeef, 16'h1337, 16'h0010, 16'h0051, 64'h0000000000000000}); // ld        sp,$0010
+        testvectors.push_back('{32'hf5000000, 16'hff00, 16'hbeef, 16'h1337, 16'h000e, 16'h0052, 64'h00000000000000ff}); // push      af
+        testvectors.push_back('{32'hdde50000, 16'hff00, 16'hbeef, 16'h1337, 16'h000c, 16'h0054, 64'h00000000371300ff}); // push      ix
+        testvectors.push_back('{32'hfde50000, 16'hff00, 16'hbeef, 16'h1337, 16'h000a, 16'h0056, 64'h00000190371300ff}); // push      iy
+        testvectors.push_back('{32'hdde10000, 16'hff00, 16'hbeef, 16'h9001, 16'h000c, 16'h0058, 64'h00000190371300ff}); // pop       ix
+        testvectors.push_back('{32'hfde10000, 16'hff00, 16'hbeef, 16'h9001, 16'h000e, 16'h005a, 64'h00000190371300ff}); // pop       iy
+        testvectors.push_back('{32'hc1000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h005b, 64'h00000190371300ff}); // pop       bc
+        testvectors.push_back('{32'h76000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h005b, 64'h00000190371300ff}); // HALT
+        testvectors.push_back('{32'h76000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h005b, 64'h00000190371300ff}); // HALT
 
         reset_tb();
         ->test_start;
@@ -217,7 +218,6 @@ module z80_top_tb #() ();
                 all_pass = 0;
             end
             $display("");
-            #10;
         end
         
         if (all_pass == 1) begin

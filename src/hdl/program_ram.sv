@@ -21,10 +21,17 @@ module program_ram #()(
             if (w_en) begin
                 mem[address] <= data_in;
             end
-            if (r_en) begin
-                data_out_8 <= mem[address];
-                data_out_32 <= {mem[address + 3], mem[address + 2], mem[address + 1],mem[address + 0]}; // this might be backwards
-            end
         end
     end
+
+    always_comb begin
+        if (r_en) begin
+            data_out_8 = mem[address];
+            data_out_32 = {mem[address + 3], mem[address + 2], mem[address + 1],mem[address + 0]}; // this might be backwards
+        end else begin
+            data_out_8 = 8'hXX;
+            data_out_32 = 32'hXXXXXXXX;
+        end
+    end
+
 endmodule

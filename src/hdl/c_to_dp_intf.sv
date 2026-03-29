@@ -300,8 +300,9 @@ interface c_to_dp_intf();
                              );
     
     modport memory_wrapper(
-        input mem_data_mux_sel, mem_mux_sel, mem_addr_buff_en, memory_out,
-        output memory_in, instruction_in 
+                           input mem_data_mux_sel, mem_mux_sel, mem_addr_buff_en, 
+                                 memory_out, mem_r_en, mem_w_en, clk, reset,
+                           output memory_in, instruction_in 
     );
 endinterface; // c_to_dp_intf
 

@@ -55,7 +55,11 @@ module z80_top_tb #() ();
     event frame_start;
     event frame_end;
 
+    /* test meta data */
     logic [1:0] test_frame_state;
+    logic [31:0] test_idx;
+    logic [15:0] final_pc_value;
+
 
     // clock
     logic clk;
@@ -128,6 +132,8 @@ module z80_top_tb #() ();
     initial begin
         $dumpfile("out/sim/z80_top_tb.vcd");
         $dumpvars();
+        final_pc_value = 16'hdeae;
+
         //                                    AF        BC        IX        SP        PC        first 8b of memory
         testvectors.push_back('{32'h00000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0002, 64'h0000000000000000}); // NOP
         testvectors.push_back('{32'h3e070000, 16'h0700, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000}); // ld        a,$07
@@ -162,8 +168,21 @@ module z80_top_tb #() ();
         testvectors.push_back('{32'hdde10000, 16'hff00, 16'hbeef, 16'h9001, 16'h000c, 16'h0058, 64'h00000190371300ff}); // pop       ix
         testvectors.push_back('{32'hfde10000, 16'hff00, 16'hbeef, 16'h9001, 16'h000e, 16'h005a, 64'h00000190371300ff}); // pop       iy
         testvectors.push_back('{32'hc1000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h005b, 64'h00000190371300ff}); // pop       bc
-        testvectors.push_back('{32'h76000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h005b, 64'h00000190371300ff}); // HALT
-        testvectors.push_back('{32'h76000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h005b, 64'h00000190371300ff}); // HALT
+        testvectors.push_back('{32'hca000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h005e, 64'h00000190371300ff}); // JP        z,0
+        testvectors.push_back('{32'hc2111000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h1011, 64'h00000190371300ff}); // JP        nz,$1011
+        testvectors.push_back('{32'h18cc0000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h0fdf, 64'h00000190371300ff}); // JR        -50
+        testvectors.push_back('{32'h18740000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h1055, 64'h00000190371300ff}); // JR        $76
+        testvectors.push_back('{32'h28030000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h1057, 64'h00000190371300ff}); // JR        z,5
+        testvectors.push_back('{32'h20980000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h0ff1, 64'h00000190371300ff}); // JR        nz,-102
+        testvectors.push_back('{32'h21adde00, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h0ff4, 64'h00000190371300ff}); // ld        hl,$dead
+        testvectors.push_back('{32'he9000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'hdead, 64'h00000190371300ff}); // jp        (hl)
+        testvectors.push_back('{32'h10fd0000, 16'hff00, 16'hfe00, 16'h9001, 16'h0010, 16'hdeac, 64'h00000190371300ff}); // djnz      -1
+        testvectors.push_back('{32'h06010000, 16'hff00, 16'h0100, 16'h9001, 16'h0010, 16'hdeae, 64'h00000190371300ff}); // ld        b,1
+        testvectors.push_back('{32'h10fd0000, 16'hff00, 16'h0000, 16'h9001, 16'h0010, 16'hdeb0, 64'h00000190371300ff}); // djnz      -1
+        testvectors.push_back('{32'h00000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, final_pc_value, 64'h00000190371300ff}); // NOP
+        testvectors.push_back('{32'h76000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, final_pc_value, 64'h00000190371300ff}); // HALT
+        /* The final halt after the first halt asserts that halt is working as expected */
+        testvectors.push_back('{32'h76000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, final_pc_value, 64'h00000190371300ff}); // HALT
 
         reset_tb();
         ->test_start;
@@ -175,6 +194,7 @@ module z80_top_tb #() ();
             /* application of the test vector in the fetch region */
             @frame_start;
             instruction = testvectors[i].instruction;
+            test_idx = i;
 
             /* assertion region of the testbench */
             @frame_end;

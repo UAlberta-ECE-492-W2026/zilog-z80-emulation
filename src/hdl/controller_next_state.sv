@@ -245,8 +245,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             end
             uop::add_reg_a_imm_1: begin
                 case(ctrl_intf.mop_out)
-                  JR_e: set_next_state(uop::fetch);
-                  JR_cc_e: set_next_state(uop::fetch);
+                  JR_e, JR_cc_e, DJNZ_e: set_next_state(uop::fetch);
                   default: set_next_state(uop::pc_next);
                 endcase; // case (ctrl_intf.mop_out)
             end

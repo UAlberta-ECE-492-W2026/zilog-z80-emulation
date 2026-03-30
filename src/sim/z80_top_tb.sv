@@ -176,6 +176,9 @@ module z80_top_tb #() ();
         testvectors.push_back('{32'h20980000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h0ff1, 64'h00000190371300ff}); // JR        nz,-102
         testvectors.push_back('{32'h21adde00, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'h0ff4, 64'h00000190371300ff}); // ld        hl,$dead
         testvectors.push_back('{32'he9000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, 16'hdead, 64'h00000190371300ff}); // jp        (hl)
+        testvectors.push_back('{32'h10fd0000, 16'hff00, 16'hfe00, 16'h9001, 16'h0010, 16'hdeac, 64'h00000190371300ff}); // djnz      -1
+        testvectors.push_back('{32'h06010000, 16'hff00, 16'h0100, 16'h9001, 16'h0010, 16'hdeae, 64'h00000190371300ff}); // ld        b,1
+        testvectors.push_back('{32'h10fd0000, 16'hff00, 16'h0000, 16'h9001, 16'h0010, 16'hdeb0, 64'h00000190371300ff}); // djnz      -1
         testvectors.push_back('{32'h00000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, final_pc_value, 64'h00000190371300ff}); // NOP
         testvectors.push_back('{32'h76000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, final_pc_value, 64'h00000190371300ff}); // HALT
         /* The final halt after the first halt asserts that halt is working as expected */

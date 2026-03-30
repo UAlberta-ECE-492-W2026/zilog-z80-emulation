@@ -238,8 +238,8 @@ module controller_output (
                 intf.write_back_sel = WB_MUX_ALU;
             end
             uop::dec_reg_b: begin
-                intf.reg_a_sel = intf.reg_a_sel_out;
-                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.reg_a_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_b_sel_out);
                 intf.set_imm(1);
                 intf.enable_and_set_alu_opcode(ALU_SUB,
                                                .mux_a(A_MUX_REG),

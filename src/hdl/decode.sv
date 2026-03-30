@@ -1159,6 +1159,7 @@ module decode #(
             reg_b = IY;
         end else if (op_0 == 8'h10) begin // DJNZ, e
             output_op = DJNZ_e;
+            use_16b_alu = 1;
             reg_a = PC;
             reg_b = B;
             imm_0 = 8'b0; // imm_0 here encodes the cc command for NZ

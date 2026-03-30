@@ -142,7 +142,13 @@ module memory_wrapper #(
 
     // data_out combining (avoiding a tristate bus since verilator gets unhappy about that)
     always_comb begin
+        `ifdef Z80_TOP_TESTING
+        if (intf.mem_r_en && address <= 16'h000F) begin
+            intf.memory_in = test_ram_data[test_mem_addr];
+        end else if (r_en_config_ROM) begin
+        `else
         if (r_en_config_ROM) begin
+        `endif
             intf.memory_in = data_out_config_ROM;
         end else if (r_en_program_RAM) begin
             intf.memory_in = data_out_program_RAM;
@@ -155,7 +161,8 @@ module memory_wrapper #(
         end
     end
 
-    // optional test ram for use with the top level tb
+    // optional test ram for use with the top level tb. 
+    // aliased to every 8b chunk for writes. 
     `ifdef Z80_TOP_TESTING
     reg [7:0] test_ram_data [0:7];
 

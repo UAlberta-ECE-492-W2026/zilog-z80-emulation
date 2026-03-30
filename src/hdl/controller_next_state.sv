@@ -225,7 +225,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             end
             uop::write_mrbuffL_p1: begin
                 case(ctrl_intf.mop_out)
-                  PUSH_R: set_next_state(uop::pc_next);
+                  PUSH_R, INC_mRd: set_next_state(uop::pc_next);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end

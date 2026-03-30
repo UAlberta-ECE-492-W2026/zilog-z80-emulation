@@ -58,7 +58,6 @@ module z80_top_tb #() ();
     /* test meta data */
     logic [1:0] test_frame_state;
     logic [31:0] test_idx;
-    logic [15:0] final_pc_value;
 
 
     // clock
@@ -132,7 +131,6 @@ module z80_top_tb #() ();
     initial begin
         $dumpfile("out/sim/z80_top_tb.vcd");
         $dumpvars();
-        final_pc_value = 16'hdeae;
 
         //                                    AF        BC        IX        SP        PC        first 8b of memory
         testvectors.push_back('{32'h00000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0002, 64'h0000000000000000}); // NOP
@@ -179,10 +177,10 @@ module z80_top_tb #() ();
         testvectors.push_back('{32'h10fd0000, 16'hff00, 16'hfe00, 16'h9001, 16'h0010, 16'hdeac, 64'h00000190371300ff}); // djnz      -1
         testvectors.push_back('{32'h06010000, 16'hff00, 16'h0100, 16'h9001, 16'h0010, 16'hdeae, 64'h00000190371300ff}); // ld        b,1
         testvectors.push_back('{32'h10fd0000, 16'hff00, 16'h0000, 16'h9001, 16'h0010, 16'hdeb0, 64'h00000190371300ff}); // djnz      -1
-        testvectors.push_back('{32'h00000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, final_pc_value, 64'h00000190371300ff}); // NOP
-        testvectors.push_back('{32'h76000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, final_pc_value, 64'h00000190371300ff}); // HALT
+        testvectors.push_back('{32'h00000000, 16'hff00, 16'h0000, 16'h9001, 16'h0010, 16'hdeb1, 64'h00000190371300ff}); // NOP
+        testvectors.push_back('{32'h76000000, 16'hff00, 16'h0000, 16'h9001, 16'h0010, 16'hdeb1, 64'h00000190371300ff}); // HALT
         /* The final halt after the first halt asserts that halt is working as expected */
-        testvectors.push_back('{32'h76000000, 16'hff00, 16'hff00, 16'h9001, 16'h0010, final_pc_value, 64'h00000190371300ff}); // HALT
+        testvectors.push_back('{32'h76000000, 16'hff00, 16'h0000, 16'h9001, 16'h0010, 16'hdeb1, 64'h00000190371300ff}); // HALT
 
         reset_tb();
         ->test_start;

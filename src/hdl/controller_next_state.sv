@@ -273,7 +273,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             uop::dec_reg_b: begin
                 case(ctrl_intf.mop_out)
                   DJNZ_e: set_next_state( choose_next_jump_state(j_cc,
-                                                 ctrl_intf.f,
+                                                 ctrl_intf.raw_f,
                                                  uop::add_reg_a_imm_1,
                                                  uop::pc_next) );
                   default: set_next_state(uop::invalid);

@@ -170,7 +170,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                 case(ctrl_intf.mop_out)
                   INC_mRd: set_next_state(uop::read_mbuff_mrbuff);
                   LD_mRd_R: set_next_state(uop::write_reg_bL);
-                  LD_mRd_n: set_next_state(uop::write_imm_0);
+                  LD_mRd_n: set_next_state(uop::write_imm_1L);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end
@@ -208,12 +208,6 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end
-            uop::write_imm_0: begin
-              case(ctrl_intf.mop_out)
-                LD_mRd_n: set_next_state(uop::pc_next);
-                default: set_next_state(uop::invalid);
-              endcase
-            end
             uop::write_imm_1H: begin
                 case(ctrl_intf.mop_out)
                   CALL_nn: set_next_state(uop::sp_m1_2);
@@ -229,6 +223,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             uop::write_imm_1L: begin
                 case(ctrl_intf.mop_out)
                   CALL_nn: set_next_state(uop::ld_reg_b_imm_1);
+                  LD_mRd_n: set_next_state(uop::pc_next);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end

@@ -154,8 +154,8 @@ module controller_output (
                 intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
                 intf.mem_w_en = 1;
             end
-            uop::write_imm_0: begin
-                intf.imm_in = {8'h00, intf.imm_0_out};
+            uop::write_imm_1L: begin
+                intf.imm_in = intf.imm_1_out;
                 intf.enable_and_set_alu_opcode(ALU_PASS_B, .mux_b(B_MUX_IMM));
                 intf.alu_16b_mode = 0;
                 intf.mem_mux_sel = MEM_MUX_BUFFERED;

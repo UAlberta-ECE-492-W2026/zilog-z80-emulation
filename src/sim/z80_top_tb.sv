@@ -55,7 +55,10 @@ module z80_top_tb #() ();
     event frame_start;
     event frame_end;
 
+    /* test meta data */
     logic [1:0] test_frame_state;
+    logic [31:0] test_idx;
+
 
     // clock
     logic clk;
@@ -128,6 +131,7 @@ module z80_top_tb #() ();
     initial begin
         $dumpfile("out/sim/z80_top_tb.vcd");
         $dumpvars();
+
         //                                    AF        BC        IX        SP        PC        first 8b of memory
         testvectors.push_back('{32'h00000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0002, 64'h0000000000000000}); // NOP
         testvectors.push_back('{32'h3e070000, 16'h0700, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000}); // ld        a,$07
@@ -184,8 +188,21 @@ module z80_top_tb #() ();
         testvectors.push_back('{32'h36080000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0089, 64'h0000000008000000}); // ld        (hl),$08
         testvectors.push_back('{32'hdd360409, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h008d, 64'h0000000008090000}); // ld        (ix+$04),$09
         testvectors.push_back('{32'hfd360107, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0091, 64'h0000000708090000}); // ld        (iy+$01),$07
-        testvectors.push_back('{32'h76000000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0091, 64'h0000000708090000}); // HALT
-        testvectors.push_back('{32'h76000000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0091, 64'h0000000708090000}); // HALT
+        testvectors.push_back('{32'hca000000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0094, 64'h0000000708090000}); // JP        z,0
+        testvectors.push_back('{32'hc2111000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h1011, 64'h0000000708090000}); // JP        nz,$1011
+        testvectors.push_back('{32'h18cc0000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0fdf, 64'h0000000708090000}); // JR        -50
+        testvectors.push_back('{32'h18740000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h1055, 64'h0000000708090000}); // JR        $76
+        testvectors.push_back('{32'h28030000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h1057, 64'h0000000708090000}); // JR        z,5
+        testvectors.push_back('{32'h20980000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0ff1, 64'h0000000708090000}); // JR        nz,-102
+        testvectors.push_back('{32'h21adde00, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0ff4, 64'h0000000708090000}); // ld        hl,$dead
+        testvectors.push_back('{32'he9000000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'hdead, 64'h0000000708090000}); // jp        (hl)
+        testvectors.push_back('{32'h06ff0000, 16'h0000, 16'hff02, 16'h0001, 16'h0010, 16'hdeaf, 64'h0000000708090000}); // ld        b,$ff
+        testvectors.push_back('{32'h10fd0000, 16'h0000, 16'hfe02, 16'h0001, 16'h0010, 16'hdeae, 64'h0000000708090000}); // djnz      -1
+        testvectors.push_back('{32'h06010000, 16'h0000, 16'h0102, 16'h0001, 16'h0010, 16'hdeb0, 64'h0000000708090000}); // ld        b,1
+        testvectors.push_back('{32'h10fd0000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'hdeb2, 64'h0000000708090000}); // djnz      -1
+        testvectors.push_back('{32'h76000000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'hdeb2, 64'h0000000708090000}); // HALT
+        /* The final halt after the first halt asserts that halt is working as expected */
+        testvectors.push_back('{32'h76000000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'hdeb2, 64'h0000000708090000}); // HALT
 
         reset_tb();
         ->test_start;
@@ -197,6 +214,7 @@ module z80_top_tb #() ();
             /* application of the test vector in the fetch region */
             @frame_start;
             instruction = testvectors[i].instruction;
+            test_idx = i;
 
             /* assertion region of the testbench */
             @frame_end;

@@ -94,7 +94,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                                                   ctrl_intf.f,
                                                   uop::add_reg_a_imm_1,
                                                   uop::pc_next) );
-                  JP_R: set_next_state(uop::read_mrbuff_reg_b_imm_0);
+                  JP_R: set_next_state(uop::ld_reg_a_reg_b);
                   DJNZ_e: set_next_state(uop::dec_reg_b);
                   CALL_nn: set_next_state(uop::sp_m1);
                   RET: set_next_state(uop::read_mrbuff_reg_b_imm_0);
@@ -109,6 +109,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             /* load group */
             uop::ld_reg_a_reg_b: begin
                 case(ctrl_intf.mop_out)
+                  JP_R: set_next_state(uop::fetch);
                   default: set_next_state(uop::pc_next);
                 endcase; // case (curr_state)
             end
@@ -180,7 +181,6 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                 case(ctrl_intf.mop_out)
                   LD_R_mRd: set_next_state(uop::read16_reg_a_reg_b_imm_0);
                   POP_R: set_next_state(uop::read16_reg_a_reg_b_imm_0);
-                  JP_R: set_next_state(uop::read16_reg_a_reg_b_imm_0);
                   RET: set_next_state(uop::read16_reg_a_reg_b_imm_0);
                   default: set_next_state(uop::invalid);
                 endcase; // case (curr_state)
@@ -189,7 +189,6 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                 case(ctrl_intf.mop_out)
                   LD_R_mRd: set_next_state(uop::pc_next);
                   POP_R: set_next_state(uop::sp_p2);
-                  JP_R: set_next_state(uop::invalid);
                   RET: set_next_state(uop::invalid);
                   default: set_next_state(uop::invalid);
                 endcase; // case (curr_state)
@@ -250,8 +249,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             end
             uop::add_reg_a_imm_1: begin
                 case(ctrl_intf.mop_out)
-                  JR_e: set_next_state(uop::fetch);
-                  JR_cc_e: set_next_state(uop::fetch);
+                  JR_e, JR_cc_e, DJNZ_e: set_next_state(uop::fetch);
                   default: set_next_state(uop::pc_next);
                 endcase; // case (ctrl_intf.mop_out)
             end
@@ -279,7 +277,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             uop::dec_reg_b: begin
                 case(ctrl_intf.mop_out)
                   DJNZ_e: set_next_state( choose_next_jump_state(j_cc,
-                                                 ctrl_intf.f,
+                                                 ctrl_intf.raw_f,
                                                  uop::add_reg_a_imm_1,
                                                  uop::pc_next) );
                   default: set_next_state(uop::invalid);

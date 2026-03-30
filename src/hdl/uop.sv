@@ -39,34 +39,35 @@ package uop;
                         write_reg_bH, //12
                         write_reg_bL, //13
                         write_mrbuffL_p1, //14
-                        write_imm_1H, //15
-                        write_imm_1L, //16
+                        write_imm_0, //15
+                        write_imm_1H, //16
+                        write_imm_1L, //17
 
                         /* buffer control */
-                        buff_addr_reg_a,//17
-                        buff_addr_reg_a_2,//18
-                        buff_addr_reg_a_imm_1,//19
+                        buff_addr_reg_a,//18
+                        buff_addr_reg_a_2,//19
+                        buff_addr_reg_a_imm_1,//1A
 
                         /* exchange */
-                        ex_de_hl,//1A
-                        ex_af_afp,//1B
-                        exx,//1C
+                        ex_de_hl,//1B
+                        ex_af_afp,//1C
+                        exx,//1D
 
                         /* arithmetic */
-                        add_reg_a_reg_b,//1D
-                        add_reg_a_imm_1,//1E
-                        adc_reg_a_reg_b,//1F
-                        adc_reg_a_imm_1,//20
-                        sub_reg_a_reg_b,//21
-                        sub_reg_a_imm_1,//22
-                        sbc_reg_a_reg_b,//23
-                        sbc_reg_a_imm_1,//24
-                        dec_reg_b,//25
+                        add_reg_a_reg_b,//1E
+                        add_reg_a_imm_1,//1F
+                        adc_reg_a_reg_b,//20
+                        adc_reg_a_imm_1,//21
+                        sub_reg_a_reg_b,//22
+                        sub_reg_a_imm_1,//23
+                        sbc_reg_a_reg_b,//24
+                        sbc_reg_a_imm_1,//25
+                        dec_reg_b,//26
 
                         /* logical */
-                        or_reg_a_reg_b,//26
+                        or_reg_a_reg_b,//27
 
-                        rl_reg_a//27
+                        rl_reg_a//28
 
                         } uop_t ;
 endpackage;

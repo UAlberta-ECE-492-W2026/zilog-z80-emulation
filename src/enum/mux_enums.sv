@@ -15,7 +15,8 @@ typedef enum [2:0] {
     B_MUX_NOP,
     B_MUX_IMM,
     B_MUX_INSTRUCTION_LENGTH,
-    B_MUX_REG
+    B_MUX_REG,
+    B_MUX_MEMORY_READ_BUFF
 } alu_mux_b_enum;
 
 typedef enum [1:0] {

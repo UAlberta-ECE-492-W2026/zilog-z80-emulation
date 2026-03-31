@@ -181,6 +181,16 @@ module controller_output (
                 intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
                 intf.mem_w_en = 1;
             end
+            uop::write_mrbuffL_m1: begin
+                intf.set_imm(1);
+                intf.enable_and_set_alu_opcode(ALU_SUB,
+                                               .mux_a(A_MUX_MEMORY_READ_BUFF),
+                                               .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 0;
+                intf.mem_mux_sel = MEM_MUX_BUFFERED;
+                intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
+                intf.mem_w_en = 1;
+            end
             uop::write_imm_1L: begin
                 intf.imm_in = intf.imm_1_out;
                 intf.enable_and_set_alu_opcode(ALU_PASS_B, .mux_b(B_MUX_IMM));
@@ -272,6 +282,29 @@ module controller_output (
                 intf.update_flags = intf.update_flags_out;
                 intf.write_back_sel = WB_MUX_ALU;
             end
+            uop::add_reg_a_imm_1: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.imm_1_to_imm();
+                intf.enable_and_set_alu_opcode(ALU_ADD,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_IMM));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::add_reg_a_mrbuff: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_ADD,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_MEMORY_READ_BUFF));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
             uop::adc_reg_a_reg_b: begin
                 intf.reg_a_sel = intf.reg_a_sel_out;
                 intf.reg_b_sel = intf.reg_b_sel_out;
@@ -284,28 +317,39 @@ module controller_output (
                 intf.f_w_en = 1;
                 intf.write_back_sel = WB_MUX_ALU;
             end
-            uop::sbc_reg_a_reg_b: begin
-                intf.reg_a_sel = intf.reg_a_sel_out;
-                intf.reg_b_sel = intf.reg_b_sel_out;
-                intf.enable_and_set_reg_w(intf.reg_a_sel);
-                intf.enable_and_set_alu_opcode(ALU_SBC,
-                                               .mux_a(A_MUX_REG),
-                                               .mux_b(B_MUX_REG));
-                intf.forward_decode_16b_alu();
-                intf.f_w_en = 1;
-                intf.update_flags = intf.update_flags_out;
-                intf.write_back_sel = WB_MUX_ALU;
-            end
-            uop::add_reg_a_imm_1: begin
+            uop::adc_reg_a_imm_1: begin
                 intf.reg_a_sel = intf.reg_a_sel_out;
                 intf.enable_and_set_reg_w(intf.reg_a_sel);
                 intf.imm_1_to_imm();
-                intf.enable_and_set_alu_opcode(ALU_ADD,
+                intf.enable_and_set_alu_opcode(ALU_ADC,
                                                .mux_a(A_MUX_REG),
                                                .mux_b(B_MUX_IMM));
                 intf.forward_decode_16b_alu();
                 intf.f_w_en = 1;
                 intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::adc_reg_a_mrbuff: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_ADC,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_MEMORY_READ_BUFF));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::sub_reg_a_reg_b: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.reg_b_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_SUB,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_REG));
+                intf.forward_decode_16b_alu();
+                intf.update_flags = intf.update_flags_out;
+                intf.f_w_en = 1;
                 intf.write_back_sel = WB_MUX_ALU;
             end
             uop::sub_reg_a_imm_1: begin
@@ -320,14 +364,83 @@ module controller_output (
                 intf.update_flags = intf.update_flags_out;
                 intf.write_back_sel = WB_MUX_ALU;
             end
-            uop::dec_reg_b: begin
-                intf.reg_a_sel = intf.reg_b_sel_out;
-                intf.enable_and_set_reg_w(intf.reg_b_sel_out);
-                intf.set_imm(1);
+            uop::sub_reg_a_mrbuff: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
                 intf.enable_and_set_alu_opcode(ALU_SUB,
                                                .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_MEMORY_READ_BUFF));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::sbc_reg_a_reg_b: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.reg_b_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_SBC,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_REG));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::sbc_reg_a_imm_1: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.imm_1_to_imm();
+                intf.enable_and_set_alu_opcode(ALU_SBC,
+                                               .mux_a(A_MUX_REG),
                                                .mux_b(B_MUX_IMM));
-                intf.alu_16b_mode = 0;
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::sbc_reg_a_mrbuff: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_SBC,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_MEMORY_READ_BUFF));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::and_reg_a_reg_b: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.reg_b_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_AND,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_REG));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::and_reg_a_imm_1: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.imm_1_to_imm();
+                intf.enable_and_set_alu_opcode(ALU_AND,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_IMM));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::and_reg_a_mrbuff: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_AND,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_MEMORY_READ_BUFF));
+                intf.forward_decode_16b_alu();
                 intf.f_w_en = 1;
                 intf.update_flags = intf.update_flags_out;
                 intf.write_back_sel = WB_MUX_ALU;
@@ -344,6 +457,64 @@ module controller_output (
                 intf.update_flags = intf.update_flags_out;
                 intf.write_back_sel = WB_MUX_ALU;
             end
+            uop::or_reg_a_imm_1: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.imm_1_to_imm();
+                intf.enable_and_set_alu_opcode(ALU_OR,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_IMM));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::or_reg_a_mrbuff: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_OR,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_MEMORY_READ_BUFF));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::xor_reg_a_reg_b: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.reg_b_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_XOR,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_REG));
+                intf.alu_16b_mode = 0;
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::xor_reg_a_imm_1: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.imm_1_to_imm();
+                intf.enable_and_set_alu_opcode(ALU_XOR,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_IMM));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::xor_reg_a_mrbuff: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel);
+                intf.enable_and_set_alu_opcode(ALU_XOR,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_MEMORY_READ_BUFF));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
             uop::cp_reg_a_reg_b: begin
                 intf.reg_a_sel = intf.reg_a_sel_out;
                 intf.reg_b_sel = intf.reg_b_sel_out;
@@ -353,6 +524,37 @@ module controller_output (
                 intf.alu_16b_mode = 0;
                 intf.f_w_en = 1;
                 intf.update_flags = intf.update_flags_out;
+            end
+            uop::cp_reg_a_imm_1: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.imm_1_to_imm();
+                intf.enable_and_set_alu_opcode(ALU_COMPARE,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_IMM));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+            end
+            uop::cp_reg_a_mrbuff: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.enable_and_set_alu_opcode(ALU_COMPARE,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_MEMORY_READ_BUFF));
+                intf.forward_decode_16b_alu();
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+            end
+            uop::dec_reg_b: begin
+                intf.reg_a_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_reg_w(intf.reg_b_sel_out);
+                intf.set_imm(1);
+                intf.enable_and_set_alu_opcode(ALU_SUB,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 0;
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
             end
             uop::rl_reg_a: begin
                 intf.reg_a_sel = intf.reg_a_sel_out;

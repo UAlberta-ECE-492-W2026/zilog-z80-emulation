@@ -37,8 +37,9 @@ module  alu #(
     parameter SHIFT_OP = 'b001;
 	parameter ROTATE_OP = 'b010;  // RL/RR
 	parameter BCD_ROTATE_OP = 'b011;  // RLD/RRD
-    parameter OR_OP = 'b100;
-    parameter XOR_OP = 'b101;
+	parameter AND_OP = 'b100;
+    parameter OR_OP = 'b101;
+    parameter XOR_OP = 'b110;
 
 
     wire signed [upper_bit:0] signed_a;
@@ -119,6 +120,7 @@ module  alu #(
 			end
         	ALU_AND: begin
            		out_var = a & b;
+                status_opcode = AND_OP;
         	end
         	ALU_OR: begin
            		out_var = a | b;

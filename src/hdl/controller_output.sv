@@ -209,6 +209,7 @@ module controller_output (
                 intf.mem_mux_sel = MEM_MUX_BUFFERED_P1;
                 intf.mem_data_mux_sel = MEM_DATA_MUX_UPPER;
                 intf.mem_w_en = 1;
+            end
             uop::write_imm_1H: begin
                 intf.imm_1_to_imm();
                 intf.enable_and_set_alu_opcode(ALU_PASS_B, .mux_b(B_MUX_IMM));

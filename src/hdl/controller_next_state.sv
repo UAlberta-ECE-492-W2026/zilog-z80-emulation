@@ -441,7 +441,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             uop::neg: begin
               set_next_state(uop::pc_next);
             end
-            
+
             /* shift related */
             uop::rl_reg_a: begin
                 case(ctrl_intf.mop_out)

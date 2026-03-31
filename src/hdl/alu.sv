@@ -31,7 +31,6 @@ module  alu #(
     parameter a_size  = alu_width;
     parameter b_size  = alu_width;
 
-
     wire signed [upper_bit:0] signed_a;
     wire signed [upper_bit:0] signed_b;
     reg [upper_bit + 1:0]     tmp; // output value buffer

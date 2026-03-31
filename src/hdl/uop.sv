@@ -42,6 +42,7 @@ package uop;
                         write_reg_bH_addr_p1,
                         write_reg_bL,
                         write_mrbuffL_p1,
+                        write_mrbuffL_m1,
                         write_imm_0,
                         write_imm_1H,
                         write_imm_1H_addr_p1,
@@ -67,23 +68,37 @@ package uop;
                         /* arithmetic */
                         add_reg_a_reg_b, //27
                         add_reg_a_imm_1,
+                        add_reg_a_mrbuff,
                         adc_reg_a_reg_b,
                         adc_reg_a_imm_1,
+                        adc_reg_a_mrbuff,
                         sub_reg_a_reg_b,
                         sub_reg_a_imm_1,
+                        sub_reg_a_mrbuff,
                         sbc_reg_a_reg_b,
                         sbc_reg_a_imm_1,
-                        cp_reg_a_reg_b, 
+                        sbc_reg_a_mrbuff,
+                        and_reg_a_reg_b,
+                        and_reg_a_imm_1,
+                        and_reg_a_mrbuff,
+                        or_reg_a_reg_b,
+                        or_reg_a_imm_1,
+                        or_reg_a_mrbuff,
+                        xor_reg_a_reg_b,
+                        xor_reg_a_imm_1,
+                        xor_reg_a_mrbuff,
+                        cp_reg_a_reg_b,
+                        cp_reg_a_imm_1,
+                        cp_reg_a_mrbuff,
+
                         dec_reg_b,
 
-                        /* logical */
-                        or_reg_a_reg_b, //31
-
-                        rl_reg_a,
-
                         /* general purpose group */
-                        ccf, //33
-                        scf
+                        ccf, //41
+                        scf,
+
+                        /* rotate/shift */
+                        rl_reg_a
 
                         } uop_t ;
 endpackage;

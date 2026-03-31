@@ -38,8 +38,9 @@ module  alu_status #(
     parameter SHIFT_OP = 'b001;
 	parameter ROTATE_OP = 'b010;  // RL/RR
 	parameter BCD_ROTATE_OP = 'b011;  // RLD/RRD
-    parameter OR_OP = 'b100;
-    parameter XOR_OP = 'b101;
+	parameter AND_OP = 'b100;
+    parameter OR_OP = 'b101;
+    parameter XOR_OP = 'b110;
 
    	/* function that does overflow_check bit logic */
 	/* verilator lint_off UNUSEDSIGNAL */
@@ -57,6 +58,7 @@ module  alu_status #(
 	/* verilator lint_on UNUSEDSIGNAL */
    	reg c_var;
    	reg pv_var;
+	reg h_var;
    	reg s_var;
    	reg z_var;
     reg      n_var;
@@ -68,7 +70,7 @@ module  alu_status #(
    	assign c = c_var;
    	assign n = n_var;
    	assign pv = pv_var;
-   	assign h = (opcode == NUMERIC_OP) ? half_buffer[4] : 1'b0;
+   	assign h = (opcode == NUMERIC_OP) ? half_buffer[4] : h_var;
    	assign s = s_var;
 
     assign uppermost_buffer_bit = result_buffer[alu_width];
@@ -79,6 +81,7 @@ module  alu_status #(
       	c_var = 0;
       	pv_var = 0;
       	half_buffer = 0;
+		h_var = 0;
       	s_var = 0;
       	z_var = 0;
         n_var = 0;
@@ -123,6 +126,18 @@ module  alu_status #(
                 z_var  = (bcd_acc == 8'h00);
                 n_var  = 0;
             end
+			AND_OP: begin
+           		s_var = op_result[upper_bit];
+           		z_var = (op_result == 0? 1 : 0);
+				h_var = 1;
+				// spec says "P/V is set if overflow; otherwise, it is reset." makes no sense imo
+				pv_var = overflow_check(op_sign,
+                                            a[upper_bit],
+                                            b[upper_bit],
+                                            op_result[upper_bit]);
+				n_var = 0;
+				c_var = 0;
+			end
 			OR_OP: begin
            		s_var = op_result[upper_bit];
            		z_var = (op_result == 0? 1 : 0);
@@ -139,8 +154,8 @@ module  alu_status #(
            		s_var = op_result[upper_bit];
            		z_var = (op_result == 0? 1 : 0);
 				//h_var = 0; h already set to 0 by default
-				// pv set to the parity
-				pv_var = 0;
+				// pv set to if parity is even
+				pv_var = 1;
 				for (i = 0; i < alu_width; i = i + 1) begin
 					pv_var = pv_var ^ op_result[i];
 				end

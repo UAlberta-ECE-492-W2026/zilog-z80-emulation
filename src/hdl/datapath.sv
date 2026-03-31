@@ -132,6 +132,7 @@ module datapath(
             B_MUX_IMM               : alu_b = intf.imm_in;
             B_MUX_INSTRUCTION_LENGTH: alu_b = {13'b0000000000000, intf.instruction_length};
             B_MUX_REG               : alu_b = reg_b;
+            B_MUX_MEMORY_READ_BUFF  : alu_b = {8'h00, memory_buff_out};
             default                 : alu_b = 16'hXXXX;
         endcase
     end

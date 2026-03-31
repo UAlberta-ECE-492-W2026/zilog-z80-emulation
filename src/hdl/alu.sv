@@ -33,10 +33,12 @@ module  alu #(
     parameter b_size  = alu_width;
 
     /* status opcodes */
-    parameter NUMERIC_OP = 'b0000;
-    parameter SHIFT_OP = 'b1;
-	parameter ROTATE_OP = 'b10;  // RL/RR
-	parameter BCD_ROTATE_OP = 'b11;  // RLD/RRD
+    parameter NUMERIC_OP = 'b000;
+    parameter SHIFT_OP = 'b001;
+	parameter ROTATE_OP = 'b010;  // RL/RR
+	parameter BCD_ROTATE_OP = 'b011;  // RLD/RRD
+    parameter OR_OP = 'b100;
+    parameter XOR_OP = 'b101;
 
 
     wire signed [upper_bit:0] signed_a;
@@ -49,7 +51,7 @@ module  alu #(
     wire               z_var;
     wire               h_var;
     wire               s_var;
-    reg [1:0]          status_opcode;
+    reg [2:0]          status_opcode;
     reg                status_sign;
 	reg [upper_bit:0]  status_b;
 	reg [7:0]		   acc_rotated;  // updated accumulator RLD/RRD
@@ -120,9 +122,11 @@ module  alu #(
         	end
         	ALU_OR: begin
            		out_var = a | b;
+                status_opcode = OR_OP;
         	end
         	ALU_XOR: begin
            		out_var = a ^ b;
+                status_opcode = XOR_OP;
         	end
         	ALU_SLL: begin
            		status_opcode = SHIFT_OP;

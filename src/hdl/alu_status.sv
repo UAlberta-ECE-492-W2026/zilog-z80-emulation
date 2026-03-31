@@ -26,7 +26,7 @@ module  alu_status #(
     input wire [alu_width-1:0] b,
     input wire [alu_width-1:0] op_result,
     input wire [alu_width:0]   result_buffer,
-    input wire [1:0] opcode,
+    input wire [2:0] opcode,
    	// op_sign == 1 : negative
    	// op_sign == 0 : positive
    	input wire                 op_sign
@@ -34,10 +34,12 @@ module  alu_status #(
    	localparam integer upper_bit = alu_width - 1;
 
    	/* the following are the opcodes for the ALU status system */
-   	parameter NUMERIC_OP = 'b0000;
-   	parameter SHIFT_OP = 'b01;
-    parameter ROTATE_OP = 'b10;  // RL/RR
-    parameter BCD_ROTATE_OP = 'b11;  // RLD/RRD
+    parameter NUMERIC_OP = 'b000;
+    parameter SHIFT_OP = 'b001;
+	parameter ROTATE_OP = 'b010;  // RL/RR
+	parameter BCD_ROTATE_OP = 'b011;  // RLD/RRD
+    parameter OR_OP = 'b100;
+    parameter XOR_OP = 'b101;
 
    	/* function that does overflow_check bit logic */
 	/* verilator lint_off UNUSEDSIGNAL */
@@ -71,6 +73,7 @@ module  alu_status #(
 
     assign uppermost_buffer_bit = result_buffer[alu_width];
     assign lowest_buffer_bit = result_buffer[0];
+	integer i;
 
    	always_comb begin
       	c_var = 0;
@@ -83,7 +86,7 @@ module  alu_status #(
 
       	case (opcode)
         	NUMERIC_OP: begin
-               n_var = op_sign;
+                n_var = op_sign;
            		c_var = uppermost_buffer_bit;
            		pv_var = overflow_check(op_sign,
                                             a[upper_bit],
@@ -99,7 +102,7 @@ module  alu_status #(
         	end
         	SHIFT_OP: begin
           		pv_var = ~(^op_result); // this is a parity check
-               c_var = (op_sign == 0) ? uppermost_buffer_bit
+                c_var = (op_sign == 0) ? uppermost_buffer_bit
                        : lowest_buffer_bit;
 			end
             ROTATE_OP: begin
@@ -120,6 +123,30 @@ module  alu_status #(
                 z_var  = (bcd_acc == 8'h00);
                 n_var  = 0;
             end
+			OR_OP: begin
+           		s_var = op_result[upper_bit];
+           		z_var = (op_result == 0? 1 : 0);
+				//h_var = 0; h already set to 0 by default
+				// spec says "P/V is set if overflow; otherwise, it is reset." makes no sense imo
+				pv_var = overflow_check(op_sign,
+                                            a[upper_bit],
+                                            b[upper_bit],
+                                            op_result[upper_bit]);
+				n_var = 0;
+				c_var = 0;
+			end
+			XOR_OP: begin
+           		s_var = op_result[upper_bit];
+           		z_var = (op_result == 0? 1 : 0);
+				//h_var = 0; h already set to 0 by default
+				// pv set to the parity
+				pv_var = 0;
+				for (i = 0; i < alu_width; i = i + 1) begin
+					pv_var = pv_var ^ op_result[i];
+				end
+				n_var = 0;
+				c_var = 0;
+			end
         	default: begin
            	end
         endcase

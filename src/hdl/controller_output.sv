@@ -130,11 +130,36 @@ module controller_output (
                 intf.mem_addr_buff_en = 1;
                 intf.imm_in = {8'h00, intf.imm_0_out};
             end
+            uop::buff_addr_reg_b_imm_1: begin
+                intf.reg_a_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_alu_opcode(ALU_ADD, .mux_a(A_MUX_REG), .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 1;
+                intf.mem_addr_buff_en = 1;
+                intf.imm_in = {8'h00, intf.imm_0_out};
+            end
+            uop::buff_addr_imm_1: begin
+                intf.enable_and_set_alu_opcode(ALU_PASS_B, .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 1;
+                intf.mem_addr_buff_en = 1;
+                intf.imm_in = intf.imm_1_out;
+            end
+            uop::ld_obuff_reg_a: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.o_buff_en = 1;
+            end
             uop::write_reg_bH: begin
                 intf.reg_a_sel = intf.reg_b_sel_out;
                 intf.enable_and_set_alu_opcode(ALU_PASS_A, .mux_a(A_MUX_REG));
                 intf.alu_16b_mode = 1;
                 intf.mem_mux_sel = MEM_MUX_BUFFERED;
+                intf.mem_data_mux_sel = MEM_DATA_MUX_UPPER;
+                intf.mem_w_en = 1;
+            end
+            uop::write_reg_bH_addr_p1: begin
+                intf.reg_a_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_alu_opcode(ALU_PASS_A, .mux_a(A_MUX_REG));
+                intf.alu_16b_mode = 1;
+                intf.mem_mux_sel = MEM_MUX_BUFFERED_P1;
                 intf.mem_data_mux_sel = MEM_DATA_MUX_UPPER;
                 intf.mem_w_en = 1;
             end
@@ -164,6 +189,20 @@ module controller_output (
                 intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
                 intf.mem_w_en = 1;
             end
+            uop::write_obuffL: begin
+                intf.enable_and_set_alu_opcode(ALU_PASS_A, .mux_a(A_MUX_O_BUFF));
+                intf.alu_16b_mode = 0;
+                intf.mem_mux_sel = MEM_MUX_BUFFERED;
+                intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
+                intf.mem_w_en = 1;
+            end
+            uop::write_obuffH_addr_p1: begin
+                intf.enable_and_set_alu_opcode(ALU_PASS_A, .mux_a(A_MUX_O_BUFF));
+                intf.alu_16b_mode = 1;
+                intf.mem_mux_sel = MEM_MUX_BUFFERED_P1;
+                intf.mem_data_mux_sel = MEM_DATA_MUX_UPPER;
+                intf.mem_w_en = 1;
+            end
             uop::read_mrbuff_reg_b_imm_0: begin
                 intf.reg_a_sel = intf.reg_b_sel_out;
                 intf.imm_0_to_imm();
@@ -175,6 +214,14 @@ module controller_output (
                 intf.mem_read_buff_en = 1;
                 intf.mem_r_en = 1;
             end
+            uop::read_mrbuff_imm_1: begin
+                intf.imm_in = intf.imm_1_out;
+                intf.enable_and_set_alu_opcode(ALU_PASS_B, .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 1;
+                intf.mem_read_buff_en = 1;
+                intf.mem_mux_sel = MEM_MUX_UNBUFFERED;
+                intf.mem_r_en = 1;
+            end
             uop::read16_reg_a_reg_b_imm_0: begin
                 intf.reg_a_sel = intf.reg_b_sel_out;
                 intf.enable_and_set_reg_w(intf.reg_a_sel_out);
@@ -182,6 +229,15 @@ module controller_output (
                 intf.enable_and_set_alu_opcode(ALU_ADD,
                                                .mux_a(A_MUX_REG),
                                                .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 1;
+                intf.write_back_sel = WB_MUX_MEMORY_READ_BUFF;
+                intf.mem_mux_sel = MEM_MUX_UNBUFFERED_P1;
+                intf.mem_r_en = 1;
+            end
+            uop::read16_reg_a_imm_1: begin
+                intf.imm_in = intf.imm_1_out;
+                intf.enable_and_set_reg_w(intf.reg_a_sel_out);
+                intf.enable_and_set_alu_opcode(ALU_PASS_B, .mux_b(B_MUX_IMM));
                 intf.alu_16b_mode = 1;
                 intf.write_back_sel = WB_MUX_MEMORY_READ_BUFF;
                 intf.mem_mux_sel = MEM_MUX_UNBUFFERED_P1;

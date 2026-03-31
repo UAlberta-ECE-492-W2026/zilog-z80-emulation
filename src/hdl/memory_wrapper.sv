@@ -88,6 +88,7 @@ module memory_wrapper #(
     always_comb begin
         case(intf.mem_mux_sel)
             MEM_MUX_BUFFERED: address = mem_addr_buff_out;
+            MEM_MUX_BUFFERED_P1: address = mem_addr_buff_out + 1;
             MEM_MUX_UNBUFFERED: address = intf.memory_out;
             MEM_MUX_UNBUFFERED_P1: address = intf.memory_out + 1;
             default: address = 16'h0000;

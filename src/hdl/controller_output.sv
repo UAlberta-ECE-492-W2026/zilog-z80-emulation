@@ -192,9 +192,9 @@ module controller_output (
                 intf.mem_w_en = 1;
             end
             uop::write_imm_1L: begin
-                intf.imm_in = intf.imm_1_out;
+                intf.imm_1_to_imm();
                 intf.enable_and_set_alu_opcode(ALU_PASS_B, .mux_b(B_MUX_IMM));
-                intf.alu_16b_mode = 0;
+                intf.alu_16b_mode = 1;
                 intf.mem_mux_sel = MEM_MUX_BUFFERED;
                 intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
                 intf.mem_w_en = 1;
@@ -210,6 +210,13 @@ module controller_output (
                 intf.enable_and_set_alu_opcode(ALU_PASS_A, .mux_a(A_MUX_O_BUFF));
                 intf.alu_16b_mode = 1;
                 intf.mem_mux_sel = MEM_MUX_BUFFERED_P1;
+                intf.mem_data_mux_sel = MEM_DATA_MUX_UPPER;
+                intf.mem_w_en = 1;
+            uop::write_imm_1H: begin
+                intf.imm_1_to_imm();
+                intf.enable_and_set_alu_opcode(ALU_PASS_B, .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 1;
+                intf.mem_mux_sel = MEM_MUX_BUFFERED;
                 intf.mem_data_mux_sel = MEM_DATA_MUX_UPPER;
                 intf.mem_w_en = 1;
             end

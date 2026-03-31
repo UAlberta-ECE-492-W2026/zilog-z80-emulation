@@ -371,21 +371,21 @@ module z80_top_tb #() ();
                 special_reg_set[3],
                 special_reg_set[4],
                 {test_ram[0],test_ram[1],test_ram[2],test_ram[3],test_ram[4],test_ram[5],test_ram[6],test_ram[7]},
-                testvectors[i].AF, 
-                testvectors[i].BC, 
-                testvectors[i].IX,
-                testvectors[i].SP,
-                testvectors[i].PC,
-                testvectors[i].test_ram
+                current_test.AF,
+                current_test.BC,
+                current_test.IX,
+                current_test.SP,
+                current_test.PC,
+                current_test.test_ram
             );
 
             if (
-                testvectors[i].AF == {main_reg_set[0], main_reg_set[1]} &&
-                testvectors[i].BC == {main_reg_set[2], main_reg_set[3]} &&
-                testvectors[i].IX == special_reg_set[1] &&
-                testvectors[i].SP == special_reg_set[3] &&
-                testvectors[i].PC == special_reg_set[4] &&
-                testvectors[i].test_ram == {
+                current_test.AF == {main_reg_set[0], main_reg_set[1]} &&
+                current_test.BC == {main_reg_set[2], main_reg_set[3]} &&
+                current_test.IX == special_reg_set[1] &&
+                current_test.SP == special_reg_set[3] &&
+                current_test.PC == special_reg_set[4] &&
+                current_test.test_ram == {
                                             test_ram[0],
                                             test_ram[1],
                                             test_ram[2],

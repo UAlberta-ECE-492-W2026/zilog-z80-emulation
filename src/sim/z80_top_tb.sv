@@ -16,9 +16,9 @@ task display_input_output_expected_z_80_top(input
                                             reg [15:0] expected_pc,
                                             reg [63:0] expected_test_ram);
 
-    $write(" %2d |    %h | %h | %h | %h | %h | %h | %h \n", i, instruction, af, bc, ix, sp, pc, test_ram);
+    $write(" %3d |    %h | %h | %h | %h | %h | %h | %h \n", i, instruction, af, bc, ix, sp, pc, test_ram);
 
-    $write("    |             | %h | %h | %h | %h | %h | %h |", expected_af, expected_bc, expected_ix, expected_sp, expected_pc, expected_test_ram);
+    $write("     |             | %h | %h | %h | %h | %h | %h |", expected_af, expected_bc, expected_ix, expected_sp, expected_pc, expected_test_ram);
 endtask
 /* verilator lint_on UNUSEDSIGNAL */
 
@@ -258,12 +258,29 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hc34d0000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // JP        $4d
         testvectors.push_back(cons_test(32'h76000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT
         testvectors.push_back(cons_test(32'h76000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT
+        testvectors.push_back(cons_reset());
+        testvectors.push_back(cons_test(32'h3e670000, 16'h6700, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // ld        a,$67
+        testvectors.push_back(cons_test(32'h32010000, 16'h6700, 16'h0000, 16'h0000, 16'h0000, 16'h0006, 64'h0067000000000000)); // ld        ($0001),a
+        testvectors.push_back(cons_test(32'h01341200, 16'h6700, 16'h1234, 16'h0000, 16'h0000, 16'h0009, 64'h0067000000000000)); // ld        bc,$1234
+        testvectors.push_back(cons_test(32'hed430200, 16'h6700, 16'h1234, 16'h0000, 16'h0000, 16'h000d, 64'h0067341200000000)); // ld        ($0002),bc
+        testvectors.push_back(cons_test(32'h08000000, 16'h0000, 16'h1234, 16'h0000, 16'h0000, 16'h000e, 64'h0067341200000000)); // ex        af,af'
+        testvectors.push_back(cons_test(32'h3e210000, 16'h2100, 16'h1234, 16'h0000, 16'h0000, 16'h0010, 64'h0067341200000000)); // ld        a,$21
+        testvectors.push_back(cons_test(32'h08000000, 16'h6700, 16'h1234, 16'h0000, 16'h0000, 16'h0011, 64'h0067341200000000)); // ex        af,af'
+        testvectors.push_back(cons_test(32'hd9000000, 16'h2100, 16'h0000, 16'h0000, 16'h0000, 16'h0012, 64'h0067341200000000)); // exx
+        testvectors.push_back(cons_test(32'h3a020000, 16'h3400, 16'h0000, 16'h0000, 16'h0000, 16'h0015, 64'h0067341200000000)); // ld        a,($0002)
+        testvectors.push_back(cons_test(32'h21896700, 16'h3400, 16'h0000, 16'h0000, 16'h0000, 16'h0018, 64'h0067341200000000)); // ld        hl,$6789
+        testvectors.push_back(cons_test(32'hdd213254, 16'h3400, 16'h0000, 16'h5432, 16'h0000, 16'h001c, 64'h0067341200000000)); // ld        ix,$5432
+        testvectors.push_back(cons_test(32'hfd214523, 16'h3400, 16'h0000, 16'h5432, 16'h0000, 16'h0020, 64'h0067341200000000)); // ld        iy,$2345
+        testvectors.push_back(cons_test(32'h31040000, 16'h3400, 16'h0000, 16'h5432, 16'h0004, 16'h0023, 64'h0067341200000000)); // ld        sp,$0004
+        testvectors.push_back(cons_test(32'he3000000, 16'h3400, 16'h0000, 16'h5432, 16'h0004, 16'h0024, 64'h0067341289670000)); // ex        (sp),hl
+        testvectors.push_back(cons_test(32'hdde30000, 16'h3400, 16'h0000, 16'h6789, 16'h0004, 16'h0026, 64'h0067341232540000)); // ex        (sp),ix
+        testvectors.push_back(cons_test(32'hfde30000, 16'h3400, 16'h0000, 16'h6789, 16'h0004, 16'h0028, 64'h0067341245230000)); // ex        (sp),iy
 
         reset_tb();
         ->test_start;
 
 
-        $display("idx | instruction |   AF |   BC |   IX |   SP |   PC | memory    ");
+        $display("idx  | instruction |   AF |   BC |   IX |   SP |   PC | memory    ");
 
         foreach (testvectors[i]) begin
             automatic test_vector current_test = testvectors[i];

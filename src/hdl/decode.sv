@@ -209,8 +209,8 @@ module decode #(
             reg_a = DE;
             reg_b = A;
         end else if (op_0 == 8'h32) begin // LD (nn), A
-            output_op = LD_mnn_R;
-            reg_a = A;
+            output_op = LD_mnn_A;
+            reg_b = A;
             imm_1 = {op_2, op_1};
             instruction_length = 3;
         end else if (op_0 == 8'hED && op_1 == 8'h57) begin // LD A, I
@@ -275,22 +275,22 @@ module decode #(
             instruction_length = 4;
         end else if (op_0 == 8'h22) begin // LD (nn), HL
             output_op = LD_mnn_R;
-            reg_a = HL;
+            reg_b = HL;
             imm_1 = {op_2, op_1};
             instruction_length = 3;
         end else if (op_0 == 8'hED && op_1[7:6] == 2'b01 && op_1[3:0] == 4'b0011) begin // LD (nn), dd
             output_op = LD_mnn_R;
-            reg_a = reg_from_dd(op_1[5:4]);
+            reg_b = reg_from_dd(op_1[5:4]);
             imm_1 = {op_3, op_2};
             instruction_length = 4;
         end else if (op_0 == 8'hDD && op_1 == 8'h22) begin // LD (nn), IX
             output_op = LD_mnn_R;
-            reg_a = IX;
+            reg_b = IX;
             imm_1 = {op_3, op_2};
             instruction_length = 4;
         end else if (op_0 == 8'hFD && op_1 == 8'h22) begin // LD (nn), IY
             output_op = LD_mnn_R;
-            reg_a = IY;
+            reg_b = IY;
             imm_1 = {op_3, op_2};
             instruction_length = 4;
         end else if (op_0 == 8'hF9) begin // LD SP, HL
@@ -349,17 +349,17 @@ module decode #(
             output_op = EXX;
         end else if (op_0 == 8'hE3) begin // EX (SP), HL
             output_op = EX_mR_R;
-            reg_a = SP;
-            reg_b = HL;
+            reg_a = HL;
+            reg_b = SP;
         end else if (op_0 == 8'hDD && op_1 == 8'hE3) begin // EX (SP), IX
             output_op = EX_mR_R;
-            reg_a = SP;
-            reg_b = IX;
+            reg_a = IX;
+            reg_b = SP;
             instruction_length = 2;
         end else if (op_0 == 8'hFD && op_1 == 8'hE3) begin // EX (SP), IY
             output_op = EX_mR_R;
-            reg_a = SP;
-            reg_b = IY;
+            reg_a = IY;
+            reg_b = SP;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hA0) begin // LDI
             output_op = LD_block;

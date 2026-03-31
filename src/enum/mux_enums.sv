@@ -25,9 +25,10 @@ typedef enum [1:0] {
     WB_MUX_ALU
 } write_back_enum;
 
-typedef enum [1:0] {
+typedef enum [2:0] {
                     MEM_MUX_NOP,
                     MEM_MUX_BUFFERED,
+                    MEM_MUX_BUFFERED_P1,
                     MEM_MUX_UNBUFFERED,
                     MEM_MUX_UNBUFFERED_P1
                     } mem_mux_enum;

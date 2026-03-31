@@ -80,7 +80,10 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   SUB_R_nn: set_next_state(uop::sub_reg_a_imm_1);
                   SBC_R_R: set_next_state(uop::sbc_reg_a_reg_b);
                   OR_R_R: set_next_state(uop::or_reg_a_reg_b);
+                  CP_R_R: set_next_state(uop::cp_reg_a_reg_b);
                   INC_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  CCF: set_next_state(uop::ccf);
+                  SCF: set_next_state(uop::scf);
                   NOP: set_next_state(uop::pc_next);
                   HALT: set_next_state(uop::fetch);
                   RL_R: set_next_state(uop::rl_reg_a);
@@ -236,9 +239,22 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             /* exchange uop */
             uop::ex_de_hl: begin
                 case(ctrl_intf.mop_out)
-                  EX_DE_HL: set_next_state(uop::pc_next);
-                  default: set_next_state(uop::invalid);
+                  default: set_next_state(uop::pc_next);
                 endcase; // case (ctrl_intf.mop_out)
+            end
+            uop::ex_af_afp: begin
+                case(ctrl_intf.mop_out)
+                  default: set_next_state(uop::pc_next);
+                endcase; // case (ctrl_intf.mop_out)
+            end
+            uop::exx: begin
+                case(ctrl_intf.mop_out)
+                  default: set_next_state(uop::pc_next);
+                endcase; // case (ctrl_intf.mop_out)
+            end
+            /* General purpose group*/
+            uop::ccf, uop::scf: begin
+              set_next_state(uop::pc_next);
             end
 
             /* arithmetic */
@@ -286,6 +302,11 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
 
             /* logical uop */
             uop::or_reg_a_reg_b: begin
+                case(ctrl_intf.mop_out)
+                  default: set_next_state(uop::pc_next);
+                endcase; // case (ctrl_intf.mop_out)
+            end
+            uop::cp_reg_a_reg_b: begin
                 case(ctrl_intf.mop_out)
                   default: set_next_state(uop::pc_next);
                 endcase; // case (ctrl_intf.mop_out)

@@ -62,12 +62,17 @@ package uop;
                         sub_reg_a_imm_1,//23
                         sbc_reg_a_reg_b,//24
                         sbc_reg_a_imm_1,//25
-                        dec_reg_b,//26
+                        cp_reg_a_reg_b, //26
+                        dec_reg_b,//27
 
                         /* logical */
-                        or_reg_a_reg_b,//27
+                        or_reg_a_reg_b,//28
 
-                        rl_reg_a//28
+                        rl_reg_a,//29
+
+                        /* general purpose group */
+                        ccf, //2A
+                        scf //2B
 
                         } uop_t ;
 endpackage;

@@ -34,10 +34,10 @@ module alu_wrapper #()
     wire [5:0] bit_set_flags;
     wire [5:0] bit_reset_flags;
 
-    assign set_flags = is_bit_op ? bit_set_flags : (raw_flags & update_flags);
-    assign raw_flags = is_bit_op ? bit_raw_flags : ((alu_16b_mode == 1) ? flags_16 : flags_8);
+    assign set_flags = enable ? (is_bit_op ? bit_set_flags : (raw_flags & update_flags)) : 0;
+    assign raw_flags = enable ? (is_bit_op ? bit_raw_flags : ((alu_16b_mode == 1) ? flags_16 : flags_8)) : 0;
     
-    assign reset_flags = is_bit_op ? bit_reset_flags : (~raw_flags) & update_flags & current_flags;
+    assign reset_flags = enable ? (is_bit_op ? bit_reset_flags : (~raw_flags) & update_flags & current_flags) : 0;
     assign toggle_flags = 0;
 
     wire is_bit_op;

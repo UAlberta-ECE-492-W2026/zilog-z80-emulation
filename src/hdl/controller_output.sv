@@ -288,6 +288,16 @@ module controller_output (
                 intf.update_flags = intf.update_flags_out;
                 intf.write_back_sel = WB_MUX_ALU;
             end
+            uop::cp_reg_a_reg_b: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.reg_b_sel = intf.reg_b_sel_out;
+                intf.enable_and_set_alu_opcode(ALU_COMPARE,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_REG));
+                intf.alu_16b_mode = 0;
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+            end
             uop::rl_reg_a: begin
                 intf.reg_a_sel = intf.reg_a_sel_out;
                 intf.enable_and_set_reg_w(intf.reg_a_sel);
@@ -297,6 +307,14 @@ module controller_output (
                 intf.f_w_en = 1;
                 intf.update_flags = intf.update_flags_out;
                 intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::ccf: begin
+                intf.f_op = F_CCF;
+                intf.f_w_en = 1;
+            end
+            uop::scf: begin
+                intf.f_op = F_SCF;
+                intf.f_w_en = 1;
             end
             default: begin
             end

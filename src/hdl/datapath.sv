@@ -60,22 +60,25 @@ module datapath(
     );
 
 
-    // for CCF and SCF instructions. tempted to put this in the register file
+    // for CCF and SCF instructions
     always_comb begin
+        f_set = 0;
+        f_toggle = 0;
+        f_reset = 0;
         case (intf.f_op)
             F_CCF: begin
-                f_toggle[0] = 1; // main intent of the CCF instruction
-                f_reset[1] = 1; // side effect
+                f_toggle = 6'b000001; // main intent of the CCF instruction
+                f_reset = {2'b00, ~intf.f[0], 3'b000};
+                f_set = {2'b00, intf.f[0], 3'b000}; // store last C in H
             end
             F_SCF: begin
-                f_set[0] = 1; // main intent
-                f_reset[1] = 1; // wow side effects! amazing
-                f_reset[3] = 1;
+                f_set = 6'b000001; // main intent
+                f_reset = 6'b001010; // wow side effects! amazing
             end
             default: begin
-                f_set = 0;
-                f_reset = 0;
-                f_toggle = 0;
+                f_set = alu_f_set;
+                f_reset = alu_f_reset;
+                f_toggle = alu_f_toggle;
             end
         endcase
     end
@@ -92,9 +95,9 @@ module datapath(
         .reg_w_sel(intf.reg_w_sel),
         .reg_w_data(reg_w_data),
         .reg_w_en(intf.reg_w_en),
-        .f_set(f_set | alu_f_set),
-        .f_reset(f_reset | alu_f_reset),
-        .f_toggle(f_toggle | alu_f_toggle),
+        .f_set(f_set),
+        .f_reset(f_reset),
+        .f_toggle(f_toggle),
         .f_w_en(intf.f_w_en),
         .f(intf.f)
          `ifdef Z80_TOP_TESTING

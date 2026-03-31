@@ -119,13 +119,17 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                                                   uop::pc_next) );
                   JP_R: set_next_state(uop::ld_reg_a_reg_b);
                   DJNZ_e: set_next_state(uop::dec_reg_b);
-                  CALL_nn: set_next_state(uop::sp_m1);
+                  CALL_nn: set_next_state(uop::pc_next);
                   RET: set_next_state(uop::read_mrbuff_reg_b_imm_0);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
 
             end // case: uop::fetch
-            uop::pc_next: set_next_state(uop::fetch);
+            uop::pc_next: case(ctrl_intf.mop_out)
+                            CALL_nn: set_next_state(uop::sp_m1);
+                            default: set_next_state(uop::fetch);
+                          endcase // case (ctrl_intf.mop_out)
+
             /* invalid case handling */
             uop::invalid: set_next_state(uop::fetch);
 
@@ -155,16 +159,16 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
 
             uop::sp_m1: begin
                 case(ctrl_intf.mop_out)
+                  CALL_nn,
                   PUSH_R: set_next_state(uop::buff_addr_reg_a);
-                  CALL_nn: set_next_state(uop::buff_addr_reg_a);
                   default: set_next_state(uop::invalid);
 
                 endcase; // case (ctrl_intf.mop_out)
             end
             uop::sp_m1_2: begin
                 case(ctrl_intf.mop_out)
+                  CALL_nn,
                   PUSH_R: set_next_state(uop::buff_addr_reg_a_2);
-                  CALL_nn: set_next_state(uop::buff_addr_reg_a_2);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end
@@ -178,15 +182,15 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             /* buff uop */
             uop::buff_addr_reg_a: begin
                 case(ctrl_intf.mop_out)
+                  CALL_nn,
                   PUSH_R: set_next_state(uop::write_reg_bH);
-                  CALL_nn: set_next_state(uop::write_imm_1H);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end
             uop::buff_addr_reg_a_2: begin
                 case(ctrl_intf.mop_out)
+                  CALL_nn,
                   PUSH_R: set_next_state(uop::write_reg_bL);
-                  CALL_nn: set_next_state(uop::write_imm_1L);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end
@@ -266,6 +270,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             /* write uop */
             uop::write_reg_bH: begin
                 case(ctrl_intf.mop_out)
+                  CALL_nn,
                   PUSH_R: set_next_state(uop::sp_m1_2);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
@@ -278,7 +283,6 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             end
             uop::write_imm_1H: begin
                 case(ctrl_intf.mop_out)
-                  CALL_nn: set_next_state(uop::sp_m1_2);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end
@@ -286,12 +290,12 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                 case(ctrl_intf.mop_out)
                   PUSH_R, LD_mRd_R, LD_mnn_A: set_next_state(uop::pc_next);
                   LD_mnn_R: set_next_state(uop::write_reg_bH_addr_p1);
+                  CALL_nn: set_next_state(uop::ld_reg_b_imm_1);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end
             uop::write_imm_1L: begin
                 case(ctrl_intf.mop_out)
-                  CALL_nn: set_next_state(uop::ld_reg_b_imm_1);
                   LD_mRd_n: set_next_state(uop::pc_next);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)

@@ -255,8 +255,9 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'h3f000000, 16'hff90, 16'h0002, 16'h0001, 16'h0010, 16'hdec3, 64'h0000000708098000)); // ccf
         testvectors.push_back(cons_test(32'h3f000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec4, 64'h0000000708098000)); // ccf
         testvectors.push_back(cons_reset());
-        testvectors.push_back(cons_test(32'h31100000, 16'h0000, 16'h0000, 16'h0000, 16'h0010, 16'h0004, 64'h0000000000000000)); // ld        sp,$0010
-        testvectors.push_back(cons_test(32'hcd371300, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h1337, 64'h0000000000003713)); // CALL      1337
+        testvectors.push_back(cons_test(32'hc3efbe00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'hbeef, 64'h0000000000000000)); // JP        $4d
+        testvectors.push_back(cons_test(32'h31100000, 16'h0000, 16'h0000, 16'h0000, 16'h0010, 16'hbef2, 64'h0000000000000000)); // ld        sp,$0010
+        testvectors.push_back(cons_test(32'hcd371300, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h1337, 64'h000000000000f5be)); // CALL      1337
         testvectors.push_back(cons_reset());
         testvectors.push_back(cons_test(32'hc34d0000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // JP        $4d
         testvectors.push_back(cons_test(32'h76000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT

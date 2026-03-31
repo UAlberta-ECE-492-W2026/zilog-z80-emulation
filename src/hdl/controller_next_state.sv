@@ -292,7 +292,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             end
 
             /* exchange uop */
-            uop::ex_de_hl, uop::ex_af_afp,  uop::exx: begin
+            uop::ex_de_hl, uop::ex_af_afp, uop::exx: begin
               set_next_state(uop::pc_next);
             end
 

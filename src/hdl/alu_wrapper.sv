@@ -7,7 +7,7 @@ module alu_wrapper #()
     input wire alu_16b_mode,
     input alu_op opcode,
     input wire [5:0] update_flags,
-    input wire carry_in,
+    input wire [5:0] current_flags,
     input wire [15:0] a,
     input wire [15:0] b,
     output wire [15:0] out,
@@ -15,7 +15,10 @@ module alu_wrapper #()
     output wire [5:0] reset_flags,
     output wire [5:0] toggle_flags,
     output wire [5:0] raw_flags
-);
+);  
+    wire carry_in;
+    assign carry_in = current_flags[0];
+
     wire alu_8_en;
     wire alu_16_en;
     assign alu_8_en   = (alu_16b_mode == 0) ? (enable && opcode != ALU_NOP && !is_bit_op) : 0;
@@ -34,8 +37,7 @@ module alu_wrapper #()
     assign set_flags = is_bit_op ? bit_set_flags : (raw_flags & update_flags);
     assign raw_flags = is_bit_op ? bit_raw_flags : ((alu_16b_mode == 1) ? flags_16 : flags_8);
     
-    // will likely need these once the alu actually supports all the required flag behavior
-    assign reset_flags = is_bit_op ? bit_reset_flags : 0;
+    assign reset_flags = is_bit_op ? bit_reset_flags : (~raw_flags) & update_flags & current_flags;
     assign toggle_flags = 0;
 
     wire is_bit_op;

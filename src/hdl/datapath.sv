@@ -147,7 +147,7 @@ module datapath(
         .enable(intf.alu_enable),
         .alu_16b_mode(intf.alu_16b_mode),
         .update_flags(intf.update_flags),
-        .carry_in(intf.f[0])
+        .current_flags(intf.f)
     );
 
     assign intf.memory_out = alu_out;

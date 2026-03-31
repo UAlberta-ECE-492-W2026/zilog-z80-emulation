@@ -143,9 +143,7 @@ module register_file
             end
 
             if (f_w_en == 1'b1) begin
-                if (! (internal_f_set == 0)) main_reg_set[1] <= main_reg_set[1] | internal_f_set;
-                if (! (internal_f_reset == 0)) main_reg_set[1] <= main_reg_set[1] & ( ~ internal_f_reset);
-                if (! (internal_f_toggle == 0)) main_reg_set[1] <= main_reg_set[1] ^ internal_f_toggle;
+                main_reg_set[1] <= ((main_reg_set[1] | internal_f_set) & ( ~ internal_f_reset)) ^ internal_f_toggle;
             end
         
             // exchange

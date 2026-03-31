@@ -75,7 +75,47 @@ module z80_top_tb #() ();
         reg[15:0]  SP;
         reg[15:0]  PC;
         reg[63:0]  test_ram;
+        logic      reset;
     } test_vector;
+
+    /**
+     constructor function that abstracts out optional parameters for the test
+     vector struct.
+     */
+    function automatic test_vector cons_test(
+        //inputs
+        /* verilator lint_off UNUSEDSIGNAL */
+        reg [31:0] instr,
+
+        //expected outputs
+        reg [15:0] af,
+        reg [15:0] bc,
+        reg [15:0] ix,
+        reg [15:0] sp,
+        reg [15:0] pc,
+        reg [63:0] t_ram,
+
+        logic      assert_reset = 0, // optional parameters
+        /* verilator lint_on UNUSEDSIGNAL */
+                                             );
+        return '{instr, af, bc, ix, sp, pc, t_ram, assert_reset};
+    endfunction; // cons_test
+
+    /**
+     * helper constructor that creates a reset blob
+     */
+    function automatic test_vector cons_reset();
+        return cons_test(32'h00000000,
+                         16'h0000,
+                         16'h0000,
+                         16'h0000,
+                         16'h0000,
+                         16'h0001,
+                         64'h0000000000000000,
+                         .assert_reset(1));
+    endfunction; // cons_reset
+
+
 
     test_vector testvectors[$];
 
@@ -132,89 +172,92 @@ module z80_top_tb #() ();
         $dumpfile("out/sim/z80_top_tb.vcd");
         $dumpvars();
 
-        //                                    AF        BC        IX        SP        PC        first 8b of memory
-        testvectors.push_back('{32'h00000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0002, 64'h0000000000000000}); // NOP
-        testvectors.push_back('{32'h3e070000, 16'h0700, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000}); // ld        a,$07
-        testvectors.push_back('{32'h47000000, 16'h0700, 16'h0700, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000}); // ld        b,a
-        testvectors.push_back('{32'h01efbe00, 16'h0700, 16'hbeef, 16'h0000, 16'h0000, 16'h0008, 64'h0000000000000000}); // ld        bc,$beef
-        testvectors.push_back('{32'hed4f0000, 16'h0700, 16'hbeef, 16'h0000, 16'h0000, 16'h000A, 64'h0000000000000000}); // ld        r,a
-        testvectors.push_back('{32'h3e670000, 16'h6700, 16'hbeef, 16'h0000, 16'h0000, 16'h000C, 64'h0000000000000000}); // ld        a,$67
-        testvectors.push_back('{32'hed5f0000, 16'h0700, 16'hbeef, 16'h0000, 16'h0000, 16'h000E, 64'h0000000000000000}); // ld        a,r
-        testvectors.push_back('{32'hed470000, 16'h0700, 16'hbeef, 16'h0000, 16'h0000, 16'h0010, 64'h0000000000000000}); // ld        i,a
-        testvectors.push_back('{32'h3e230000, 16'h2300, 16'hbeef, 16'h0000, 16'h0000, 16'h0012, 64'h0000000000000000}); // ld        a,$23
-        testvectors.push_back('{32'hed570000, 16'h0700, 16'hbeef, 16'h0000, 16'h0000, 16'h0014, 64'h0000000000000000}); // ld        a,i
-        testvectors.push_back('{32'hdd213713, 16'h0700, 16'hbeef, 16'h1337, 16'h0000, 16'h0018, 64'h0000000000000000}); // ld        ix,$1337
-        testvectors.push_back('{32'hfd210190, 16'h0700, 16'hbeef, 16'h1337, 16'h0000, 16'h001C, 64'h0000000000000000}); // ld        iy,$9001
-        testvectors.push_back('{32'hfdf90000, 16'h0700, 16'hbeef, 16'h1337, 16'h9001, 16'h001E, 64'h0000000000000000}); // ld        sp,iy
-        testvectors.push_back('{32'hddf90000, 16'h0700, 16'hbeef, 16'h1337, 16'h1337, 16'h0020, 64'h0000000000000000}); // ld        sp,ix
-        testvectors.push_back('{32'h11341200, 16'h0700, 16'hbeef, 16'h1337, 16'h1337, 16'h0023, 64'h0000000000000000}); // ld        de,$1234
-        testvectors.push_back('{32'h21785600, 16'h0700, 16'hbeef, 16'h1337, 16'h1337, 16'h0026, 64'h0000000000000000}); // ld        hl,$5678
-        testvectors.push_back('{32'heb000000, 16'h0700, 16'hbeef, 16'h1337, 16'h1337, 16'h0027, 64'h0000000000000000}); // ex        de,hl
-        testvectors.push_back('{32'h7a000000, 16'h5600, 16'hbeef, 16'h1337, 16'h1337, 16'h0028, 64'h0000000000000000}); // ld        a,d
-        testvectors.push_back('{32'h7c000000, 16'h1200, 16'hbeef, 16'h1337, 16'h1337, 16'h0029, 64'h0000000000000000}); // ld        a,h
-        testvectors.push_back('{32'h21998800, 16'h1200, 16'hbeef, 16'h1337, 16'h1337, 16'h002C, 64'h0000000000000000}); // ld        hl,$8899
-        testvectors.push_back('{32'hf9000000, 16'h1200, 16'hbeef, 16'h1337, 16'h8899, 16'h002D, 64'h0000000000000000}); // ld        sp,hl
-        testvectors.push_back('{32'h80000000, 16'hd090, 16'hbeef, 16'h1337, 16'h8899, 16'h002E, 64'h0000000000000000}); // add       b
-        testvectors.push_back('{32'hd6010000, 16'hcf92, 16'hbeef, 16'h1337, 16'h8899, 16'h0030, 64'h0000000000000000}); // sub       $01
-        testvectors.push_back('{32'hb0000000, 16'hff80, 16'hbeef, 16'h1337, 16'h8899, 16'h0031, 64'h0000000000000000}); // or        b
-        testvectors.push_back('{32'hc34d0000, 16'hff80, 16'hbeef, 16'h1337, 16'h8899, 16'h004d, 64'h0000000000000000}); // JP        $4d
-        testvectors.push_back('{32'h00000000, 16'hff80, 16'hbeef, 16'h1337, 16'h8899, 16'h004e, 64'h0000000000000000}); // NOP
-        testvectors.push_back('{32'h31100000, 16'hff80, 16'hbeef, 16'h1337, 16'h0010, 16'h0051, 64'h0000000000000000}); // ld        sp,$0010
-        testvectors.push_back('{32'hf5000000, 16'hff80, 16'hbeef, 16'h1337, 16'h000e, 16'h0052, 64'h00000000000080ff}); // push      af
-        testvectors.push_back('{32'hdde50000, 16'hff80, 16'hbeef, 16'h1337, 16'h000c, 16'h0054, 64'h00000000371380ff}); // push      ix
-        testvectors.push_back('{32'hfde50000, 16'hff80, 16'hbeef, 16'h1337, 16'h000a, 16'h0056, 64'h00000190371380ff}); // push      iy
-        testvectors.push_back('{32'hdde10000, 16'hff80, 16'hbeef, 16'h9001, 16'h000c, 16'h0058, 64'h00000190371380ff}); // pop       ix
-        testvectors.push_back('{32'hfde10000, 16'hff80, 16'hbeef, 16'h9001, 16'h000e, 16'h005a, 64'h00000190371380ff}); // pop       iy
-        testvectors.push_back('{32'hc1000000, 16'hff80, 16'hff80, 16'h9001, 16'h0010, 16'h005b, 64'h00000190371380ff}); // pop       bc
-        testvectors.push_back('{32'h21040000, 16'hff80, 16'hff80, 16'h9001, 16'h0010, 16'h005e, 64'h00000190371380ff}); // ld        hl,$0004
-        testvectors.push_back('{32'hdd210100, 16'hff80, 16'hff80, 16'h0001, 16'h0010, 16'h0062, 64'h00000190371380ff}); // ld        ix,$0001
-        testvectors.push_back('{32'hfd210200, 16'hff80, 16'hff80, 16'h0001, 16'h0010, 16'h0066, 64'h00000190371380ff}); // ld        iy,$0002
-        testvectors.push_back('{32'h34000000, 16'hff80, 16'hff80, 16'h0001, 16'h0010, 16'h0067, 64'h00000190381380ff}); // inc       (hl)
-        testvectors.push_back('{32'hdd340b00, 16'hff80, 16'hff80, 16'h0001, 16'h0010, 16'h006a, 64'h00000190391380ff}); // inc       (ix+$0b)
-        testvectors.push_back('{32'hfd340a00, 16'hff80, 16'hff80, 16'h0001, 16'h0010, 16'h006d, 64'h000001903a1380ff}); // inc       (iy+$0a)
-        testvectors.push_back('{32'h7e000000, 16'h3a80, 16'hff80, 16'h0001, 16'h0010, 16'h006e, 64'h000001903a1380ff}); // ld        a,(hl)
-        testvectors.push_back('{32'hdd7e0100, 16'h0180, 16'hff80, 16'h0001, 16'h0010, 16'h0071, 64'h000001903a1380ff}); // ld        a,(ix+$01)
-        testvectors.push_back('{32'hfd7e0200, 16'h3a80, 16'hff80, 16'h0001, 16'h0010, 16'h0074, 64'h000001903a1380ff}); // ld        a,(iy+$02)
-        testvectors.push_back('{32'h01020000, 16'h3a80, 16'h0002, 16'h0001, 16'h0010, 16'h0077, 64'h000001903a1380ff}); // ld        bc,$0002
-        testvectors.push_back('{32'h11030000, 16'h3a80, 16'h0002, 16'h0001, 16'h0010, 16'h007a, 64'h000001903a1380ff}); // ld        de,$0003
-        testvectors.push_back('{32'h0a000000, 16'h0180, 16'h0002, 16'h0001, 16'h0010, 16'h007b, 64'h000001903a1380ff}); // ld        a,(bc)
-        testvectors.push_back('{32'h1a000000, 16'h9080, 16'h0002, 16'h0001, 16'h0010, 16'h007c, 64'h000001903a1380ff}); // ld        a,(de)
-        testvectors.push_back('{32'h3e000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h007e, 64'h000001903a1380ff}); // ld        a,$00
-        testvectors.push_back('{32'h77000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h007f, 64'h00000190001380ff}); // ld        (hl),a
-        testvectors.push_back('{32'hdd770400, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0082, 64'h00000190000080ff}); // ld        (ix+$04),a
-        testvectors.push_back('{32'hfd770500, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0085, 64'h0000019000008000}); // ld        (iy+$05),a
-        testvectors.push_back('{32'h02000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0086, 64'h0000009000008000}); // ld        (bc),a
-        testvectors.push_back('{32'h12000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0087, 64'h0000000000008000}); // ld        (de),a
-        testvectors.push_back('{32'h36080000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0089, 64'h0000000008008000}); // ld        (hl),$08
-        testvectors.push_back('{32'hdd360409, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h008d, 64'h0000000008098000}); // ld        (ix+$04),$09
-        testvectors.push_back('{32'hfd360107, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0091, 64'h0000000708098000}); // ld        (iy+$01),$07
-        testvectors.push_back('{32'hca000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0094, 64'h0000000708098000}); // JP        z,0
-        testvectors.push_back('{32'hc2111000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h1011, 64'h0000000708098000}); // JP        nz,$1011
-        testvectors.push_back('{32'h18cc0000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0fdf, 64'h0000000708098000}); // JR        -50
-        testvectors.push_back('{32'h18740000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h1055, 64'h0000000708098000}); // JR        $76
-        testvectors.push_back('{32'h28030000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h1057, 64'h0000000708098000}); // JR        z,5
-        testvectors.push_back('{32'h20980000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0ff1, 64'h0000000708098000}); // JR        nz,-102
-        testvectors.push_back('{32'h21adde00, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0ff4, 64'h0000000708098000}); // ld        hl,$dead
-        testvectors.push_back('{32'he9000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'hdead, 64'h0000000708098000}); // jp        (hl)
-        testvectors.push_back('{32'h06ff0000, 16'h0080, 16'hff02, 16'h0001, 16'h0010, 16'hdeaf, 64'h0000000708098000}); // ld        b,$ff
-        testvectors.push_back('{32'h10fd0000, 16'h0080, 16'hfe02, 16'h0001, 16'h0010, 16'hdeae, 64'h0000000708098000}); // djnz      -1
-        testvectors.push_back('{32'h06010000, 16'h0080, 16'h0102, 16'h0001, 16'h0010, 16'hdeb0, 64'h0000000708098000}); // ld        b,1
-        testvectors.push_back('{32'h10fd0000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'hdeb2, 64'h0000000708098000}); // djnz      -1
-        testvectors.push_back('{32'h3e090000, 16'h0980, 16'h0002, 16'h0001, 16'h0010, 16'hdeb4, 64'h0000000708098000}); // ld        a,$09
-        testvectors.push_back('{32'h1e050000, 16'h0980, 16'h0002, 16'h0001, 16'h0010, 16'hdeb6, 64'h0000000708098000}); // ld        e,$05
-        testvectors.push_back('{32'h9b000000, 16'h0402, 16'h0002, 16'h0001, 16'h0010, 16'hdeb7, 64'h0000000708098000}); // sbc       e
-        testvectors.push_back('{32'h9b000000, 16'hff93, 16'h0002, 16'h0001, 16'h0010, 16'hdeb8, 64'h0000000708098000}); // sbc       e
-        testvectors.push_back('{32'h3e070000, 16'h0793, 16'h0002, 16'h0001, 16'h0010, 16'hdeba, 64'h0000000708098000}); // ld        a,$07
-        testvectors.push_back('{32'h9b000000, 16'h0102, 16'h0002, 16'h0001, 16'h0010, 16'hdebb, 64'h0000000708098000}); // sbc       e
-        testvectors.push_back('{32'h3e020000, 16'h0202, 16'h0002, 16'h0001, 16'h0010, 16'hdebd, 64'h0000000708098000}); // ld        a,$02
-        testvectors.push_back('{32'hbb000000, 16'h0293, 16'h0002, 16'h0001, 16'h0010, 16'hdebe, 64'h0000000708098000}); // cp        e
-        testvectors.push_back('{32'h3eff0000, 16'hff93, 16'h0002, 16'h0001, 16'h0010, 16'hdec0, 64'h0000000708098000}); // ld        a,$ff
-        testvectors.push_back('{32'hbb000000, 16'hff82, 16'h0002, 16'h0001, 16'h0010, 16'hdec1, 64'h0000000708098000}); // cp        e
-        testvectors.push_back('{32'h37000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec2, 64'h0000000708098000}); // scf
-        testvectors.push_back('{32'h3f000000, 16'hff90, 16'h0002, 16'h0001, 16'h0010, 16'hdec3, 64'h0000000708098000}); // ccf
-        testvectors.push_back('{32'h3f000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec4, 64'h0000000708098000}); // ccf
-        testvectors.push_back('{32'h76000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec4, 64'h0000000708098000}); // HALT
-        testvectors.push_back('{32'h76000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec4, 64'h0000000708098000}); // HALT
+        //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
+        testvectors.push_back(cons_reset()); // RESET
+        testvectors.push_back(cons_test(32'h00000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0002, 64'h0000000000000000)); // NOP
+        testvectors.push_back(cons_test(32'h3e070000, 16'h0700, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld        a,$07
+        testvectors.push_back(cons_test(32'h47000000, 16'h0700, 16'h0700, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // ld        b,a
+        testvectors.push_back(cons_test(32'h01efbe00, 16'h0700, 16'hbeef, 16'h0000, 16'h0000, 16'h0008, 64'h0000000000000000)); // ld        bc,$beef
+        testvectors.push_back(cons_test(32'hed4f0000, 16'h0700, 16'hbeef, 16'h0000, 16'h0000, 16'h000A, 64'h0000000000000000)); // ld        r,a
+        testvectors.push_back(cons_test(32'h3e670000, 16'h6700, 16'hbeef, 16'h0000, 16'h0000, 16'h000C, 64'h0000000000000000)); // ld        a,$67
+        testvectors.push_back(cons_test(32'hed5f0000, 16'h0700, 16'hbeef, 16'h0000, 16'h0000, 16'h000E, 64'h0000000000000000)); // ld        a,r
+        testvectors.push_back(cons_test(32'hed470000, 16'h0700, 16'hbeef, 16'h0000, 16'h0000, 16'h0010, 64'h0000000000000000)); // ld        i,a
+        testvectors.push_back(cons_test(32'h3e230000, 16'h2300, 16'hbeef, 16'h0000, 16'h0000, 16'h0012, 64'h0000000000000000)); // ld        a,$23
+        testvectors.push_back(cons_test(32'hed570000, 16'h0700, 16'hbeef, 16'h0000, 16'h0000, 16'h0014, 64'h0000000000000000)); // ld        a,i
+        testvectors.push_back(cons_test(32'hdd213713, 16'h0700, 16'hbeef, 16'h1337, 16'h0000, 16'h0018, 64'h0000000000000000)); // ld        ix,$1337
+        testvectors.push_back(cons_test(32'hfd210190, 16'h0700, 16'hbeef, 16'h1337, 16'h0000, 16'h001C, 64'h0000000000000000)); // ld        iy,$9001
+        testvectors.push_back(cons_test(32'hfdf90000, 16'h0700, 16'hbeef, 16'h1337, 16'h9001, 16'h001E, 64'h0000000000000000)); // ld        sp,iy
+        testvectors.push_back(cons_test(32'hddf90000, 16'h0700, 16'hbeef, 16'h1337, 16'h1337, 16'h0020, 64'h0000000000000000)); // ld        sp,ix
+        testvectors.push_back(cons_test(32'h11341200, 16'h0700, 16'hbeef, 16'h1337, 16'h1337, 16'h0023, 64'h0000000000000000)); // ld        de,$1234
+        testvectors.push_back(cons_test(32'h21785600, 16'h0700, 16'hbeef, 16'h1337, 16'h1337, 16'h0026, 64'h0000000000000000)); // ld        hl,$5678
+        testvectors.push_back(cons_test(32'heb000000, 16'h0700, 16'hbeef, 16'h1337, 16'h1337, 16'h0027, 64'h0000000000000000)); // ex        de,hl
+        testvectors.push_back(cons_test(32'h7a000000, 16'h5600, 16'hbeef, 16'h1337, 16'h1337, 16'h0028, 64'h0000000000000000)); // ld        a,d
+        testvectors.push_back(cons_test(32'h7c000000, 16'h1200, 16'hbeef, 16'h1337, 16'h1337, 16'h0029, 64'h0000000000000000)); // ld        a,h
+        testvectors.push_back(cons_test(32'h21998800, 16'h1200, 16'hbeef, 16'h1337, 16'h1337, 16'h002C, 64'h0000000000000000)); // ld        hl,$8899
+        testvectors.push_back(cons_test(32'hf9000000, 16'h1200, 16'hbeef, 16'h1337, 16'h8899, 16'h002D, 64'h0000000000000000)); // ld        sp,hl
+        testvectors.push_back(cons_test(32'h80000000, 16'hd090, 16'hbeef, 16'h1337, 16'h8899, 16'h002E, 64'h0000000000000000)); // add       b
+        testvectors.push_back(cons_test(32'hd6010000, 16'hcf92, 16'hbeef, 16'h1337, 16'h8899, 16'h0030, 64'h0000000000000000)); // sub       $01
+        testvectors.push_back(cons_test(32'hb0000000, 16'hff80, 16'hbeef, 16'h1337, 16'h8899, 16'h0031, 64'h0000000000000000)); // or        b
+        testvectors.push_back(cons_test(32'hc34d0000, 16'hff80, 16'hbeef, 16'h1337, 16'h8899, 16'h004d, 64'h0000000000000000)); // JP        $4d
+        testvectors.push_back(cons_test(32'h00000000, 16'hff80, 16'hbeef, 16'h1337, 16'h8899, 16'h004e, 64'h0000000000000000)); // NOP
+        testvectors.push_back(cons_test(32'h31100000, 16'hff80, 16'hbeef, 16'h1337, 16'h0010, 16'h0051, 64'h0000000000000000)); // ld        sp,$0010
+        testvectors.push_back(cons_test(32'hf5000000, 16'hff80, 16'hbeef, 16'h1337, 16'h000e, 16'h0052, 64'h00000000000080ff)); // push      af
+        testvectors.push_back(cons_test(32'hdde50000, 16'hff80, 16'hbeef, 16'h1337, 16'h000c, 16'h0054, 64'h00000000371380ff)); // push      ix
+        testvectors.push_back(cons_test(32'hfde50000, 16'hff80, 16'hbeef, 16'h1337, 16'h000a, 16'h0056, 64'h00000190371380ff)); // push      iy
+        testvectors.push_back(cons_test(32'hdde10000, 16'hff80, 16'hbeef, 16'h9001, 16'h000c, 16'h0058, 64'h00000190371380ff)); // pop       ix
+        testvectors.push_back(cons_test(32'hfde10000, 16'hff80, 16'hbeef, 16'h9001, 16'h000e, 16'h005a, 64'h00000190371380ff)); // pop       iy
+        testvectors.push_back(cons_test(32'hc1000000, 16'hff80, 16'hff80, 16'h9001, 16'h0010, 16'h005b, 64'h00000190371380ff)); // pop       bc
+        testvectors.push_back(cons_test(32'h21040000, 16'hff80, 16'hff80, 16'h9001, 16'h0010, 16'h005e, 64'h00000190371380ff)); // ld        hl,$0004
+        testvectors.push_back(cons_test(32'hdd210100, 16'hff80, 16'hff80, 16'h0001, 16'h0010, 16'h0062, 64'h00000190371380ff)); // ld        ix,$0001
+        testvectors.push_back(cons_test(32'hfd210200, 16'hff80, 16'hff80, 16'h0001, 16'h0010, 16'h0066, 64'h00000190371380ff)); // ld        iy,$0002
+        testvectors.push_back(cons_test(32'h34000000, 16'hff80, 16'hff80, 16'h0001, 16'h0010, 16'h0067, 64'h00000190381380ff)); // inc       (hl)
+        testvectors.push_back(cons_test(32'hdd340b00, 16'hff80, 16'hff80, 16'h0001, 16'h0010, 16'h006a, 64'h00000190391380ff)); // inc       (ix+$0b)
+        testvectors.push_back(cons_test(32'hfd340a00, 16'hff80, 16'hff80, 16'h0001, 16'h0010, 16'h006d, 64'h000001903a1380ff)); // inc       (iy+$0a)
+        testvectors.push_back(cons_test(32'h7e000000, 16'h3a80, 16'hff80, 16'h0001, 16'h0010, 16'h006e, 64'h000001903a1380ff)); // ld        a,(hl)
+        testvectors.push_back(cons_test(32'hdd7e0100, 16'h0180, 16'hff80, 16'h0001, 16'h0010, 16'h0071, 64'h000001903a1380ff)); // ld        a,(ix+$01)
+        testvectors.push_back(cons_test(32'hfd7e0200, 16'h3a80, 16'hff80, 16'h0001, 16'h0010, 16'h0074, 64'h000001903a1380ff)); // ld        a,(iy+$02)
+        testvectors.push_back(cons_test(32'h01020000, 16'h3a80, 16'h0002, 16'h0001, 16'h0010, 16'h0077, 64'h000001903a1380ff)); // ld        bc,$0002
+        testvectors.push_back(cons_test(32'h11030000, 16'h3a80, 16'h0002, 16'h0001, 16'h0010, 16'h007a, 64'h000001903a1380ff)); // ld        de,$0003
+        testvectors.push_back(cons_test(32'h0a000000, 16'h0180, 16'h0002, 16'h0001, 16'h0010, 16'h007b, 64'h000001903a1380ff)); // ld        a,(bc)
+        testvectors.push_back(cons_test(32'h1a000000, 16'h9080, 16'h0002, 16'h0001, 16'h0010, 16'h007c, 64'h000001903a1380ff)); // ld        a,(de)
+        testvectors.push_back(cons_test(32'h3e000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h007e, 64'h000001903a1380ff)); // ld        a,$00
+        testvectors.push_back(cons_test(32'h77000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h007f, 64'h00000190001380ff)); // ld        (hl),a
+        testvectors.push_back(cons_test(32'hdd770400, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0082, 64'h00000190000080ff)); // ld        (ix+$04),a
+        testvectors.push_back(cons_test(32'hfd770500, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0085, 64'h0000019000008000)); // ld        (iy+$05),a
+        testvectors.push_back(cons_test(32'h02000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0086, 64'h0000009000008000)); // ld        (bc),a
+        testvectors.push_back(cons_test(32'h12000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0087, 64'h0000000000008000)); // ld        (de),a
+        testvectors.push_back(cons_test(32'h36080000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0089, 64'h0000000008008000)); // ld        (hl),$08
+        testvectors.push_back(cons_test(32'hdd360409, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h008d, 64'h0000000008098000)); // ld        (ix+$04),$09
+        testvectors.push_back(cons_test(32'hfd360107, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0091, 64'h0000000708098000)); // ld        (iy+$01),$07
+        testvectors.push_back(cons_test(32'hca000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0094, 64'h0000000708098000)); // JP        z,0
+        testvectors.push_back(cons_test(32'hc2111000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h1011, 64'h0000000708098000)); // JP        nz,$1011
+        testvectors.push_back(cons_test(32'h18cc0000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0fdf, 64'h0000000708098000)); // JR        -50
+        testvectors.push_back(cons_test(32'h18740000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h1055, 64'h0000000708098000)); // JR        $76
+        testvectors.push_back(cons_test(32'h28030000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h1057, 64'h0000000708098000)); // JR        z,5
+        testvectors.push_back(cons_test(32'h20980000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0ff1, 64'h0000000708098000)); // JR        nz,-102
+        testvectors.push_back(cons_test(32'h21adde00, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0ff4, 64'h0000000708098000)); // ld        hl,$dead
+        testvectors.push_back(cons_test(32'he9000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'hdead, 64'h0000000708098000)); // jp        (hl)
+        testvectors.push_back(cons_test(32'h06ff0000, 16'h0080, 16'hff02, 16'h0001, 16'h0010, 16'hdeaf, 64'h0000000708098000)); // ld        b,$ff
+        testvectors.push_back(cons_test(32'h10fd0000, 16'h0080, 16'hfe02, 16'h0001, 16'h0010, 16'hdeae, 64'h0000000708098000)); // djnz      -1
+        testvectors.push_back(cons_test(32'h06010000, 16'h0080, 16'h0102, 16'h0001, 16'h0010, 16'hdeb0, 64'h0000000708098000)); // ld        b,1
+        testvectors.push_back(cons_test(32'h10fd0000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'hdeb2, 64'h0000000708098000)); // djnz      -1
+        testvectors.push_back(cons_test(32'h3e090000, 16'h0980, 16'h0002, 16'h0001, 16'h0010, 16'hdeb4, 64'h0000000708098000)); // ld        a,$09
+        testvectors.push_back(cons_test(32'h1e050000, 16'h0980, 16'h0002, 16'h0001, 16'h0010, 16'hdeb6, 64'h0000000708098000)); // ld        e,$05
+        testvectors.push_back(cons_test(32'h9b000000, 16'h0402, 16'h0002, 16'h0001, 16'h0010, 16'hdeb7, 64'h0000000708098000)); // sbc       e
+        testvectors.push_back(cons_test(32'h9b000000, 16'hff93, 16'h0002, 16'h0001, 16'h0010, 16'hdeb8, 64'h0000000708098000)); // sbc       e
+        testvectors.push_back(cons_test(32'h3e070000, 16'h0793, 16'h0002, 16'h0001, 16'h0010, 16'hdeba, 64'h0000000708098000)); // ld        a,$07
+        testvectors.push_back(cons_test(32'h9b000000, 16'h0102, 16'h0002, 16'h0001, 16'h0010, 16'hdebb, 64'h0000000708098000)); // sbc       e
+        testvectors.push_back(cons_test(32'h3e020000, 16'h0202, 16'h0002, 16'h0001, 16'h0010, 16'hdebd, 64'h0000000708098000)); // ld        a,$02
+        testvectors.push_back(cons_test(32'hbb000000, 16'h0293, 16'h0002, 16'h0001, 16'h0010, 16'hdebe, 64'h0000000708098000)); // cp        e
+        testvectors.push_back(cons_test(32'h3eff0000, 16'hff93, 16'h0002, 16'h0001, 16'h0010, 16'hdec0, 64'h0000000708098000)); // ld        a,$ff
+        testvectors.push_back(cons_test(32'hbb000000, 16'hff82, 16'h0002, 16'h0001, 16'h0010, 16'hdec1, 64'h0000000708098000)); // cp        e
+        testvectors.push_back(cons_test(32'h37000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec2, 64'h0000000708098000)); // scf
+        testvectors.push_back(cons_test(32'h3f000000, 16'hff90, 16'h0002, 16'h0001, 16'h0010, 16'hdec3, 64'h0000000708098000)); // ccf
+        testvectors.push_back(cons_test(32'h3f000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec4, 64'h0000000708098000)); // ccf
+        testvectors.push_back(cons_reset());
+        testvectors.push_back(cons_test(32'hc34d0000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // JP        $4d
+        testvectors.push_back(cons_test(32'h76000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT
+        testvectors.push_back(cons_test(32'h76000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT
 
         reset_tb();
         ->test_start;
@@ -223,10 +266,16 @@ module z80_top_tb #() ();
         $display("idx | instruction |   AF |   BC |   IX |   SP |   PC | memory    ");
 
         foreach (testvectors[i]) begin
+            automatic test_vector current_test = testvectors[i];
+
             /* application of the test vector in the fetch region */
             @frame_start;
-            instruction = testvectors[i].instruction;
+            instruction = current_test.instruction;
             test_idx = i;
+            if (current_test.reset == 1) begin
+                reset_tb();
+            end;
+
 
             /* assertion region of the testbench */
             @frame_end;

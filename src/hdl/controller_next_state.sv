@@ -102,6 +102,9 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   CP_R_nn: set_next_state(uop::cp_reg_a_imm_1);
                   CP_R_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0);
                   INC_mRd, DEC_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  DAA: set_next_state(uop::daa);
+                  CPL: set_next_state(uop::cpl);
+                  NEG: set_next_state(uop::neg);
                   CCF: set_next_state(uop::ccf);
                   SCF: set_next_state(uop::scf);
                   NOP: set_next_state(uop::pc_next);
@@ -433,7 +436,12 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
             begin
               set_next_state(uop::pc_next);
             end
-
+            uop::daa,
+            uop::cpl,
+            uop::neg: begin
+              set_next_state(uop::pc_next);
+            end
+            
             /* shift related */
             uop::rl_reg_a: begin
                 case(ctrl_intf.mop_out)

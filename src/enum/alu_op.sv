@@ -29,8 +29,22 @@ typedef enum [4:0] {
     ALU_RL,
     ALU_RR,
     ALU_RLD,
-    ALU_RRD
+    ALU_RRD,
+    ALU_DAA,
+    ALU_CPL
 } alu_op;
+
+typedef enum [4:0] { 
+    NUMERIC_OP,
+    SHIFT_OP, 
+    ROTATE_OP,
+    BCD_ROTATE_OP,
+    AND_OP, 
+    OR_OP, 
+    XOR_OP, 
+    DAA_OP,
+    CPL_OP
+} alu_status_op;
 /* verilator lint_on UNDRIVEN */
 /* verilator lint_on UNUSEDSIGNAL */
 `endif

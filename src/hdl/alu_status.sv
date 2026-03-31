@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-
+`include "alu_op.sv"
 //! This module implements the status output for the ALU, as defined by the
 //! Zilog Z80 specification
 //! Symbol Field Name
@@ -26,21 +26,15 @@ module  alu_status #(
     input wire [alu_width-1:0] b,
     input wire [alu_width-1:0] op_result,
     input wire [alu_width:0]   result_buffer,
-    input wire [2:0] opcode,
+    input alu_status_op opcode,
    	// op_sign == 1 : negative
    	// op_sign == 0 : positive
-   	input wire                 op_sign
+   	input wire                 op_sign,
+	/* verilator lint_off UNUSEDSIGNAL */
+	input wire[5:0]			   flags_in
+	/* verilator lint_on UNUSEDSIGNAL */
 );
    	localparam integer upper_bit = alu_width - 1;
-
-   	/* the following are the opcodes for the ALU status system */
-    parameter NUMERIC_OP = 'b000;
-    parameter SHIFT_OP = 'b001;
-	parameter ROTATE_OP = 'b010;  // RL/RR
-	parameter BCD_ROTATE_OP = 'b011;  // RLD/RRD
-	parameter AND_OP = 'b100;
-    parameter OR_OP = 'b101;
-    parameter XOR_OP = 'b110;
 
    	/* function that does overflow_check bit logic */
 	/* verilator lint_off UNUSEDSIGNAL */
@@ -85,6 +79,7 @@ module  alu_status #(
       	s_var = 0;
       	z_var = 0;
         n_var = 0;
+		bcd_acc = 0;
 
 
       	case (opcode)
@@ -161,6 +156,28 @@ module  alu_status #(
 				end
 				n_var = 0;
 				c_var = 0;
+			end
+			DAA_OP: begin
+				c_var = (flags_in[0] || a > 'h99) ? 1 : 0;
+				if (flags_in[1] && ~flags_in[3]) begin
+					h_var = 0;
+				end else begin
+					if (flags_in[1] && flags_in[3]) begin
+						h_var = (a & 'hF) < 'h6;
+					end else begin
+						h_var = (a & 'hF) >= 'hA;
+					end
+				end
+				s_var = op_result[7];
+				z_var = (op_result == 0? 1 : 0);
+				pv_var = 1;
+				for (i = 0; i < alu_width; i = i + 1) begin
+					pv_var = pv_var ^ op_result[i];
+				end
+			end
+			CPL_OP: begin
+				h_var = 1;
+				n_var = 1;
 			end
         	default: begin
            	end

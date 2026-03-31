@@ -125,6 +125,7 @@ module datapath(
             A_MUX_REG_SHIFTED   : alu_a = {reg_a[7:0], 8'h00};
             A_MUX_REG           : alu_a = reg_a;
             A_MUX_MEMORY_READ_BUFF : alu_a = {8'h00, memory_buff_out};
+            A_MUX_0             : alu_a = 0;
             default             : alu_a = 16'hXXXX;
         endcase
 

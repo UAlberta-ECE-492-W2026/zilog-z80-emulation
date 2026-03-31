@@ -94,7 +94,10 @@ package uop;
                         dec_reg_b,
 
                         /* general purpose group */
-                        ccf, //41
+                        daa, //41
+                        cpl,
+                        neg,
+                        ccf, 
                         scf,
 
                         /* rotate/shift */

@@ -338,6 +338,13 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hbe000000, 16'h1042, 16'h0000, 16'h0006, 16'h0000, 16'h007c, 64'h0000000000331110)); // cp        (hl)
         testvectors.push_back(cons_test(32'hfdbe0000, 16'h1093, 16'h0000, 16'h0006, 16'h0000, 16'h007f, 64'h0000000000331110)); // cp        (iy+$00)
         testvectors.push_back(cons_test(32'hddbe0000, 16'h1093, 16'h0000, 16'h0006, 16'h0000, 16'h0082, 64'h0000000000331110)); // cp        (ix+$00)
+        testvectors.push_back(cons_reset());
+        testvectors.push_back(cons_test(32'h3e0f0000, 16'h0f00, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // ld        a,$0f
+        testvectors.push_back(cons_test(32'h2f080000, 16'hf012, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // cpl
+        testvectors.push_back(cons_test(32'h3e020000, 16'h0212, 16'h0000, 16'h0000, 16'h0000, 16'h0006, 64'h0000000000000000)); // ld        a,$02
+        testvectors.push_back(cons_test(32'hed440000, 16'hfe93, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h0000000000000000)); // neg
+        // just to make sure the states sequense correctly and the instruction is decoded. no idea if the result is correct
+        testvectors.push_back(cons_test(32'h27000000, 16'h9883, 16'h0000, 16'h0000, 16'h0000, 16'h0009, 64'h0000000000000000)); // daa 
 
         reset_tb();
         ->test_start;

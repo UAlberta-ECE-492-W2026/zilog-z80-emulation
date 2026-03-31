@@ -556,6 +556,38 @@ module controller_output (
                 intf.update_flags = intf.update_flags_out;
                 intf.write_back_sel = WB_MUX_ALU;
             end
+            uop::daa: begin
+                intf.reg_a_sel = A;
+                intf.enable_and_set_reg_w(A);
+                intf.enable_and_set_alu_opcode(ALU_DAA,
+                                               .mux_a(A_MUX_REG));
+                intf.alu_16b_mode = 0;
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::cpl: begin
+                intf.reg_a_sel = A;
+                intf.enable_and_set_reg_w(A);
+                intf.enable_and_set_alu_opcode(ALU_CPL,
+                                               .mux_a(A_MUX_REG));
+                intf.alu_16b_mode = 0;
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::neg: begin
+                intf.reg_b_sel = A;
+                intf.imm_in = 0;
+                intf.enable_and_set_reg_w(A);
+                intf.enable_and_set_alu_opcode(ALU_SUB,
+                                               .mux_a(A_MUX_0),
+                                               .mux_b(B_MUX_REG));
+                intf.alu_16b_mode = 0;
+                intf.f_w_en = 1;
+                intf.update_flags = intf.update_flags_out;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
             uop::rl_reg_a: begin
                 intf.reg_a_sel = intf.reg_a_sel_out;
                 intf.enable_and_set_reg_w(intf.reg_a_sel);

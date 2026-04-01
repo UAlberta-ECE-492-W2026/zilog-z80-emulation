@@ -9,17 +9,23 @@ module char_ram #()(
     /* verilator lint_off UNUSEDSIGNAL */
     input  logic [15:0] address,
     /* verilator lint_on UNUSEDSIGNAL */
+    input  logic axi_clk,
     input  logic w_en,
+    input  logic r_en,
     input  logic [7:0] data_in
 );
-localparam total_chars = 80*60;
+localparam total_chars = 80 * 60;
 logic [7:0] RW[0:total_chars - 1];
 
 always_ff @(posedge clk) begin
-    if (w_en)
+    if ( w_en ) begin
         RW[address[12:0]] <= data_in;
-
-    data_out <= RW[address[12:0]];
+    end
+end
+always_ff @(posedge axi_clk) begin
+    if ( r_en ) begin
+        data_out <= RW[address[12:0]];
+    end
 end
 
 endmodule

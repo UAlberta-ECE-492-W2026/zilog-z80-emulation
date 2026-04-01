@@ -119,8 +119,7 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   RR_mRd: set_next_state(uop::buff_addr_reg_a);
                   SLA_R: set_next_state(uop::rl_reg_a);
                   SLA_mRd: set_next_state(uop::buff_addr_reg_a);
-                  RLD: set_next_state(uop::rld);
-                  RRD: set_next_state(uop::rrd);
+                  RLD, RRD: set_next_state(uop::buff_addr_reg_a);
                   JP_nn: set_next_state(uop::ld_reg_a_imm_1);
                   JP_cc_nn: set_next_state(choose_next_jump_state(j_cc,
                                                                   ctrl_intf.f,
@@ -221,7 +220,9 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   RR_mRd,
                   SLA_mRd,
                   SRA_mRd,
-                  SRL_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0);
+                  SRL_mRd,
+                  RLD,
+                  RRD: set_next_state(uop::read_mrbuff_reg_b_imm_0);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end
@@ -288,6 +289,8 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   SLA_mRd: set_next_state(uop::sla_mbuff_mrbuff);
                   SRA_mRd: set_next_state(uop::sra_mbuff_mrbuff);
                   SRL_mRd: set_next_state(uop::srl_mbuff_mrbuff);
+                  RLD: set_next_state(uop::rld);
+                  RRD: set_next_state(uop::rrd);
                   default: set_next_state(uop::invalid);
                 endcase; // case (curr_state)
             end

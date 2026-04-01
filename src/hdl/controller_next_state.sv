@@ -109,7 +109,18 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   SCF: set_next_state(uop::scf);
                   NOP: set_next_state(uop::pc_next);
                   HALT: set_next_state(uop::fetch);
+                  RLC_R: set_next_state(uop::rlc_reg_a);
+                  RLC_mRd: set_next_state(uop::buff_addr_reg_a);
                   RL_R: set_next_state(uop::rl_reg_a);
+                  RL_mRd: set_next_state(uop::buff_addr_reg_a);
+                  RRC_R: set_next_state(uop::rl_reg_a);
+                  RRC_mRd: set_next_state(uop::buff_addr_reg_a);
+                  RR_R: set_next_state(uop::rl_reg_a);
+                  RR_mRd: set_next_state(uop::buff_addr_reg_a);
+                  SLA_R: set_next_state(uop::rl_reg_a);
+                  SLA_mRd: set_next_state(uop::buff_addr_reg_a);
+                  RLD: set_next_state(uop::rld);
+                  RRD: set_next_state(uop::rrd);
                   JP_nn: set_next_state(uop::ld_reg_a_imm_1);
                   JP_cc_nn: set_next_state(choose_next_jump_state(j_cc,
                                                                   ctrl_intf.f,
@@ -183,6 +194,13 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                 case(ctrl_intf.mop_out)
                   PUSH_R: set_next_state(uop::write_reg_bH);
                   CALL_nn: set_next_state(uop::write_imm_1H);
+                  RLC_mRd,
+                  RL_mRd,
+                  RRC_mRd,
+                  RR_mRd,
+                  SLA_mRd,
+                  SRA_mRd,
+                  SRL_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end
@@ -234,6 +252,13 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   OR_R_mRd: set_next_state(uop::or_reg_a_mrbuff);
                   XOR_R_mRd: set_next_state(uop::xor_reg_a_mrbuff);
                   CP_R_mRd: set_next_state(uop::cp_reg_a_mrbuff);
+                  RLC_mRd: set_next_state(uop::rlc_mbuff_mrbuff);
+                  RL_mRd: set_next_state(uop::rl_mbuff_mrbuff);
+                  RRC_mRd: set_next_state(uop::rrc_mbuff_mrbuff);
+                  RR_mRd: set_next_state(uop::rr_mbuff_mrbuff);
+                  SLA_mRd: set_next_state(uop::sla_mbuff_mrbuff);
+                  SRA_mRd: set_next_state(uop::sra_mbuff_mrbuff);
+                  SRL_mRd: set_next_state(uop::srl_mbuff_mrbuff);
                   default: set_next_state(uop::invalid);
                 endcase; // case (curr_state)
             end
@@ -442,11 +467,24 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
               set_next_state(uop::pc_next);
             end
 
-            /* shift related */
-            uop::rl_reg_a: begin
-                case(ctrl_intf.mop_out)
-                  default: set_next_state(uop::pc_next);
-                endcase; // case (ctrl_intf.mop_out)
+            /* rotate/shift related */
+            uop::rlc_reg_a,
+            uop::rlc_mbuff_mrbuff,
+            uop::rl_reg_a,
+            uop::rl_mbuff_mrbuff,
+            uop::rrc_reg_a,
+            uop::rrc_mbuff_mrbuff,
+            uop::rr_reg_a,
+            uop::rr_mbuff_mrbuff,
+            uop::sla_reg_a,
+            uop::sla_mbuff_mrbuff,
+            uop::sra_reg_a,
+            uop::sra_mbuff_mrbuff,
+            uop::srl_reg_a,
+            uop::srl_mbuff_mrbuff,
+            uop::rld,
+            uop::rrd: begin
+              set_next_state(uop::pc_next);
             end
 
             default: set_next_state(uop::fetch);

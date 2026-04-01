@@ -833,6 +833,7 @@ module decode #(
             output_op = RR_R;
             reg_a = A;
             update_flags = 6'b001011;
+
         end else if (op_0 == 8'hCB && op_1[7:3] == 5'h0 && ! (op_1[2:0] == 3'b110) ) begin // RLC r
             output_op = RLC_R;
             reg_a = reg_from_r(op_1[2:0]);
@@ -841,20 +842,24 @@ module decode #(
         end else if (op_0 == 8'hCB && op_1 == 8'h06) begin // RLC HL
             output_op = RLC_mRd;
             reg_a = HL;
+            reg_b = HL;
             update_flags = 6'b111111;
             instruction_length = 2;
         end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h06) begin // RLC (IX+d)
             output_op = RLC_mRd;
             reg_a = IX;
+            reg_b = IX;
             imm_0 = op_2;
             update_flags = 6'b111111;
             instruction_length = 4;
         end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h06) begin // RLC (IY+d)
             output_op = RLC_mRd;
             reg_a = IY;
+            reg_b = IY;
             imm_0 = op_2;
             update_flags = 6'b111111;
             instruction_length = 4;
+        
         end else if (op_0 == 8'hCB && op_1[7:3] == 5'b10 && ! (op_1[2:0] == 3'b110)) begin // RL r
             output_op = RL_R;
             reg_a = reg_from_r(op_1[2:0]);
@@ -863,17 +868,20 @@ module decode #(
         end else if (op_0 == 8'hCB && op_1 == 8'h16) begin // RL HL
             output_op = RL_mRd;
             reg_a = HL;
+            reg_b = HL;
             update_flags = 6'b111111;
             instruction_length = 2;
         end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h16) begin // RL (IX+d)
             output_op = RL_mRd;
             reg_a = IX;
+            reg_b = IX;
             imm_0 = op_2;
             update_flags = 6'b111111;
             instruction_length = 4;
         end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h16) begin // RL (IY+d)
             output_op = RL_mRd;
             reg_a = IY;
+            reg_b = IY;
             imm_0 = op_2;
             update_flags = 6'b111111;
             instruction_length = 4;
@@ -886,18 +894,20 @@ module decode #(
         end else if (op_0 == 8'hCB && op_1 == 8'h0E) begin // RRC (HL)
             output_op = RRC_mRd;
             reg_a = HL;
+            reg_b = HL;
             update_flags = 6'b111111;
             instruction_length = 2;
         end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h0E) begin // RRC (IX+d)
             output_op = RRC_mRd;
             reg_a = IX;
+            reg_b = IX;
             imm_0 = op_2;
             update_flags = 6'b111111;
             instruction_length = 4;
-
         end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h0E) begin // RRC (IY+d)
             output_op = RRC_mRd;
             reg_a = IY;
+            reg_b = IY;
             imm_0 = op_2;
             update_flags = 6'b111111;
             instruction_length = 4;
@@ -914,20 +924,24 @@ module decode #(
         end else if (op_0 == 8'hCB && op_1 == 8'h1E) begin // RR (HL)
             output_op = RR_mRd;
             reg_a = HL;
+            reg_b = HL;
             update_flags = 6'b111111;
             instruction_length = 2;
         end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h1E) begin // RR (IX+d)
             output_op = RR_mRd;
             imm_0 = op_2;
             reg_a = IX;
+            reg_b = IX;
             update_flags = 6'b111111;
             instruction_length = 4;
         end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h1E) begin // RR (IY+d)
             output_op = RR_mRd;
             imm_0 = op_2;
             reg_a = IY;
+            reg_b = IY;
             update_flags = 6'b111111;
             instruction_length = 4;
+
         end else if (op_0 == 8'hCB && op_1[7:3] == 5'b00100 && ! (op_1[2:0] == 3'b110)) begin // SLA r
             output_op = SLA_R;
             reg_a = reg_from_r(op_1[2:0]);
@@ -936,20 +950,24 @@ module decode #(
         end else if (op_0 == 8'hCB && op_1 == 8'h26) begin // SLA (HL)
             output_op = SLA_mRd;
             reg_a = HL;
+            reg_b = HL;
             update_flags = 6'b111111;
             instruction_length = 2;
         end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h26) begin // SLA (IX+d)
             output_op = SLA_mRd;
             reg_a = IX;
+            reg_b = IX;
             imm_0 = op_2;
             update_flags = 6'b111111;
             instruction_length = 4;
         end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h26) begin // SLA (IY+d)
             output_op = SLA_mRd;
             reg_a = IY;
+            reg_b = IY;
             imm_0 = op_2;
             update_flags = 6'b111111;
             instruction_length = 4;
+
         end else if (op_0 == 8'hCB && op_1[7:3] == 5'b00101 && ! (op_1[2:0] == 3'b110)) begin // SRA r
             output_op = SRA_R;
             reg_a = reg_from_r(op_1[2:0]);
@@ -958,17 +976,20 @@ module decode #(
         end else if (op_0 == 8'hCB && op_1 == 8'h2E) begin // SRA (HL)
             output_op = SRA_mRd;
             reg_a = HL;
+            reg_b = HL;
             update_flags = 6'b111111;
             instruction_length = 2;
         end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h2E) begin // SRA (IX+d)
             output_op = SRA_mRd;
             reg_a = IX;
+            reg_b = IX;
             imm_0 = op_2;
             update_flags = 6'b111111;
             instruction_length = 4;
         end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h2E) begin // SRA (IY+d)
             output_op = SRA_mRd;
             reg_a = IY;
+            reg_b = IY;
             imm_0 = op_2;
             update_flags = 6'b111111;
             instruction_length = 4;
@@ -981,28 +1002,33 @@ module decode #(
         end else if (op_0 == 8'hCB && op_1 == 8'h3E) begin // SRL (HL)
             output_op = SRL_mRd;
             reg_a = HL;
+            reg_b = HL;
             update_flags = 6'b111111;
             instruction_length = 2;
         end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3 == 8'h3E) begin // SRL (IX+d)
             output_op = SRL_mRd;
             reg_a = IX;
+            reg_b = IX;
             imm_0 = op_2;
             update_flags = 6'b111111;
             instruction_length = 4;
         end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3 == 8'h3E) begin // SRL (IY+d)
             output_op = SRL_mRd;
             reg_a = IY;
+            reg_b = IY;
             imm_0 = op_2;
             update_flags = 6'b111111;
             instruction_length = 4;
         end else if (op_0 == 8'hED && op_1 == 8'h6F) begin //RLD
             output_op = RLD;
             reg_a = HL;
+            reg_b = HL;
             update_flags = 6'b111110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'h67) begin //RRD
             output_op = RRD;
             reg_a = HL;
+            reg_b = HL;
             update_flags = 6'b111110;
             instruction_length = 2;
 

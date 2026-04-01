@@ -51,22 +51,22 @@ package uop;
                         write_obuffH_addr_p1,
 
                         /* buffer control */
-                        buff_addr_reg_a, //1E
+                        buff_addr_reg_a, //1F
                         buff_addr_reg_a_2,
                         buff_addr_reg_a_imm_1,
                         buff_addr_reg_b_imm_1,
                         buff_addr_imm_1,
 
                         /* operand buffer */
-                        ld_obuff_reg_a, //23
+                        ld_obuff_reg_a, //24
 
                         /* exchange */
-                        ex_de_hl, //24
+                        ex_de_hl, //25
                         ex_af_afp,
                         exx,
 
                         /* arithmetic */
-                        add_reg_a_reg_b, //27
+                        add_reg_a_reg_b, //28
                         add_reg_a_imm_1,
                         add_reg_a_mrbuff,
                         adc_reg_a_reg_b,
@@ -94,14 +94,29 @@ package uop;
                         dec_reg_b,
 
                         /* general purpose group */
-                        daa, //41
+                        daa, //40
                         cpl,
                         neg,
                         ccf, 
                         scf,
 
                         /* rotate/shift */
-                        rl_reg_a
+                        rlc_reg_a,//45
+                        rlc_mbuff_mrbuff,
+                        rl_reg_a,
+                        rl_mbuff_mrbuff,
+                        rrc_reg_a,
+                        rrc_mbuff_mrbuff,
+                        rr_reg_a,
+                        rr_mbuff_mrbuff,
+                        sla_reg_a,
+                        sla_mbuff_mrbuff,
+                        sra_reg_a,
+                        sra_mbuff_mrbuff,
+                        srl_reg_a,
+                        srl_mbuff_mrbuff,
+                        rld,
+                        rrd
 
                         } uop_t ;
 endpackage;

@@ -16,9 +16,6 @@ module alu_wrapper #()
     output wire [5:0] toggle_flags,
     output wire [5:0] raw_flags
 );  
-    wire carry_in;
-    assign carry_in = current_flags[0];
-
     wire alu_8_en;
     wire alu_16_en;
     assign alu_8_en   = (alu_16b_mode == 0) ? (enable && opcode != ALU_NOP && !is_bit_op) : 0;
@@ -55,7 +52,7 @@ module alu_wrapper #()
         .b(b[7:0]),
         .opcode(opcode),
         .enable(alu_8_en),
-        .carry_in(carry_in),
+        .flags_in(current_flags),
         .status_flag(flags_8),
         .out(out_8)
     );
@@ -64,7 +61,7 @@ module alu_wrapper #()
         .b(b),
         .opcode(opcode),
         .enable(alu_16_en),
-        .carry_in(carry_in),
+        .flags_in(current_flags),
         .status_flag(flags_16),
         .out(out_16)
 

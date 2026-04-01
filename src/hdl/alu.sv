@@ -24,23 +24,12 @@ module  alu #(
     input wire [alu_width-1:0]  b,
     input alu_op opcode,
 	input wire enable,
-	input wire carry_in
+	input wire [5:0] flags_in
 );
-
     parameter upper_bit=alu_width-1;
 
     parameter a_size  = alu_width;
     parameter b_size  = alu_width;
-
-    /* status opcodes */
-    parameter NUMERIC_OP = 'b000;
-    parameter SHIFT_OP = 'b001;
-	parameter ROTATE_OP = 'b010;  // RL/RR
-	parameter BCD_ROTATE_OP = 'b011;  // RLD/RRD
-	parameter AND_OP = 'b100;
-    parameter OR_OP = 'b101;
-    parameter XOR_OP = 'b110;
-
 
     wire signed [upper_bit:0] signed_a;
     wire signed [upper_bit:0] signed_b;
@@ -52,17 +41,14 @@ module  alu #(
     wire               z_var;
     wire               h_var;
     wire               s_var;
-    reg [2:0]          status_opcode;
+    alu_status_op      status_opcode;
     reg                status_sign;
 	reg [upper_bit:0]  status_b;
 	reg [7:0]		   acc_rotated;  // updated accumulator RLD/RRD
 	reg [7:0]		   mem_rotated;  // updated memory byte RLD/RRD
 
-    /* function that does parity bit logic */ // unused, commented out for now
-    //function reg parity(reg first_op, second_op, result);
-    //    return (first_op & second_op & !result)
-    //    | (!first_op & !second_op & result);
-    //endfunction // parity
+    wire carry_in;
+    assign carry_in = flags_in[0];
 
 	// set outputs to X if not enabled to aid debugging
     assign status_flag[5] = enable ? s_var  : 'Z;
@@ -222,6 +208,21 @@ module  alu #(
            		out_var = tmp[upper_bit:0];
            		status_sign=1;
         	end
+            // https://stackoverflow.com/questions/8119577/z80-daa-instruction
+            ALU_DAA: begin
+                status_opcode = DAA_OP;
+                if ((flags_in[3] || ((a & 'hF) > 'h9)) && (flags_in[0] || (a > 'h99))) begin
+                    out_var = a + (flags_in[1] ? 'h9A : 'h66);
+                end else if (flags_in[3] || ((a & 'hF) > 'h9)) begin
+                    out_var = a + (flags_in[1] ? 'hFA : 'h06);
+                end else if (flags_in[0] || (a > 'h99)) begin
+                    out_var = a + (flags_in[1] ? 'hA0 : 'h60);
+                end
+            end
+            ALU_CPL: begin
+                status_opcode = CPL_OP;
+                out_var = ~a;
+            end
 			ALU_PASS_A: begin
 				out_var = a;
 			end
@@ -247,7 +248,8 @@ module  alu #(
         .op_result(out_var),
         .result_buffer(tmp),
         .opcode(status_opcode),
-        .op_sign(status_sign)
+        .op_sign(status_sign),
+        .flags_in(flags_in)
     );
 
 endmodule

@@ -768,7 +768,7 @@ module decode #(
             use_16b_alu = 1;
 
         end else if (op_0 == 8'hFD && op_1[7:6] == 2'b00 && op_1[3:0] == 4'b1001) begin // ADD IY, rr
-            output_op = SBC_R_R;
+            output_op = ADD_R_R;
             reg_a = IY;
             reg_b = reg_from_rr(op_1[5:4]);
             update_flags = 6'b001011;

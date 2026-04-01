@@ -8,7 +8,8 @@ typedef enum [2:0] {
     A_MUX_O_BUFF,
     A_MUX_REG_SHIFTED,
     A_MUX_REG,
-    A_MUX_MEMORY_READ_BUFF
+    A_MUX_MEMORY_READ_BUFF,
+    A_MUX_0
 } alu_mux_a_enum;
 
 typedef enum [2:0] {

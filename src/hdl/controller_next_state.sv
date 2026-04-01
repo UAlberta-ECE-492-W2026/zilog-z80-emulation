@@ -110,15 +110,19 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   NOP: set_next_state(uop::pc_next);
                   HALT: set_next_state(uop::fetch);
                   RLC_R: set_next_state(uop::rlc_reg_a);
-                  RLC_mRd: set_next_state(uop::buff_addr_reg_a);
+                  RLC_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
                   RL_R: set_next_state(uop::rl_reg_a);
-                  RL_mRd: set_next_state(uop::buff_addr_reg_a);
-                  RRC_R: set_next_state(uop::rl_reg_a);
-                  RRC_mRd: set_next_state(uop::buff_addr_reg_a);
-                  RR_R: set_next_state(uop::rl_reg_a);
-                  RR_mRd: set_next_state(uop::buff_addr_reg_a);
-                  SLA_R: set_next_state(uop::rl_reg_a);
-                  SLA_mRd: set_next_state(uop::buff_addr_reg_a);
+                  RL_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  RRC_R: set_next_state(uop::rrc_reg_a);
+                  RRC_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  RR_R: set_next_state(uop::rr_reg_a);
+                  RR_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  SLA_R: set_next_state(uop::sla_reg_a);
+                  SLA_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  SRA_R: set_next_state(uop::sra_reg_a);
+                  SRA_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  SRL_R: set_next_state(uop::srl_reg_a);
+                  SRL_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
                   RLD, RRD: set_next_state(uop::buff_addr_reg_a);
                   JP_nn: set_next_state(uop::ld_reg_a_imm_1);
                   JP_cc_nn: set_next_state(choose_next_jump_state(j_cc,
@@ -214,13 +218,6 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   CALL_cc_nn,
                   CALL_nn,
                   PUSH_R: set_next_state(uop::write_reg_bH);
-                  RLC_mRd,
-                  RL_mRd,
-                  RRC_mRd,
-                  RR_mRd,
-                  SLA_mRd,
-                  SRA_mRd,
-                  SRL_mRd,
                   RLD,
                   RRD: set_next_state(uop::read_mrbuff_reg_b_imm_0);
                   default: set_next_state(uop::invalid);
@@ -239,6 +236,13 @@ module controller_next_state (c_to_dp_intf.next_state_logic ctrl_intf);
                   INC_mRd, DEC_mRd: set_next_state(uop::read_mbuff_mrbuff);
                   LD_mRd_R: set_next_state(uop::write_reg_bL);
                   LD_mRd_n: set_next_state(uop::write_imm_1L);
+                  RLC_mRd,
+                  RL_mRd,
+                  RRC_mRd,
+                  RR_mRd,
+                  SLA_mRd,
+                  SRA_mRd,
+                  SRL_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0);
                   default: set_next_state(uop::invalid);
                 endcase; // case (ctrl_intf.mop_out)
             end

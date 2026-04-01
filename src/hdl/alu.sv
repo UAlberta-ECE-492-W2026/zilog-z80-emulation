@@ -151,13 +151,13 @@ module  alu #(
 
             ALU_RLD: begin
                 status_opcode = BCD_ROTATE_OP;
-                if (alu_width >= 16) begin
-                    acc_rotated = {a[7:4], b[7:4]};
-                    mem_rotated = {b[3:0], a[3:0]};
-                    // packed result: upper byte = new A, lower byte = new memory byte
+                if (alu_width == 16) begin
+                    acc_rotated = {b[7:4], a[7:4]};
+                    mem_rotated = {a[3:0], b[3:0]};
+                    // packed result: upper byte = new memory byte, lower byte = new A
                     out_var = '0;
-                    out_var = ({{(alu_width-8){1'b0}}, acc_rotated} << 8)
-                            |  {{(alu_width-8){1'b0}}, mem_rotated};
+                    out_var = ({{(alu_width-8){1'b0}}, mem_rotated} << 8)
+                            |  {{(alu_width-8){1'b0}}, acc_rotated};
                     tmp = '0;
                     tmp[upper_bit:0]   = out_var;
                     tmp[upper_bit + 1] = carry_in;
@@ -165,13 +165,11 @@ module  alu #(
             end
             ALU_RRD: begin
                 status_opcode = BCD_ROTATE_OP;
-                if (alu_width >= 16) begin
-                    acc_rotated = {a[7:4], b[3:0]};
-                    mem_rotated = {a[3:0], b[7:4]};
-                    // packed result: upper byte = new A, lower byte = new memory byte
-                    out_var = '0;
-                    out_var = ({{(alu_width-8){1'b0}}, acc_rotated} << 8)
-                            |  {{(alu_width-8){1'b0}}, mem_rotated};
+                if (alu_width == 16) begin
+                    acc_rotated = {b[7:4], a[3:0]};
+                    mem_rotated = {b[3:0], a[7:4]};
+                    out_var = ({{(alu_width-8){1'b0}}, mem_rotated} << 8)
+                            |  {{(alu_width-8){1'b0}}, acc_rotated};
                     tmp = '0;
                     tmp[upper_bit:0]   = out_var;
                     tmp[upper_bit + 1] = carry_in;

@@ -345,6 +345,28 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hed440000, 16'hfe93, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h0000000000000000)); // neg
         // just to make sure the states sequense correctly and the instruction is decoded. no idea if the result is correct
         testvectors.push_back(cons_test(32'h27000000, 16'h9883, 16'h0000, 16'h0000, 16'h0000, 16'h0009, 64'h0000000000000000)); // daa 
+        testvectors.push_back(cons_reset());
+        testvectors.push_back(cons_test(32'h21021200, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld        hl,$1202
+        testvectors.push_back(cons_test(32'h01010100, 16'h0000, 16'h0101, 16'h0000, 16'h0000, 16'h0007, 64'h0000000000000000)); // ld        bc,$0101
+        testvectors.push_back(cons_test(32'h09000000, 16'h0000, 16'h0101, 16'h0000, 16'h0000, 16'h0008, 64'h0000000000000000)); // add       hl,bc
+        testvectors.push_back(cons_test(32'h22000000, 16'h0000, 16'h0101, 16'h0000, 16'h0000, 16'h000b, 64'h0313000000000000)); // ld        ($0000),hl
+        testvectors.push_back(cons_test(32'hfd090000, 16'h0000, 16'h0101, 16'h0000, 16'h0000, 16'h000d, 64'h0313000000000000)); // add       iy,bc
+        testvectors.push_back(cons_test(32'hfd230000, 16'h0000, 16'h0101, 16'h0000, 16'h0000, 16'h000f, 64'h0313000000000000)); // inc       iy
+        testvectors.push_back(cons_test(32'hfd220000, 16'h0000, 16'h0101, 16'h0000, 16'h0000, 16'h0013, 64'h0201000000000000)); // ld        ($0000),iy
+        testvectors.push_back(cons_test(32'hdd090000, 16'h0000, 16'h0101, 16'h0101, 16'h0000, 16'h0015, 64'h0201000000000000)); // add       ix,bc
+        testvectors.push_back(cons_test(32'hed4a0000, 16'h0000, 16'h0101, 16'h0101, 16'h0000, 16'h0017, 64'h0201000000000000)); // adc       hl,bc
+        testvectors.push_back(cons_test(32'h22000000, 16'h0000, 16'h0101, 16'h0101, 16'h0000, 16'h001a, 64'h0414000000000000)); // ld        ($0000),hl
+        testvectors.push_back(cons_test(32'h3f000000, 16'h0001, 16'h0101, 16'h0101, 16'h0000, 16'h001b, 64'h0414000000000000)); // ccf
+        testvectors.push_back(cons_test(32'hed4a0000, 16'h0000, 16'h0101, 16'h0101, 16'h0000, 16'h001d, 64'h0414000000000000)); // adc       hl,bc
+        testvectors.push_back(cons_test(32'h22000000, 16'h0000, 16'h0101, 16'h0101, 16'h0000, 16'h0020, 64'h0615000000000000)); // ld        ($0000),hl
+        testvectors.push_back(cons_test(32'h3f000000, 16'h0001, 16'h0101, 16'h0101, 16'h0000, 16'h0021, 64'h0615000000000000)); // ccf
+        testvectors.push_back(cons_test(32'hed520000, 16'h0002, 16'h0101, 16'h0101, 16'h0000, 16'h0023, 64'h0615000000000000)); // sbc       hl,de
+        testvectors.push_back(cons_test(32'h22000000, 16'h0002, 16'h0101, 16'h0101, 16'h0000, 16'h0026, 64'h0515000000000000)); // ld        ($0000),hl
+        testvectors.push_back(cons_test(32'h03000000, 16'h0002, 16'h0102, 16'h0101, 16'h0000, 16'h0027, 64'h0515000000000000)); // inc       bc
+        testvectors.push_back(cons_test(32'hdd230000, 16'h0002, 16'h0102, 16'h0102, 16'h0000, 16'h0029, 64'h0515000000000000)); // inc       ix
+        testvectors.push_back(cons_test(32'hdd2b0000, 16'h0002, 16'h0102, 16'h0101, 16'h0000, 16'h002b, 64'h0515000000000000)); // dec       ix
+        testvectors.push_back(cons_test(32'hfd2b0000, 16'h0002, 16'h0102, 16'h0101, 16'h0000, 16'h002d, 64'h0515000000000000)); // dec       iy
+        testvectors.push_back(cons_test(32'hfd220000, 16'h0002, 16'h0102, 16'h0101, 16'h0000, 16'h0031, 64'h0101000000000000)); // ld        ($0000),iy
 
         reset_tb();
         ->test_start;

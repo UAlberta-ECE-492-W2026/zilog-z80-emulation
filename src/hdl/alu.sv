@@ -24,23 +24,10 @@ module  alu #(
     input wire [alu_width-1:0]  b,
     input alu_op opcode,
 	input wire enable,
-	input wire carry_in
+	input wire [5:0] flags_in
 );
-
     parameter upper_bit=alu_width-1;
 
-    parameter a_size  = alu_width;
-    parameter b_size  = alu_width;
-
-    /* status opcodes */
-    parameter NUMERIC_OP = 'b0000;
-    parameter SHIFT_OP = 'b1;
-	parameter ROTATE_OP = 'b10;  // RL/RR
-	parameter BCD_ROTATE_OP = 'b11;  // RLD/RRD
-
-
-    wire signed [upper_bit:0] signed_a;
-    wire signed [upper_bit:0] signed_b;
     reg [upper_bit + 1:0]     tmp; // output value buffer
     reg [upper_bit:0]         out_var;
     wire               c_var; // carry bit variable
@@ -49,17 +36,14 @@ module  alu #(
     wire               z_var;
     wire               h_var;
     wire               s_var;
-    reg [1:0]          status_opcode;
+    alu_status_op      status_opcode;
     reg                status_sign;
 	reg [upper_bit:0]  status_b;
 	reg [7:0]		   acc_rotated;  // updated accumulator RLD/RRD
 	reg [7:0]		   mem_rotated;  // updated memory byte RLD/RRD
 
-    /* function that does parity bit logic */ // unused, commented out for now
-    //function reg parity(reg first_op, second_op, result);
-    //    return (first_op & second_op & !result)
-    //    | (!first_op & !second_op & result);
-    //endfunction // parity
+    wire carry_in;
+    assign carry_in = flags_in[0];
 
 	// set outputs to X if not enabled to aid debugging
     assign status_flag[5] = enable ? s_var  : 'Z;
@@ -70,11 +54,6 @@ module  alu #(
     assign status_flag[0] = enable ? c_var  : 'Z;
 
     assign out = enable ? out_var : '{default: 'Z};
-
-	// technically not needed, but should clarify intent when debugging
-    assign signed_a = enable ? a : '{default: 'Z};
-    assign signed_b = enable ? b : '{default: 'Z};
-
 
     always_comb begin
         status_opcode = NUMERIC_OP;
@@ -117,77 +96,68 @@ module  alu #(
 			end
         	ALU_AND: begin
            		out_var = a & b;
+                status_opcode = AND_OP;
         	end
         	ALU_OR: begin
            		out_var = a | b;
+                status_opcode = OR_OP;
         	end
         	ALU_XOR: begin
            		out_var = a ^ b;
+                status_opcode = XOR_OP;
         	end
-        	ALU_SLL: begin
-           		status_opcode = SHIFT_OP;
-                tmp= {1'b0, a} << b;
-                out_var = tmp[upper_bit:0];
-        	end
-        	ALU_SRL: begin
-           		status_opcode = SHIFT_OP;
-                status_sign = 1;
-                tmp = {a, 1'b0} >> b;
-           		out_var = tmp[upper_bit+1:1];
-        	end
-        	ALU_SLA: begin
-           		status_opcode = SHIFT_OP;
-                tmp = signed'({1'b0, a}) <<< b;
-                out_var = tmp[upper_bit:0];
-        	end
-        	ALU_SRA: begin
-           		status_opcode = SHIFT_OP;
-                status_sign = 1;
-                tmp = signed'({signed_a, 1'b0}) >>> signed_b;
-           		out_var = tmp[upper_bit+1:1];
-        	end
-        	/* There is a chance that the following does not synthesize */
-        	ALU_ROL: begin // need to implement the pv flag bit for this
-           		status_opcode = SHIFT_OP;
-           		out_var = (a << (b % a_size[upper_bit:0]))
-            		| (a >> (a_size - {{(32 - b_size){1'b0}},(b % a_size[upper_bit:0])}));
-			end
-        	ALU_ROR: begin
-           		status_opcode = SHIFT_OP;
-           		out_var = (a >> (b % a_size[upper_bit:0]))
-            		| (a << (a_size - {{(32 - b_size){1'b0}},(b % a_size[upper_bit:0])}));
-        	end
+            ALU_RLC: begin
+                status_opcode = ROTATE_OP;
+                tmp = a << 1;
+                out_var = {tmp[alu_width-1:1], tmp[alu_width]};
+                status_sign = 0;
+            end
             ALU_RL: begin
                 status_opcode = ROTATE_OP;
-                // RL is always 8-bit
-                out_var = '0;
-                out_var[7:0] = {a[6:0], carry_in};
-                // carry-out  from original bit 7
-                tmp = '0;
-                tmp[8]   = a[7];
-                tmp[7:0] = out_var[7:0];
+                tmp = a << 1;
+                out_var = {tmp[alu_width-1:1], carry_in};
+                status_sign = 0;
+            end 
+            ALU_RRC: begin
+                status_opcode = ROTATE_OP;
+                tmp = {1'b0, a};
+                out_var = {tmp[0], tmp[alu_width-1:1]};
+                status_sign = 1;
             end
             ALU_RR: begin
                 status_opcode = ROTATE_OP;
-                // RR is always 8-bit
-                out_var = '0;
-                out_var[7:0] = {carry_in, a[7:1]};
-                // carry-out from original bit 0
-                tmp = '0;
-                tmp[8:1] = out_var[7:0];
-                tmp[0]   = a[0];
-
+                tmp = {1'b0, a};
+                out_var = {carry_in, tmp[alu_width-1:1]};
+                status_sign = 1;
+            end 
+            ALU_SLA: begin
+                status_opcode = SHIFT_OP;
+                tmp = a << 1;
+                out_var = tmp[alu_width-1:0];
+                status_sign = 0;
+            end 
+            ALU_SRA: begin
+                status_opcode = SHIFT_OP;
+                tmp = {1'b0, a};
+                out_var = {tmp[alu_width-1], tmp[alu_width-1:1]};
+                status_sign = 1;
+            end 
+            ALU_SRL: begin
+                status_opcode = SHIFT_OP;
+                tmp = {1'b0, a};
+                out_var = {1'b0, tmp[alu_width-1:1]};
                 status_sign = 1;
             end
+
             ALU_RLD: begin
                 status_opcode = BCD_ROTATE_OP;
-                if (alu_width >= 16) begin
-                    acc_rotated = {a[7:4], b[7:4]};
-                    mem_rotated = {b[3:0], a[3:0]};
-                    // packed result: upper byte = new A, lower byte = new memory byte
+                if (alu_width == 16) begin
+                    acc_rotated = {b[7:4], a[7:4]};
+                    mem_rotated = {a[3:0], b[3:0]};
+                    // packed result: upper byte = new memory byte, lower byte = new A
                     out_var = '0;
-                    out_var = ({{(alu_width-8){1'b0}}, acc_rotated} << 8)
-                            |  {{(alu_width-8){1'b0}}, mem_rotated};
+                    out_var = ({{(alu_width-8){1'b0}}, mem_rotated} << 8)
+                            |  {{(alu_width-8){1'b0}}, acc_rotated};
                     tmp = '0;
                     tmp[upper_bit:0]   = out_var;
                     tmp[upper_bit + 1] = carry_in;
@@ -195,27 +165,40 @@ module  alu #(
             end
             ALU_RRD: begin
                 status_opcode = BCD_ROTATE_OP;
-                if (alu_width >= 16) begin
-                    acc_rotated = {a[7:4], b[3:0]};
-                    mem_rotated = {a[3:0], b[7:4]};
-                    // packed result: upper byte = new A, lower byte = new memory byte
-                    out_var = '0;
-                    out_var = ({{(alu_width-8){1'b0}}, acc_rotated} << 8)
-                            |  {{(alu_width-8){1'b0}}, mem_rotated};
+                if (alu_width == 16) begin
+                    acc_rotated = {b[7:4], a[3:0]};
+                    mem_rotated = {b[3:0], a[7:4]};
+                    out_var = ({{(alu_width-8){1'b0}}, mem_rotated} << 8)
+                            |  {{(alu_width-8){1'b0}}, acc_rotated};
                     tmp = '0;
                     tmp[upper_bit:0]   = out_var;
                     tmp[upper_bit + 1] = carry_in;
                 end
             end
-        	ALU_INC:begin
-           		tmp = a + 1;
-           		out_var = tmp[upper_bit:0];
-        	end
+        	//ALU_INC:begin
+           	//	tmp = a + 1;
+           	//	out_var = tmp[upper_bit:0];
+        	//end
         	ALU_DEC: begin
            		tmp = a - 1;
            		out_var = tmp[upper_bit:0];
            		status_sign=1;
         	end
+            // https://stackoverflow.com/questions/8119577/z80-daa-instruction
+            ALU_DAA: begin
+                status_opcode = DAA_OP;
+                if ((flags_in[3] || ((a & 'hF) > 'h9)) && (flags_in[0] || (a > 'h99))) begin
+                    out_var = a + (flags_in[1] ? 'h9A : 'h66);
+                end else if (flags_in[3] || ((a & 'hF) > 'h9)) begin
+                    out_var = a + (flags_in[1] ? 'hFA : 'h06);
+                end else if (flags_in[0] || (a > 'h99)) begin
+                    out_var = a + (flags_in[1] ? 'hA0 : 'h60);
+                end
+            end
+            ALU_CPL: begin
+                status_opcode = CPL_OP;
+                out_var = ~a;
+            end
 			ALU_PASS_A: begin
 				out_var = a;
 			end
@@ -241,7 +224,8 @@ module  alu #(
         .op_result(out_var),
         .result_buffer(tmp),
         .opcode(status_opcode),
-        .op_sign(status_sign)
+        .op_sign(status_sign),
+        .flags_in(flags_in)
     );
 
 endmodule

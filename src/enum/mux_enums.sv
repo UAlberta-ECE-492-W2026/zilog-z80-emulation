@@ -8,14 +8,16 @@ typedef enum [2:0] {
     A_MUX_O_BUFF,
     A_MUX_REG_SHIFTED,
     A_MUX_REG,
-    A_MUX_MEMORY_READ_BUFF
+    A_MUX_MEMORY_READ_BUFF,
+    A_MUX_0
 } alu_mux_a_enum;
 
 typedef enum [2:0] {
     B_MUX_NOP,
     B_MUX_IMM,
     B_MUX_INSTRUCTION_LENGTH,
-    B_MUX_REG
+    B_MUX_REG,
+    B_MUX_MEMORY_READ_BUFF
 } alu_mux_b_enum;
 
 typedef enum [1:0] {
@@ -25,9 +27,10 @@ typedef enum [1:0] {
     WB_MUX_ALU
 } write_back_enum;
 
-typedef enum [1:0] {
+typedef enum [2:0] {
                     MEM_MUX_NOP,
                     MEM_MUX_BUFFERED,
+                    MEM_MUX_BUFFERED_P1,
                     MEM_MUX_UNBUFFERED,
                     MEM_MUX_UNBUFFERED_P1
                     } mem_mux_enum;

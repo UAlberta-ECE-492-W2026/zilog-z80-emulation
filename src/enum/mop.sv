@@ -24,6 +24,7 @@ typedef enum [6:0] {
     LD_mRd_R,
     LD_mRd_n,
     LD_R_mnn,
+    LD_mnn_A,
     LD_mnn_R,
     PUSH_R,
     POP_R,

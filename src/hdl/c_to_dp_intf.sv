@@ -148,12 +148,14 @@ interface c_to_dp_intf();
         ir_en = 0;
         reg_a_sel = NONE;
         reg_b_sel = NONE;
+        f_w_en = 0;
+        f_op = F_NOP;
         disable_reg_w();
         exx_sig = EXX_NOP;
         disable_alu();
         o_buff_en = 0;
         alu_16b_mode = 0;
-        update_flags = update_flags_out;
+        update_flags = 0;
         write_back_sel = WB_MUX_NOP;
         mem_read_buff_en = 0;
         mem_addr_buff_en = 0;
@@ -282,6 +284,7 @@ interface c_to_dp_intf();
 
                          input  current_state, reset, reg_a_sel_out,
                                 reg_b_sel_out, imm_0_out, imm_1_out,
+                                update_flags_out,
                          import disable_alu,
                          import enable_and_set_alu_opcode,
                          import set_default_outputs,
@@ -300,8 +303,9 @@ interface c_to_dp_intf();
                              );
     
     modport memory_wrapper(
-        input mem_data_mux_sel, mem_mux_sel, mem_addr_buff_en, memory_out,
-        output memory_in, instruction_in 
+                           input mem_data_mux_sel, mem_mux_sel, mem_addr_buff_en, 
+                                 memory_out, mem_r_en, mem_w_en, clk, reset,
+                           output memory_in, instruction_in 
     );
 endinterface; // c_to_dp_intf
 

@@ -21,9 +21,36 @@ module vga_out
     output logic [3:0] red,        //! red channel (4-bit)
     output logic [3:0] green,      //! green channel (4-bit)
     output logic [3:0] blue,        //! blue channel (4-bit)
-    output logic [15:0] char_address
+
+    // char ram connections
+    output logic [15:0] char_ram_address,
+    input logic [7:0] char_ram_data
 );
+
+    // Clock divider to drive the external counters to the module
+    logic [2:0] div_count;
+    logic pixel_clk;
+
+    always_ff @(posedge clk) begin
+        if (reset) begin
+            div_count <= 0;
+            pixel_clk <= 0;
+        end
+        else begin
+            if (div_count == 4)
+                div_count <= 0;
+            else
+                div_count <= div_count + 1;
+
+            if (div_count == 2 || div_count == 4)
+                pixel_clk <= ~pixel_clk;
+        end
+    end
+
+
+    // TODO: make these not local
     //! VGA timing parameters
+    /* verilator lint_off UNUSEDPARAM */
     localparam H_VISIBLE = 1920;
     localparam H_FRONT   = 88;
     localparam H_SYNC    = 44;
@@ -35,9 +62,12 @@ module vga_out
     localparam V_SYNC    = 5;
     localparam V_BACK    = 36;
     localparam V_TOTAL   = 1125;
+
+
+    /* verilator lint_on UNUSEDPARAM */
     
-    localparam CHAR_ROWS = V_VISIBLE / 8;
-    localparam CHAR_COLS = H_VISIBLE / 8;
+    //localparam CHAR_ROWS = V_VISIBLE / 8;
+    //localparam CHAR_COLL = H_VISIBLE / 8;
 
     //! Signals from external modules
     logic enable_vertical_counter;           
@@ -98,10 +128,10 @@ module vga_out
 
     //! Character memory address (row * 80 + col)
     logic [7:0]  ascii;
-    assign ascii = char_data;
 
     // TODO: THIS IS USED AS THE OUTPUT TO THE CHAR RAM
-    assign char_address = row * CHAR_COLS + col;  //! row*80 + col
+    assign char_ram_address = row * 80 + col;
+    assign ascii = visible ? char_ram_data : 8'd0;  //!ASCII returned from RAM
 
     logic [2:0] px_1_clk_delay;
     logic visible_1_clk_delay;

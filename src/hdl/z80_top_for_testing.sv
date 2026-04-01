@@ -46,8 +46,26 @@ module z80_top_for_testing #(
     controller #() controller (intf);
     controller_next_state next_state_logic(.ctrl_intf(intf));
     controller_output output_logic(.intf(intf));
-    datapath #() datapath (.intf(intf), .debug_main_reg_set(main_reg_set), .debug_special_reg_set(special_reg_set));
-    memory_wrapper #() memory_wrapper(.intf(intf), .char_ram_address(char_ram_address), .char_ram_data(char_ram_data), .override_instruciton(1'b1), .override_instruciton_data(instruction), .test_ram(test_ram));
+    datapath #() datapath (
+        .intf(intf), 
+        .debug_main_reg_set(main_reg_set), 
+        .debug_special_reg_set(special_reg_set)
+    );
+
+    memory_wrapper #() memory_wrapper(
+        .intf(intf), 
+        .char_ram_address(char_ram_address), 
+        .char_ram_data(char_ram_data), 
+        .override_instruciton(1'b1), 
+        .override_instruciton_data(instruction), 
+        .test_ram(test_ram),
+        /* verilator lint_off PINCONNECTEMPTY */
+        .axi_data_in(),
+        .axi_ready(),
+        .axi_valid()
+        /* verilator lint_on PINCONNECTEMPTY */
+    );
+
     vga_out #() vga_out(
         .clk(clk),
         .reset(buttons[0]),

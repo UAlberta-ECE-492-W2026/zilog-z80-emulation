@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module keyboard_interface
 #(
 parameter FIFO_DEPTH = 16

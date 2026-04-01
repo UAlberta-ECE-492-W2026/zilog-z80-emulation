@@ -152,7 +152,8 @@ always @(posedge S_AXI_ACLK)
         state_write <= Idle;                                
       end                                
     else                                  
-      begin                                
+      begin         
+        /* verilator lint_off CASEINCOMPLETE */                       
         case(state_write)                                
           Idle:                                      
             begin                                
@@ -270,7 +271,8 @@ end
         state_read <= Idle;                                      
        end                                      
      else                                      
-       begin                                      
+       begin                 
+        /* verilator lint_off CASEINCOMPLETE */                     
          case(state_read)                                      
            Idle:     //Initial state inidicating reset is done and ready to receive read/write transactions                                      
              begin                                                

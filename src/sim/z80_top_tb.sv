@@ -261,6 +261,8 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hdc777700, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h133a, 64'h000000000000f5be)); // call      c,$7777
         testvectors.push_back(cons_test(32'hd4888800, 16'h0000, 16'h0000, 16'h0000, 16'h000c, 16'h8888, 64'h000000003d13f5be)); // call      c,$7777
         testvectors.push_back(cons_test(32'hc9000000, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h133d, 64'h000000003d13f5be)); // ret
+        testvectors.push_back(cons_test(32'he8000000, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h133e, 64'h000000003d13f5be)); // ret       pe
+        testvectors.push_back(cons_test(32'he0000000, 16'h0000, 16'h0000, 16'h0000, 16'h0010, 16'hbef5, 64'h000000003d13f5be)); // ret       po
         testvectors.push_back(cons_reset());
         testvectors.push_back(cons_test(32'hc34d0000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // JP        $4d
         testvectors.push_back(cons_test(32'h76000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT

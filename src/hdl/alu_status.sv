@@ -102,6 +102,8 @@ module  alu_status #(
           		pv_var = ~(^op_result); // this is a parity check
                 c_var = (op_sign == 0) ? uppermost_buffer_bit
                        : lowest_buffer_bit;
+				z_var  = (op_result[7:0] == 8'h00);
+				s_var  = op_result[7];
 			end
             ROTATE_OP: begin
 				// Carry from bit 7 for RL -> bit 0 for RR.
@@ -111,10 +113,8 @@ module  alu_status #(
                 z_var  = (op_result[7:0] == 8'h00);
             end
             BCD_ROTATE_OP: begin
-                // RLD/RRD preserve carry
-                c_var = uppermost_buffer_bit;
                 // updated A = upper byte of packed result
-                bcd_acc = 8'(op_result >> 8);  // cast type
+                bcd_acc = 8'(op_result >> 8); 
                 // flags updated A only
                 pv_var = ~(^bcd_acc);
                 s_var  = bcd_acc[7];

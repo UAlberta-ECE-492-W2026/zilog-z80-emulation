@@ -1,8 +1,8 @@
 .PHONY: clean waves run_top
 
 
-obj_dir/Vz80_top_tb: ./src/sim/z80_top_tb.sv
-	verilator --trace-vcd --trace-structs --no-trace-top --binary --MMD -j 0 -Wall -cc $^ --top-module z80_top_tb --timing +incdir+./src/enum +incdir+./src/hdl
+obj_dir/Vz80_top_tb: ./src/sim/z80_top_tb.sv ./src/hdl/controller_next_state.sv ./src/hdl/controller_output.sv
+	verilator --trace-vcd --trace-structs --no-trace-top --binary --MMD -j 0 -Wall -cc $< --top-module z80_top_tb --timing +incdir+./src/enum +incdir+./src/hdl
 
 out/sim:
 	mkdir -p ./out/sim

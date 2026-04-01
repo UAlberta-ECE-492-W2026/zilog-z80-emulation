@@ -255,6 +255,15 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'h3f000000, 16'hff90, 16'h0002, 16'h0001, 16'h0010, 16'hdec3, 64'h0000000708098000)); // ccf
         testvectors.push_back(cons_test(32'h3f000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec4, 64'h0000000708098000)); // ccf
         testvectors.push_back(cons_reset());
+        testvectors.push_back(cons_test(32'hc3efbe00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'hbeef, 64'h0000000000000000)); // JP        $4d
+        testvectors.push_back(cons_test(32'h31100000, 16'h0000, 16'h0000, 16'h0000, 16'h0010, 16'hbef2, 64'h0000000000000000)); // ld        sp,$0010
+        testvectors.push_back(cons_test(32'hcd371300, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h1337, 64'h000000000000f5be)); // call      1337
+        testvectors.push_back(cons_test(32'hdc777700, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h133a, 64'h000000000000f5be)); // call      c,$7777
+        testvectors.push_back(cons_test(32'hd4888800, 16'h0000, 16'h0000, 16'h0000, 16'h000c, 16'h8888, 64'h000000003d13f5be)); // call      c,$7777
+        testvectors.push_back(cons_test(32'hc9000000, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h133d, 64'h000000003d13f5be)); // ret
+        testvectors.push_back(cons_test(32'he8000000, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h133e, 64'h000000003d13f5be)); // ret       pe
+        testvectors.push_back(cons_test(32'he0000000, 16'h0000, 16'h0000, 16'h0000, 16'h0010, 16'hbef5, 64'h000000003d13f5be)); // ret       po
+        testvectors.push_back(cons_reset());
         testvectors.push_back(cons_test(32'hc34d0000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // JP        $4d
         testvectors.push_back(cons_test(32'h76000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT
         testvectors.push_back(cons_test(32'h76000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT
@@ -397,21 +406,21 @@ module z80_top_tb #() ();
                 special_reg_set[3],
                 special_reg_set[4],
                 {test_ram[0],test_ram[1],test_ram[2],test_ram[3],test_ram[4],test_ram[5],test_ram[6],test_ram[7]},
-                testvectors[i].AF, 
-                testvectors[i].BC, 
-                testvectors[i].IX,
-                testvectors[i].SP,
-                testvectors[i].PC,
-                testvectors[i].test_ram
+                current_test.AF,
+                current_test.BC,
+                current_test.IX,
+                current_test.SP,
+                current_test.PC,
+                current_test.test_ram
             );
 
             if (
-                testvectors[i].AF == {main_reg_set[0], main_reg_set[1]} &&
-                testvectors[i].BC == {main_reg_set[2], main_reg_set[3]} &&
-                testvectors[i].IX == special_reg_set[1] &&
-                testvectors[i].SP == special_reg_set[3] &&
-                testvectors[i].PC == special_reg_set[4] &&
-                testvectors[i].test_ram == {
+                current_test.AF == {main_reg_set[0], main_reg_set[1]} &&
+                current_test.BC == {main_reg_set[2], main_reg_set[3]} &&
+                current_test.IX == special_reg_set[1] &&
+                current_test.SP == special_reg_set[3] &&
+                current_test.PC == special_reg_set[4] &&
+                current_test.test_ram == {
                                             test_ram[0],
                                             test_ram[1],
                                             test_ram[2],

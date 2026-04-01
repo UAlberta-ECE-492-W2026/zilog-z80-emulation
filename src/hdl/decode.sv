@@ -1211,7 +1211,7 @@ module decode #(
             output_op = RET;
             reg_a = PC;
             reg_b = SP;
-        end else if (op_0[7:6] == 2'b11 && op_0[2:0] == 3'b100) begin //RET cc
+        end else if (op_0[7:6] == 2'b11 && op_0[2:0] == 3'b000) begin //RET cc
             output_op = RET_cc;
             reg_a = PC;
             reg_b = SP;

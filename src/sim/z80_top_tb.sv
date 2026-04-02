@@ -431,7 +431,10 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hed6f0000, 16'h3104, 16'h4000, 16'h0006, 16'h0000, 16'h0087, 64'h0000000024000001)); // rld
         testvectors.push_back(cons_test(32'hed670000, 16'h3404, 16'h4000, 16'h0006, 16'h0000, 16'h0089, 64'h0000000012000001)); // rrd
         testvectors.push_back(cons_reset()); /* the test for the bit instruction group */
+        //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
         testvectors.push_back(cons_test(32'hcb590000, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // bit       3,c
+        testvectors.push_back(cons_test(32'h0e080000, 16'h0050, 16'h0008, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // bit       3,c
+        testvectors.push_back(cons_test(32'hcb590000, 16'h0010, 16'h0008, 16'h0000, 16'h0000, 16'h0007, 64'h0000000000000000)); // bit       3,c
 
         reset_tb();
         ->test_start;

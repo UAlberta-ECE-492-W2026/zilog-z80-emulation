@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "alu_op.sv"
+//`include "alu_op.sv"
 
 //! This module implements the 8-bit ALU that was defined in the Zilog Z80
 //! specification

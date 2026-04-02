@@ -15,7 +15,6 @@ module vga_out
 (
     input  logic clk,              //! 125 MHz pixel clock from Zybo z-7
     input  logic reset,            //! synchronous reset for counters
-    input  logic [7:0] char_data,
     output logic hsync,            //! horizontal sync (active LOW)
     output logic vsync,            //! vertical sync (active LOW)
     output logic [3:0] red,        //! red channel (4-bit)

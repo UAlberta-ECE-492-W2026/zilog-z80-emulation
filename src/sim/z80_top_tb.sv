@@ -436,10 +436,12 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'h0e080000, 16'h0050, 16'h0008, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // bit       3,c
         testvectors.push_back(cons_test(32'hcb590000, 16'h0010, 16'h0008, 16'h0000, 16'h0000, 16'h0007, 64'h0000000000000000)); // bit       3,c
         testvectors.push_back(cons_reset());
-        testvectors.push_back(cons_test(32'hddcb0266, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // bit       3,c
-        testvectors.push_back(cons_test(32'hdd360210, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0009, 64'h0000100000000000)); // bit       3,c
+        testvectors.push_back(cons_test(32'hddcb0266, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // bit       4,(ix + 2)
+        testvectors.push_back(cons_test(32'hdd360210, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0009, 64'h0000100000000000)); // ld        (ix + 2),10
         testvectors.push_back(cons_test(32'h3f000000, 16'h0041, 16'h0000, 16'h0000, 16'h0000, 16'h000a, 64'h0000100000000000)); // ccf
-        testvectors.push_back(cons_test(32'hddcb0266, 16'h0011, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 64'h0000100000000000)); // bit       3,c
+        testvectors.push_back(cons_test(32'hddcb0266, 16'h0011, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 64'h0000100000000000)); // bit       4,(ix + 2)
+        testvectors.push_back(cons_reset());
+        testvectors.push_back(cons_test(32'hcbf00000, 16'h0000, 16'h4000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // set       6,h
 
         reset_tb();
         ->test_start;

@@ -9,4 +9,4 @@ module controller (c_to_dp_intf.controller intf);
         else intf.current_state <= intf.next_state;
     end;
 
-endmodule; // controller
+endmodule // controller

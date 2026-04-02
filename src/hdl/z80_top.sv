@@ -5,8 +5,10 @@
 `define USE_AXI_KEYBOARD
 
 module z80_top #(
+    /*
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
     parameter integer C_S00_AXI_ADDR_WIDTH = 4
+    */
 )(
     // display driving outputs
     output logic hsync,            //! horizontal sync (active LOW)
@@ -23,9 +25,10 @@ module z80_top #(
     /* verilator lint_on UNUSEDSIGNAL */
 
     // clock
-    input logic clk,
+    input logic clk
 
     // AXI interface
+    /*
     input wire  s00_axi_aclk,
     input wire  s00_axi_aresetn,
     input wire [C_S00_AXI_ADDR_WIDTH-1 : 0] s00_axi_awaddr,
@@ -47,6 +50,7 @@ module z80_top #(
     output wire [1 : 0] s00_axi_rresp,
     output wire  s00_axi_rvalid,
     input wire  s00_axi_rready
+    */
 );    
     logic[15:0] char_ram_address;
     logic[7:0] char_ram_data;

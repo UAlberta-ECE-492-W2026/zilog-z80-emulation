@@ -794,4 +794,4 @@ module controller_output (
           endcase; // case (current_state)
     end;
 
-endmodule; // controller_next_state
+endmodule // controller_next_state

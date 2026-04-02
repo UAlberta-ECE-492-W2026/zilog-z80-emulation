@@ -532,4 +532,4 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
     end;
 
 
-endmodule; // controller_next_state
+endmodule // controller_next_state

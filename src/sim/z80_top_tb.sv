@@ -435,6 +435,8 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hcb590000, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // bit       3,c
         testvectors.push_back(cons_test(32'h0e080000, 16'h0050, 16'h0008, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // bit       3,c
         testvectors.push_back(cons_test(32'hcb590000, 16'h0010, 16'h0008, 16'h0000, 16'h0000, 16'h0007, 64'h0000000000000000)); // bit       3,c
+        testvectors.push_back(cons_reset());
+        testvectors.push_back(cons_test(32'hddcb0266, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // bit       3,c
 
         reset_tb();
         ->test_start;

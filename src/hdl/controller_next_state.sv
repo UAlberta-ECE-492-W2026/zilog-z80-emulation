@@ -123,6 +123,11 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   SRL_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
                   RLD, RRD: set_next_state(uop::buff_addr_reg_a);
                   BIT_b_R: set_next_state(uop::bit_reg_a);
+                  SET_b_R: set_next_state(uop::set_reg_a);
+                  RES_b_R: set_next_state(uop::res_reg_a);
+                  SET_b_mRd,
+                    RES_b_mRd,
+                    BIT_b_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0);
                   JP_nn: set_next_state(uop::ld_reg_a_imm_1);
                   JP_cc_nn: set_next_state(choose_next_jump_state(j_cc,
                                                                   ctrl_intf.f,
@@ -294,6 +299,10 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   SRL_mRd: set_next_state(uop::srl_mbuff_mrbuff);
                   RLD: set_next_state(uop::rld);
                   RRD: set_next_state(uop::rrd);
+                  BIT_b_mRd: set_next_state(uop::bit_mrbuff);
+                  SET_b_mRd: set_next_state(uop::set_mrbuff);
+                  RES_b_mRd: set_next_state(uop::res_mrbuff);
+
                   default: set_next_state(uop::invalid);
                 endcase;
             end
@@ -527,7 +536,12 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
               set_next_state(uop::pc_next);
             end
 
-            uop::bit_reg_a: set_next_state(uop::pc_next);
+            uop::set_reg_a,
+              uop::set_mrbuff,
+              uop::res_reg_a,
+              uop::res_mrbuff,
+              uop::bit_mrbuff,
+              uop::bit_reg_a: set_next_state(uop::pc_next);
 
 
             default: set_next_state(uop::fetch);

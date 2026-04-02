@@ -123,6 +123,6 @@ package uop;
                         rld,
                         rrd
 
-                        } uop_t ;
-endpackage;
+                        } uop_t;
+endpackage
 `endif

@@ -1,7 +1,4 @@
 `timescale 1ns/1ps
-`ifndef NO_INCLUDES
-`include "program_ram.sv"
-`endif
 
 // the interface specifies the following:
 //inputs 
@@ -29,6 +26,7 @@ module memory_wrapper #(
 
     // AXI
     /* verilator lint_off UNUSEDSIGNAL */
+    /*
     `ifdef USE_AXI_KEYBOARD
     ,
     input wire  s00_axi_aclk,
@@ -54,7 +52,7 @@ module memory_wrapper #(
     input wire  s00_axi_rready
     `endif
     /* verilator lint_on UNUSEDSIGNAL */
-
+    
     // debug
     `ifdef Z80_TOP_TESTING
     , // comma here so that if we don't use the ifdef the last port doesn't have a trailing comma
@@ -167,8 +165,8 @@ module memory_wrapper #(
 
     `ifdef USE_AXI_KEYBOARD
         axi_wrapper #() axi_wrapper(
-        .clk(clk),
-        .reset(reset),
+        .clk(intf.clk),
+        .reset(intf.reset),
         .s00_axi_aclk(s00_axi_aclk),
         .s00_axi_aresetn(s00_axi_aresetn),
         .s00_axi_awaddr(s00_axi_awaddr),

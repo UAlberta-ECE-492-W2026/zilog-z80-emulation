@@ -1,7 +1,6 @@
 `timescale 1ns/1ps
-`ifndef NO_INCLUDES
 `include "alu_op.sv"
-`endif
+
 //! This module implements the status output for the ALU, as defined by the
 //! Zilog Z80 specification
 //! Symbol Field Name

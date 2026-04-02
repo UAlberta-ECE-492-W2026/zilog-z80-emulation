@@ -1,8 +1,7 @@
 `timescale 1ns/1ps
-`ifndef NO_INCLUDES
 `include "mop.sv"
 `include "reg_name.sv"
-`endif
+
 /* verilator lint_off UNUSEDSIGNAL */
 
 /** Decode module

@@ -21,14 +21,15 @@ module char_ram #()(
     input  logic r_en,
     input  logic [7:0] data_in
 );
-localparam total_chars = 80*60;
+localparam total_chars = 80 * 60;
 logic [7:0] RW[0:total_chars - 1];
 
 assign char_ram_data = RW[char_ram_address[12:0]];
 
 always_ff @(posedge clk) begin
-    if (w_en)
+    if ( w_en ) begin
         RW[address[12:0]] <= data_in;
+    end
 end
 always_comb begin
     if (r_en)

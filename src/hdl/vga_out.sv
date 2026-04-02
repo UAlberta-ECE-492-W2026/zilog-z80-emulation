@@ -1,5 +1,4 @@
-//`timescale 1ns/1ps
-`include "char_ram.sv"
+`timescale 1ns/1ps
 `include "font_rom.sv"
 `include "horizontal_counter.sv"
 `include "vertical_counter.sv"
@@ -20,7 +19,7 @@ module vga_out
     output logic vsync,            //! vertical sync (active LOW)
     output logic [3:0] red,        //! red channel (4-bit)
     output logic [3:0] green,      //! green channel (4-bit)
-    output logic [3:0] blue,       //! blue channel (4-bit)
+    output logic [3:0] blue,        //! blue channel (4-bit)
 
     // char ram connections
     output logic [15:0] char_ram_address,
@@ -77,25 +76,25 @@ module vga_out
     logic [10:0] address_rom;
     
     horizontal_counter VGA_horizontal (
-        .clk(pixel_clk),
+        .clk(clk),
         .reset(reset),
         .enable_vertical_counter(enable_vertical_counter),
         .horizontal_count_value(horizontal_count_value)
     );
 
     vertical_counter VGA_vertical (
-        .clk(pixel_clk),
+        .clk(clk),
         .reset(reset),
         .enable_vertical_counter(enable_vertical_counter),
         .vertical_count_value(vertical_count_value)
     );
 
     font_rom font_rom (
-        .clk(pixel_clk),
+        .clk(clk),
         .data_out(data_out_rom),
         .address(address_rom)
     );
-
+    
     //! Sync pulses are active LOW
     assign hsync = ~((horizontal_count_value >= (H_VISIBLE + H_FRONT)) &&
                      (horizontal_count_value <  (H_VISIBLE + H_FRONT + H_SYNC)));
@@ -128,23 +127,30 @@ module vga_out
 
     //! Character memory address (row * 80 + col)
     logic [7:0]  ascii;
+
+    // TODO: THIS IS USED AS THE OUTPUT TO THE CHAR RAM
     assign char_ram_address = row * 80 + col;
     assign ascii = visible ? char_ram_data : 8'd0;  //!ASCII returned from RAM
 
+    logic [2:0] px_1_clk_delay;
+    logic visible_1_clk_delay;
     logic [7:0] font_row;  //!row of ascii character to be printed
     logic pixel_on;  //!pixel enable signal
     logic [10:0] font_address;
+    always_ff @( posedge clk ) begin
+        px_1_clk_delay <= px;
+        visible_1_clk_delay <= visible;
+    end
 
-    assign font_address = (ascii << 3) + {8'h00, py};
-
+    assign font_address = ({3'b0, ascii} << 3) + {8'b0, py};
     assign address_rom = font_address;  //! send address to font ROM
     assign font_row = data_out_rom[7:0];  //! bitmap row returned from ROM
 
-    assign pixel_on = font_row[8 - px];  //! select horizontal pixel inside font
+    assign pixel_on = font_row[7 - px_1_clk_delay];  //! select horizontal pixel inside font
 
     //! Drive RGB colour outputs
     always_comb begin
-        if (visible && pixel_on) begin
+        if (visible_1_clk_delay && pixel_on) begin
             red   = 4'h0;
             green = 4'hF;
             blue  = 4'h0;

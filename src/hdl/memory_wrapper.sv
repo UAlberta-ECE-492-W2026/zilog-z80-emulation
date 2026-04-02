@@ -1,5 +1,4 @@
-//`timescale 1ns/1ps
-`include "program_ram.sv"
+`timescale 1ns/1ps
 
 // the interface specifies the following:
 //inputs 
@@ -11,8 +10,10 @@
 // memory_in, (aka data_out_8)
 // instruction_in (aka data_out_32)
 module memory_wrapper #(
+    `ifdef USE_AXI_KEYBOARD
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
     parameter integer C_S00_AXI_ADDR_WIDTH = 4
+    `endif
 )(
 
     c_to_dp_intf.memory_wrapper intf,
@@ -25,6 +26,7 @@ module memory_wrapper #(
 
     // AXI
     /* verilator lint_off UNUSEDSIGNAL */
+    /*
     `ifdef USE_AXI_KEYBOARD
     ,
     input wire  s00_axi_aclk,
@@ -50,7 +52,7 @@ module memory_wrapper #(
     input wire  s00_axi_rready
     `endif
     /* verilator lint_on UNUSEDSIGNAL */
-
+    
     // debug
     `ifdef Z80_TOP_TESTING
     , // comma here so that if we don't use the ifdef the last port doesn't have a trailing comma
@@ -163,10 +165,8 @@ module memory_wrapper #(
 
     `ifdef USE_AXI_KEYBOARD
         axi_wrapper #() axi_wrapper(
-        .clk(clk),
-        .reset(reset),
-        .char_ram_address(char_ram_address), 
-        .char_ram_data(char_ram_data), 
+        .clk(intf.clk),
+        .reset(intf.reset),
         .s00_axi_aclk(s00_axi_aclk),
         .s00_axi_aresetn(s00_axi_aresetn),
         .s00_axi_awaddr(s00_axi_awaddr),
@@ -189,6 +189,7 @@ module memory_wrapper #(
         .s00_axi_rvalid(s00_axi_rvalid),
         .s00_axi_rready(s00_axi_rready)
     );
+    assign data_out_keyboard_IO = 8'h00;
     `else
     assign data_out_keyboard_IO = 8'h00;
     `endif

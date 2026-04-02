@@ -1,12 +1,13 @@
 `timescale 1ns/1ps
 `include "reg_name.sv"
 `include "mux_enums.sv"
+`include "uop.sv"
 
 /**
  * module that provides the signal output logic for the controller.
  */
 module controller_output (
-                          c_to_dp_intf.output_maker intf
+                          c_to_dp_intf.controller_output intf
                           );
     /* assignments ***************/
 
@@ -793,4 +794,4 @@ module controller_output (
           endcase; // case (current_state)
     end;
 
-endmodule; // controller_next_state
+endmodule // controller_next_state

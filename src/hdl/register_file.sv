@@ -2,6 +2,7 @@
 `include "reg_name.sv"
 `include "exx_type.sv"
 
+
 module register_file
 (
     input  wire         clk,
@@ -13,8 +14,8 @@ module register_file
     // register read ports
     input  reg_name     reg_a_sel,
     input  reg_name     reg_b_sel,
-    output wire[15:0]   reg_a,
-    output wire[15:0]   reg_b,
+    output reg [15:0]   reg_a,
+    output reg [15:0]   reg_b,
 
     // register write port
     input  reg_name     reg_w_sel,
@@ -86,36 +87,36 @@ module register_file
 
     function void write_to_reg_file (reg_name reg_sel, reg[15:0] data);
         case(reg_sel)
-            A:      main_reg_set[0] = data[7:0];
-            F:      main_reg_set[1] = data[7:0];
-            B:      main_reg_set[2] = data[7:0];
-            C:      main_reg_set[3] = data[7:0];
-            D:      main_reg_set[4] = data[7:0];
-            E:      main_reg_set[5] = data[7:0];
-            H:      main_reg_set[6] = data[7:0];
-            L:      main_reg_set[7] = data[7:0];
+            A:      main_reg_set[0] <= data[7:0];
+            F:      main_reg_set[1] <= data[7:0];
+            B:      main_reg_set[2] <= data[7:0];
+            C:      main_reg_set[3] <= data[7:0];
+            D:      main_reg_set[4] <= data[7:0];
+            E:      main_reg_set[5] <= data[7:0];
+            H:      main_reg_set[6] <= data[7:0];
+            L:      main_reg_set[7] <= data[7:0];
             AF: begin // AF = 0x1234 => A = 0x12 and F = 0x34
-                    main_reg_set[1] = data[7:0];
-                    main_reg_set[0] = data[15:8];
+                    main_reg_set[1] <= data[7:0];
+                    main_reg_set[0] <= data[15:8];
             end
             BC: begin
-                    main_reg_set[3] = data[7:0];
-                    main_reg_set[2] = data[15:8];
+                    main_reg_set[3] <= data[7:0];
+                    main_reg_set[2] <= data[15:8];
             end
             DE: begin
-                    main_reg_set[5] = data[7:0];
-                    main_reg_set[4] = data[15:8];
+                    main_reg_set[5] <= data[7:0];
+                    main_reg_set[4] <= data[15:8];
             end
             HL: begin
-                    main_reg_set[7] = data[7:0];
-                    main_reg_set[6] = data[15:8];
+                    main_reg_set[7] <= data[7:0];
+                    main_reg_set[6] <= data[15:8];
             end
-            I:      special_reg_set[0][15:8] = data[7:0];
-            R:      special_reg_set[0][7:0] = data[7:0];   
-            IX:     special_reg_set[1] = data; 
-            IY:     special_reg_set[2] = data; 
-            SP:     special_reg_set[3] = data; 
-            PC:     special_reg_set[4] = data;
+            I:      special_reg_set[0][15:8] <= data[7:0];
+            R:      special_reg_set[0][7:0] <= data[7:0];   
+            IX:     special_reg_set[1] <= data; 
+            IY:     special_reg_set[2] <= data; 
+            SP:     special_reg_set[3] <= data; 
+            PC:     special_reg_set[4] <= data;
             default:;
         endcase
     endfunction
@@ -128,7 +129,7 @@ module register_file
     end
 
     // async reset. not sure if this is a good idea
-    always_ff @(posedge reset or posedge clk) begin
+    always_ff @(posedge clk) begin
         //reset
         if (reset) begin
             main_reg_set    <= '{default:8'h00};

@@ -1,10 +1,14 @@
 // Decided to make this a different module to reduce the amount of macros needed in the 'real' z80_top module
 
 `timescale 1ns/1ps
+
 `define USE_AXI_KEYBOARD
+
 module z80_top #(
+    /*
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
     parameter integer C_S00_AXI_ADDR_WIDTH = 4
+    */
 )(
     // display driving outputs
     output logic hsync,            //! horizontal sync (active LOW)
@@ -21,9 +25,10 @@ module z80_top #(
     /* verilator lint_on UNUSEDSIGNAL */
 
     // clock
-    input logic clk,
+    input logic clk
 
     // AXI interface
+    /*
     input wire  s00_axi_aclk,
     input wire  s00_axi_aresetn,
     input wire [C_S00_AXI_ADDR_WIDTH-1 : 0] s00_axi_awaddr,
@@ -45,6 +50,7 @@ module z80_top #(
     output wire [1 : 0] s00_axi_rresp,
     output wire  s00_axi_rvalid,
     input wire  s00_axi_rready
+    */
 );    
     logic[15:0] char_ram_address;
     logic[7:0] char_ram_data;
@@ -66,28 +72,7 @@ module z80_top #(
     memory_wrapper #() memory_wrapper(
         .intf(intf), 
         .char_ram_address(char_ram_address), 
-        .char_ram_data(char_ram_data), 
-        .s00_axi_aclk(s00_axi_aclk),
-        .s00_axi_aresetn(s00_axi_aresetn),
-        .s00_axi_awaddr(s00_axi_awaddr),
-        .s00_axi_awprot(s00_axi_awprot),
-        .s00_axi_awvalid(s00_axi_awvalid),
-        .s00_axi_awready(s00_axi_awready),
-        .s00_axi_wdata(s00_axi_wdata),
-        .s00_axi_wstrb(s00_axi_wstrb),
-        .s00_axi_wvalid(s00_axi_wvalid),
-        .s00_axi_wready(s00_axi_wready),
-        .s00_axi_bresp(s00_axi_bresp),
-        .s00_axi_bvalid(s00_axi_bvalid),
-        .s00_axi_bready(s00_axi_bready),
-        .s00_axi_araddr(s00_axi_araddr),
-        .s00_axi_arprot(s00_axi_arprot),
-        .s00_axi_arvalid(s00_axi_arvalid),
-        .s00_axi_arready(s00_axi_arready),
-        .s00_axi_rdata(s00_axi_rdata),
-        .s00_axi_rresp(s00_axi_rresp),
-        .s00_axi_rvalid(s00_axi_rvalid),
-        .s00_axi_rready(s00_axi_rready)
+        .char_ram_data(char_ram_data)
     );
 
     vga_out #() vga_out(

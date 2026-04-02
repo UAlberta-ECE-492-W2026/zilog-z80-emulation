@@ -1,6 +1,7 @@
 `timescale 1ns/1ps
 `include "mop.sv"
 `include "reg_name.sv"
+
 /* verilator lint_off UNUSEDSIGNAL */
 
 /** Decode module
@@ -21,11 +22,11 @@ module decode #(
     output mop output_op,
     output reg_name reg_a,
     output reg_name reg_b,
-    output wire [7:0] imm_0,
-    output wire [15:0] imm_1,
-    output wire use_16b_alu,
-    output wire [5:0] update_flags,
-    output wire [2:0] instruction_length
+    output reg [7:0] imm_0,
+    output reg [15:0] imm_1,
+    output reg use_16b_alu,
+    output reg [5:0] update_flags,
+    output reg [2:0] instruction_length
 );
     // this helps make it a bit easier to read and compare to the specification
     wire [7:0] op_0; //first byte
@@ -321,7 +322,7 @@ module decode #(
             reg_a = SP;
             reg_b = IY;
             instruction_length = 2;
-        end else if (op_0[7:6] == 0'b11 && op_0[3:0] == 4'b0001) begin // POP qq
+        end else if (op_0[7:6] == 2'b11 && op_0[3:0] == 4'b0001) begin // POP qq
             output_op = POP_R;
             reg_a = reg_from_qq(op_0[5:4]);
             reg_b = SP;

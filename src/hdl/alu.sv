@@ -1,6 +1,5 @@
 `timescale 1ns/1ps
-//`include "alu_op.sv"
-
+`include "alu_op.sv"
 //! This module implements the 8-bit ALU that was defined in the Zilog Z80
 //! specification
 //! Symbol Field Name
@@ -26,10 +25,8 @@ module  alu #(
 	input wire enable,
 	input wire [5:0] flags_in
 );
-    parameter upper_bit=alu_width-1;
-
-    reg [upper_bit + 1:0]     tmp; // output value buffer
-    reg [upper_bit:0]         out_var;
+    reg [alu_width:0]     tmp; // output value buffer
+    reg [alu_width-1:0]         out_var;
     wire               c_var; // carry bit variable
     wire               n_var;
     wire               pv_var;
@@ -38,7 +35,7 @@ module  alu #(
     wire               s_var;
     alu_status_op      status_opcode;
     reg                status_sign;
-	reg [upper_bit:0]  status_b;
+	reg [alu_width-1:0]  status_b;
 	reg [7:0]		   acc_rotated;  // updated accumulator RLD/RRD
 	reg [7:0]		   mem_rotated;  // updated memory byte RLD/RRD
 
@@ -67,21 +64,21 @@ module  alu #(
         case (opcode)
         	ALU_ADD: begin
            		tmp = a + b;
-           		out_var = tmp[upper_bit:0];
+           		out_var = tmp[alu_width-1:0];
         	end
         	ALU_SUB: begin
            		tmp = a - b;
-           		out_var = tmp[upper_bit:0];
+           		out_var = tmp[alu_width-1:0];
            		status_sign = 1;
         	end
             ALU_ADC: begin
                 tmp = a + b + carry_in;
-                out_var = tmp[upper_bit:0];
+                out_var = tmp[alu_width-1:0];
                 status_b = b + carry_in;
             end
             ALU_SBC: begin
                 tmp = a - b - carry_in;
-                out_var = tmp[upper_bit:0];
+                out_var = tmp[alu_width-1:0];
                 status_sign = 1;
                 status_b = b + carry_in;
             end
@@ -91,7 +88,7 @@ module  alu #(
                 COMPARE operation to be implemented as the subtraction op.
                  */
            		tmp = a - b;
-           		out_var = tmp[upper_bit:0];
+           		out_var = tmp[alu_width-1:0];
            		status_sign = 1;
 			end
         	ALU_AND: begin
@@ -159,8 +156,8 @@ module  alu #(
                     out_var = ({{(alu_width-8){1'b0}}, mem_rotated} << 8)
                             |  {{(alu_width-8){1'b0}}, acc_rotated};
                     tmp = '0;
-                    tmp[upper_bit:0]   = out_var;
-                    tmp[upper_bit + 1] = carry_in;
+                    tmp[alu_width-1:0]   = out_var;
+                    tmp[alu_width-1 + 1] = carry_in;
                 end
             end
             ALU_RRD: begin
@@ -171,17 +168,17 @@ module  alu #(
                     out_var = ({{(alu_width-8){1'b0}}, mem_rotated} << 8)
                             |  {{(alu_width-8){1'b0}}, acc_rotated};
                     tmp = '0;
-                    tmp[upper_bit:0]   = out_var;
-                    tmp[upper_bit + 1] = carry_in;
+                    tmp[alu_width-1:0]   = out_var;
+                    tmp[alu_width-1 + 1] = carry_in;
                 end
             end
         	//ALU_INC:begin
            	//	tmp = a + 1;
-           	//	out_var = tmp[upper_bit:0];
+           	//	out_var = tmp[alu_width-1:0];
         	//end
         	ALU_DEC: begin
            		tmp = a - 1;
-           		out_var = tmp[upper_bit:0];
+           		out_var = tmp[alu_width-1:0];
            		status_sign=1;
         	end
             // https://stackoverflow.com/questions/8119577/z80-daa-instruction

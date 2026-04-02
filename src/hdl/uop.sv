@@ -1,5 +1,7 @@
 `timescale 1ns/1ps
 
+`ifndef UOP
+`define UOP
 package uop;
     /**
      enum for the uop (micro-operation). These represents the states that the
@@ -8,7 +10,7 @@ package uop;
      This enum is primarily used by the controller next state logic and the output
      logic.
      */
-    typedef enum [7:0] {invalid,
+    typedef enum {invalid,
                         reset,
 
                         nop,
@@ -121,5 +123,6 @@ package uop;
                         rld,
                         rrd
 
-                        } uop_t ;
-endpackage;
+                        } uop_t;
+endpackage
+`endif

@@ -3,7 +3,7 @@
 
 /* verilator lint_off UNDRIVEN */
 /* verilator lint_off UNUSEDSIGNAL */
-typedef enum [1:0] {
+typedef enum {
     F_NOP,
     F_CCF,
     F_SCF

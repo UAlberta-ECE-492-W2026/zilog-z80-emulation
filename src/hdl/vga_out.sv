@@ -1,7 +1,4 @@
 `timescale 1ns/1ps
-`include "font_rom.sv"
-`include "horizontal_counter.sv"
-`include "vertical_counter.sv"
 
 //! VGA text driver
 //! This module generates full VGA timing and renders text

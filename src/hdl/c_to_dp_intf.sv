@@ -5,10 +5,13 @@
 `include "reg_name.sv"
 `include "f_op.sv"
 `include "mux_enums.sv"
-
+`include "uop.sv"
 /**
 Interface for the connection between the controller and the datapath.
  */
+
+ `ifndef C_TO_DP_INTF
+ `define C_TO_DP_INTF
 interface c_to_dp_intf();
 
     /* verilator lint_off UNDRIVEN */
@@ -80,13 +83,6 @@ interface c_to_dp_intf();
         next_state = state;
     endfunction; // set_next_state
     /* verilator lint_on UNUSEDSIGNAL */
-
-    /**
-     method that denotes if the controller should latch the new mop output
-     */
-    function automatic logic latch_mop();
-        return current_state == uop::fetch;
-    endfunction; // latch_mop
 
     /* output logic related *************************************/
 
@@ -175,6 +171,7 @@ interface c_to_dp_intf();
                       input  alu_enable, alu_16b_mode,
                              alu_opcode,
                              update_flags,
+                      output raw_f,
 
                       // register file
                       input  reg_a_sel,
@@ -208,78 +205,36 @@ interface c_to_dp_intf();
                       output imm_1_out,
                       output use_16b_alu_out,
                       output update_flags_out,
-                      output instruction_length_out,
-                      output raw_f);
+                      output instruction_length_out);
 
     modport controller (
-                      // buffers
-                      output ir_en, o_buff_en,
-
-                             // ALU
-                             alu_enable, alu_16b_mode, alu_opcode, update_flags,
-
-                             // register file
-                             reg_a_sel, reg_b_sel, reg_w_sel, reg_w_en, f_w_en,
-                             f_op, exx_sig,
-
-                             // mux
-                             alu_mux_a_sel,
-                             alu_mux_b_sel,
-                             write_back_sel,
-
-                             // memory interfacing
-                             memory_in,
-                             instruction_in,
-                             imm_in,
-                             instruction_length,
-                             current_state,
-
-                      // instruction decode
-                      // some of these have corrosponding similarly named inputs from the controller
-                      input  f,
-                      //input  memory_out, // data or address depending on uop
-                      input  mop_out,
-                      input  reg_a_sel_out,
-                      input  reg_b_sel_out,
-                      input  imm_0_out,
-                      input  imm_1_out,
-                      input  use_16b_alu_out,
-                      input  update_flags_out,
-                      input  instruction_length_out,
                       input  clk, reset,
                       input  next_state,
-                      input  raw_f,
-                      import latch_mop);
+                      output current_state  
+                      );
 
-    modport output_maker(output ir_en, o_buff_en,
+    modport controller_output(output ir_en, o_buff_en,
                                 // ALU
-                                alu_enable, alu_16b_mode, alu_opcode,
+                                alu_16b_mode, 
                                 update_flags,
+                                imm_in,
 
                          // register file
                          output reg_a_sel,
                                 reg_b_sel,
-                                reg_w_sel,
-                                reg_w_en,
                                 f_w_en,
                                 f_op,
                                 exx_sig,
 
                          // mux
-                         output alu_mux_a_sel,
-                                alu_mux_b_sel,
-                                write_back_sel,
+                         output write_back_sel,
                                 mem_mux_sel,
                                 mem_read_buff_en,
                                 mem_addr_buff_en,
                                 mem_data_mux_sel,
 
                          // memory interfacing
-                         output memory_in,
-                                instruction_in,
-                                imm_in,
-                                instruction_length,
-                                mem_r_en,
+                         output mem_r_en,
                                 mem_w_en,
 
                          input  current_state, reset, reg_a_sel_out,
@@ -296,7 +251,7 @@ interface c_to_dp_intf();
                          import forward_decode_16b_alu
                          );
 
-    modport next_state_logic(
+    modport controller_next_state(
                              input current_state, mop_out, reset, f, raw_f,
                                    imm_0_out,
                              import set_next_state
@@ -307,8 +262,8 @@ interface c_to_dp_intf();
                                  memory_out, mem_r_en, mem_w_en, clk, reset,
                            output memory_in, instruction_in 
     );
-endinterface; // c_to_dp_intf
-
+endinterface // c_to_dp_intf
+`endif
 /*
  Local Variables:
  eval:(add-to-list 'flycheck-verilator-include-path "../enum")

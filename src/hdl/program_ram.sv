@@ -1,7 +1,8 @@
 `timescale 1ns/1ps
 
 // the main RAM of the system
-
+`ifndef PROGRAM_RAM
+`define PROGRAM_RAM
 module program_ram #()(
     input logic         clk,
     input logic         reset,
@@ -25,13 +26,13 @@ module program_ram #()(
     end
 
     always_comb begin
+        data_out_8 = 0;
+        data_out_32 = 0;
         if (r_en) begin
             data_out_8 = mem[address];
-            data_out_32 = {mem[address + 3], mem[address + 2], mem[address + 1],mem[address + 0]}; // this might be backwards
-        end else begin
-            data_out_8 = 8'hXX;
-            data_out_32 = 32'hXXXXXXXX;
+            data_out_32 = {mem[address + 0], mem[address + 1], mem[address + 2],mem[address + 3]};
         end
     end
 
 endmodule
+`endif

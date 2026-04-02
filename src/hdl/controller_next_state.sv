@@ -122,6 +122,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   SRL_R: set_next_state(uop::srl_reg_a);
                   SRL_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
                   RLD, RRD: set_next_state(uop::buff_addr_reg_a);
+                  BIT_b_R: set_next_state(uop::bit_reg_a);
                   JP_nn: set_next_state(uop::ld_reg_a_imm_1);
                   JP_cc_nn: set_next_state(choose_next_jump_state(j_cc,
                                                                   ctrl_intf.f,
@@ -525,6 +526,9 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
             uop::rrd: begin
               set_next_state(uop::pc_next);
             end
+
+            uop::bit_reg_a: set_next_state(uop::pc_next);
+
 
             default: set_next_state(uop::fetch);
           endcase;

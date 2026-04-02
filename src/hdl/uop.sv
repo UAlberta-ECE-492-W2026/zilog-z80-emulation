@@ -121,7 +121,10 @@ package uop;
                         srl_reg_a,
                         srl_mbuff_mrbuff,
                         rld,
-                        rrd
+                        rrd,
+
+                  /* bit instruction group */
+                  bit_reg_a
 
                         } uop_t;
 endpackage

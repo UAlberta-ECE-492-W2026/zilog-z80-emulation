@@ -173,7 +173,7 @@ module z80_top_tb #() ();
         $dumpvars();
 
         //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
-        testvectors.push_back(cons_reset()); // RESET
+        testvectors.push_back(cons_reset()); // load instruction group
         testvectors.push_back(cons_test(32'h00000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0002, 64'h0000000000000000)); // NOP
         testvectors.push_back(cons_test(32'h3e070000, 16'h0700, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld        a,$07
         testvectors.push_back(cons_test(32'h47000000, 16'h0700, 16'h0700, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // ld        b,a
@@ -254,7 +254,7 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'h37000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec2, 64'h0000000708098000)); // scf
         testvectors.push_back(cons_test(32'h3f000000, 16'hff90, 16'h0002, 16'h0001, 16'h0010, 16'hdec3, 64'h0000000708098000)); // ccf
         testvectors.push_back(cons_test(32'h3f000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec4, 64'h0000000708098000)); // ccf
-        testvectors.push_back(cons_reset());
+        testvectors.push_back(cons_reset()); /* the call instruction group */
         testvectors.push_back(cons_test(32'hc3efbe00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'hbeef, 64'h0000000000000000)); // JP        $4d
         testvectors.push_back(cons_test(32'h31100000, 16'h0000, 16'h0000, 16'h0000, 16'h0010, 16'hbef2, 64'h0000000000000000)); // ld        sp,$0010
         testvectors.push_back(cons_test(32'hcd371300, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h1337, 64'h000000000000f5be)); // call      1337
@@ -263,7 +263,7 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hc9000000, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h133d, 64'h000000003d13f5be)); // ret
         testvectors.push_back(cons_test(32'he8000000, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h133e, 64'h000000003d13f5be)); // ret       pe
         testvectors.push_back(cons_test(32'he0000000, 16'h0000, 16'h0000, 16'h0000, 16'h0010, 16'hbef5, 64'h000000003d13f5be)); // ret       po
-        testvectors.push_back(cons_reset());
+        testvectors.push_back(cons_reset()); /* testing the halt instructions */
         testvectors.push_back(cons_test(32'hc34d0000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // JP        $4d
         testvectors.push_back(cons_test(32'h76000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT
         testvectors.push_back(cons_test(32'h76000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT
@@ -430,6 +430,8 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'h3e340000, 16'h3400, 16'h4000, 16'h0006, 16'h0000, 16'h0085, 64'h0000000012000001)); // ld        a,$34
         testvectors.push_back(cons_test(32'hed6f0000, 16'h3104, 16'h4000, 16'h0006, 16'h0000, 16'h0087, 64'h0000000024000001)); // rld
         testvectors.push_back(cons_test(32'hed670000, 16'h3404, 16'h4000, 16'h0006, 16'h0000, 16'h0089, 64'h0000000012000001)); // rrd
+        testvectors.push_back(cons_reset()); /* the test for the bit instruction group */
+        testvectors.push_back(cons_test(32'hcb590000, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // bit       3,c
 
         reset_tb();
         ->test_start;

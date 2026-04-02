@@ -18,6 +18,9 @@ module alu_wrapper #()
     output wire [5:0] toggle_flags,
     output wire [5:0] raw_flags
 );  
+    wire is_bit_op;
+    assign is_bit_op  = (opcode == ALU_BIT) || (opcode == ALU_SETBIT) || (opcode == ALU_RESBIT);
+
     wire alu_8_en;
     wire alu_16_en;
     assign alu_8_en   = (alu_16b_mode == 0) ? (enable && opcode != ALU_NOP && !is_bit_op) : 0;
@@ -38,9 +41,6 @@ module alu_wrapper #()
     
     assign reset_flags = enable ? (is_bit_op ? bit_reset_flags : (~raw_flags) & update_flags & current_flags) : 0;
     assign toggle_flags = 0;
-
-    wire is_bit_op;
-    assign is_bit_op  = (opcode == ALU_BIT) || (opcode == ALU_SETBIT) || (opcode == ALU_RESBIT);
 
     wire bit_alu_en;
     assign bit_alu_en = (alu_16b_mode == 0) ? (enable && is_bit_op) : 0;

@@ -13,7 +13,7 @@
 
 /* verilator lint_off UNDRIVEN */
 /* verilator lint_off UNUSEDSIGNAL */
-typedef enum [6:0] { 
+typedef enum { 
 // misc
     INVALID,
 

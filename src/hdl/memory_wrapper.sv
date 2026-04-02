@@ -169,8 +169,6 @@ module memory_wrapper #(
         axi_wrapper #() axi_wrapper(
         .clk(clk),
         .reset(reset),
-        .char_ram_address(char_ram_address), 
-        .char_ram_data(char_ram_data), 
         .s00_axi_aclk(s00_axi_aclk),
         .s00_axi_aresetn(s00_axi_aresetn),
         .s00_axi_awaddr(s00_axi_awaddr),
@@ -193,6 +191,7 @@ module memory_wrapper #(
         .s00_axi_rvalid(s00_axi_rvalid),
         .s00_axi_rready(s00_axi_rready)
     );
+    assign data_out_keyboard_IO = 8'h00;
     `else
     assign data_out_keyboard_IO = 8'h00;
     `endif

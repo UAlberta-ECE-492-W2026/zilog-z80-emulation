@@ -68,28 +68,7 @@ module z80_top #(
     memory_wrapper #() memory_wrapper(
         .intf(intf), 
         .char_ram_address(char_ram_address), 
-        .char_ram_data(char_ram_data), 
-        .s00_axi_aclk(s00_axi_aclk),
-        .s00_axi_aresetn(s00_axi_aresetn),
-        .s00_axi_awaddr(s00_axi_awaddr),
-        .s00_axi_awprot(s00_axi_awprot),
-        .s00_axi_awvalid(s00_axi_awvalid),
-        .s00_axi_awready(s00_axi_awready),
-        .s00_axi_wdata(s00_axi_wdata),
-        .s00_axi_wstrb(s00_axi_wstrb),
-        .s00_axi_wvalid(s00_axi_wvalid),
-        .s00_axi_wready(s00_axi_wready),
-        .s00_axi_bresp(s00_axi_bresp),
-        .s00_axi_bvalid(s00_axi_bvalid),
-        .s00_axi_bready(s00_axi_bready),
-        .s00_axi_araddr(s00_axi_araddr),
-        .s00_axi_arprot(s00_axi_arprot),
-        .s00_axi_arvalid(s00_axi_arvalid),
-        .s00_axi_arready(s00_axi_arready),
-        .s00_axi_rdata(s00_axi_rdata),
-        .s00_axi_rresp(s00_axi_rresp),
-        .s00_axi_rvalid(s00_axi_rvalid),
-        .s00_axi_rready(s00_axi_rready)
+        .char_ram_data(char_ram_data)
     );
 
     vga_out #() vga_out(

@@ -3,7 +3,7 @@
 
 /* verilator lint_off UNDRIVEN */
 /* verilator lint_off UNUSEDSIGNAL */
-typedef enum [4:0] { 
+typedef enum { 
     ALU_NOP,
     ALU_ADD, 
     ALU_SUB,
@@ -32,7 +32,7 @@ typedef enum [4:0] {
     ALU_CPL
 } alu_op;
 
-typedef enum [4:0] { 
+typedef enum { 
     NUMERIC_OP,
     SHIFT_OP, 
     ROTATE_OP,

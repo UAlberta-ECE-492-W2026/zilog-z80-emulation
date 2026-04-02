@@ -27,7 +27,7 @@ module program_ram #()(
     always_comb begin
         if (r_en) begin
             data_out_8 = mem[address];
-            data_out_32 = {mem[address + 3], mem[address + 2], mem[address + 1],mem[address + 0]}; // this might be backwards
+            data_out_32 = {mem[address + 0], mem[address + 1], mem[address + 2],mem[address + 3]};
         end else begin
             data_out_8 = 8'hXX;
             data_out_32 = 32'hXXXXXXXX;

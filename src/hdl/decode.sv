@@ -323,7 +323,7 @@ module decode #(
             reg_a = SP;
             reg_b = IY;
             instruction_length = 2;
-        end else if (op_0[7:6] == 0'b11 && op_0[3:0] == 4'b0001) begin // POP qq
+        end else if (op_0[7:6] == 2'b11 && op_0[3:0] == 4'b0001) begin // POP qq
             output_op = POP_R;
             reg_a = reg_from_qq(op_0[5:4]);
             reg_b = SP;

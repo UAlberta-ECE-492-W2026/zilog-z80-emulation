@@ -125,23 +125,42 @@ module vga_out
     assign px = x[2:0];
     assign py = y[2:0];
 
+<<<<<<< Updated upstream
     //! Character memory address (row * 80 + col)
     logic [7:0]  ascii;
 
+=======
+>>>>>>> Stashed changes
     // TODO: THIS IS USED AS THE OUTPUT TO THE CHAR RAM
     assign char_ram_address = row * 80 + col;
     assign ascii = visible ? char_ram_data : 8'd0;  //!ASCII returned from RAM
 
     logic [2:0] px_1_clk_delay;
     logic visible_1_clk_delay;
+    logic [2:0] py_1_clk_delay;
+    logic [7:0] ascii_1_clk_delay;
+    logic [2:0] py_1_clk_delay;
+    logic [7:0] ascii_1_clk_delay;
     logic [7:0] font_row;  //!row of ascii character to be printed
     logic pixel_on;  //!pixel enable signal
     logic [10:0] font_address;
     always_ff @( posedge clk ) begin
         px_1_clk_delay <= px;
         visible_1_clk_delay <= visible;
+        py_1_clk_delay <= py;
+        ascii_1_clk_delay <= ascii;
+        py_1_clk_delay <= py;
+        ascii_1_clk_delay <= ascii;
     end
 
+    //! Character memory address (row * 80 + col)
+    logic [7:0]  ascii;
+
+    assign ascii = char_data;
+    //! Character memory address (row * 80 + col)
+    logic [7:0]  ascii;
+
+    assign ascii = char_data;
     assign font_address = ({3'b0, ascii} << 3) + {8'b0, py};
     assign address_rom = font_address;  //! send address to font ROM
     assign font_row = data_out_rom[7:0];  //! bitmap row returned from ROM

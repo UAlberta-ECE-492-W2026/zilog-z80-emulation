@@ -19,8 +19,11 @@ parameter integer C_S00_AXI_ADDR_WIDTH = 4
 // Users to add ports here
 
 input logic clk,
-input logic reset,
-
+output logic hsync,            //! horizontal sync (active LOW)
+output logic vsync,            //! vertical sync (active LOW)
+output logic [3:0] red,        //! red channel (4-bit)
+output logic [3:0] green,      //! green channel (4-bit)
+output logic [3:0] blue,        //! blue channel (4-bit)
 // User ports ends
 // Do not modify the ports beyond this line
 
@@ -48,6 +51,11 @@ output wire [1 : 0] s00_axi_rresp,
 output wire  s00_axi_rvalid,
 input wire  s00_axi_rready
 );
+
+logic fifo_empty;
+logic [7:0] fifo_data_out;
+logic fifo_r_en;
+
 // Instantiation of Axi Bus Interface S00_AXI
 axi_wrapper_slave_lite_v1_0_S00_AXI # (
 .C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
@@ -73,9 +81,86 @@ axi_wrapper_slave_lite_v1_0_S00_AXI # (
 .S_AXI_RDATA(s00_axi_rdata),
 .S_AXI_RRESP(s00_axi_rresp),
 .S_AXI_RVALID(s00_axi_rvalid),
-.S_AXI_RREADY(s00_axi_rready)
+.S_AXI_RREADY(s00_axi_rready),
+.fifo_empty(fifo_empty),
+.fifo_data_out(fifo_data_out),
+.fifo_r_en(fifo_r_en)
 );
 
+<<<<<<< Updated upstream
+=======
+// Add user logic here
+// Clock divider to drive the external counters to the module
+logic [2:0] div_count;
+logic pixel_clk;
+logic [7:0] char_data;
+logic w_en;
+logic [15:0] vga_address;
+logic [15:0] write_ptr;
+
+always_ff @(posedge clk or negedge s00_axi_aresetn) begin
+    if (!s00_axi_aresetn) begin
+        div_count <= 0;
+        pixel_clk <= 0;
+    end else begin
+        div_count <= div_count + 1;
+        if (div_count == 2) begin
+            pixel_clk <= ~pixel_clk;
+            div_count <= 0;
+        end
+    end
+end
+
+/* verilator lint_off TIMESCALEMOD */
+/* verilator lint_off IMPLICIT */
+char_ram char_ram_inst (
+    .axi_clk(s00_axi_aclk),
+    .w_en(w_en),
+    .write_address(write_ptr),
+    .data_in(fifo_data_out),
+    .pixel_clk(pixel_clk),
+    .read_address(vga_address),
+    .data_out(char_data)
+);
+
+/* verilator lint_off TIMESCALEMOD */
+/* verilator lint_off IMPLICIT */
+vga_out vga_out (
+    .clk(pixel_clk),
+    .reset(s00_axi_aresetn),
+    .hsync(hsync),
+    .vsync(vsync),
+    .red(red),
+    .green(green),
+    .blue(blue),
+    .char_address(vga_address),
+    .char_data(char_data)
+);
+
+always_ff @(posedge s00_axi_aclk) begin
+    fifo_r_en <= 0;
+    w_en <= 0;
+    if (!s00_axi_aresetn) begin
+        write_ptr <= 0;
+    end
+    if (write_ptr == 16'd4799) begin
+        write_ptr <= 0;
+    end else begin
+        if ( !fifo_empty && write_ptr < 15'd4799 ) begin
+            fifo_r_en <= 1;
+            w_en      <= 1;
+            write_ptr <= write_ptr + 1;
+        end else begin
+            fifo_r_en <= 0;
+            w_en <= 0;
+        end
+    end
+end
+
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 // User logic ends
 
 endmodule

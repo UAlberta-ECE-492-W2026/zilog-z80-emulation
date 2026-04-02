@@ -36,6 +36,9 @@ always_ff @( posedge clk ) begin
         count <= 0;
     end else begin
         if ( w_en && !full && r_en && !empty ) begin
+            fifo[w_ptr] <= data_in;
+            w_ptr <= w_ptr + 1;
+            r_ptr <= r_ptr + 1;
             count <= count;
         end else if ( w_en && !full ) begin
             fifo[w_ptr] <= data_in;

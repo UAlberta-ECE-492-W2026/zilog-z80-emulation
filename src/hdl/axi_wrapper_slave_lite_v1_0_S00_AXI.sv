@@ -81,16 +81,16 @@ output wire [1 : 0] S_AXI_RRESP,
 output wire  S_AXI_RVALID,
 // Read ready. This signal indicates that the master can
     // accept the read data and response information.
-input wire  S_AXI_RREADY
+input wire  S_AXI_RREADY,
+output logic [7:0] fifo_data_out,
+output logic fifo_empty,
+input logic fifo_r_en
 
 );
 
 // FIFO signals
-logic [7:0] fifo_data_out;
-logic fifo_empty;
-logic fifo_full;
-logic fifo_r_en;
 logic fifo_w_en;
+logic fifo_full;
 logic [7:0] fifo_data_in;
 
 // AXI4LITE signals
@@ -368,32 +368,13 @@ always @( posedge S_AXI_ACLK ) begin
     end
 end
 
-// "A read transaction request takes place when both S_AXI_ARVALID and S_AXI_ARREADY are true on the same clock."
-// from reference "https://zipcpu.com/formal/2018/12/28/axilite.html" by The ZipCPU by Gisselquist Technology
-
-// AXI hand shake for reading
-logic read_ready;
-assign read_ready = S_AXI_ARVALID && axi_arready;
-
 // read select of reading addres (similar to write previously)
 // memory mapped register select
 logic read_data_reg_select;
 assign read_data_reg_select = ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'h00);
 
-// popping off fifo
-always @( posedge S_AXI_ACLK ) begin
-    if ( !S_AXI_ARESETN ) begin
-        fifo_r_en <= 0;
-    end else begin
-          fifo_r_en <= 0;
-      if ( read_ready && read_data_reg_select && !fifo_empty ) begin
-          fifo_r_en <= 1;
-      end
-    end
-end
-
 // read data for the ascii slave
 // either will reead the data on fifo data out or the status reg
-assign S_AXI_RDATA = ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'h00 ) ? {24'b0, fifo_data_out} : ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'h01 ) ? fifo_status_reg : 32'b0;
+assign S_AXI_RDATA = ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'h00 ) ? fifo_data_reg : ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'h01 ) ? fifo_status_reg : 32'b0;
 
 endmodule

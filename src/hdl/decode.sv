@@ -23,11 +23,11 @@ module decode #(
     output mop output_op,
     output reg_name reg_a,
     output reg_name reg_b,
-    output wire [7:0] imm_0,
-    output wire [15:0] imm_1,
-    output wire use_16b_alu,
-    output wire [5:0] update_flags,
-    output wire [2:0] instruction_length
+    output reg [7:0] imm_0,
+    output reg [15:0] imm_1,
+    output reg use_16b_alu,
+    output reg [5:0] update_flags,
+    output reg [2:0] instruction_length
 );
     // this helps make it a bit easier to read and compare to the specification
     wire [7:0] op_0; //first byte

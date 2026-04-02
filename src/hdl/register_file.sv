@@ -15,8 +15,8 @@ module register_file
     // register read ports
     input  reg_name     reg_a_sel,
     input  reg_name     reg_b_sel,
-    output wire[15:0]   reg_a,
-    output wire[15:0]   reg_b,
+    output reg [15:0]   reg_a,
+    output reg [15:0]   reg_b,
 
     // register write port
     input  reg_name     reg_w_sel,
@@ -130,7 +130,7 @@ module register_file
     end
 
     // async reset. not sure if this is a good idea
-    always_ff @(posedge reset or posedge clk) begin
+    always_ff @(posedge clk) begin
         //reset
         if (reset) begin
             main_reg_set    <= '{default:8'h00};

@@ -10,7 +10,7 @@ package uop;
      This enum is primarily used by the controller next state logic and the output
      logic.
      */
-    typedef enum [7:0] {invalid,
+    typedef enum {invalid,
                         reset,
 
                         nop,

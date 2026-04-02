@@ -1,5 +1,7 @@
 `timescale 1ns/1ps
 
+`ifndef UOP
+`define UOP
 package uop;
     /**
      enum for the uop (micro-operation). These represents the states that the
@@ -123,3 +125,4 @@ package uop;
 
                         } uop_t ;
 endpackage;
+`endif

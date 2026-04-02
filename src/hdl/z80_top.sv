@@ -1,7 +1,9 @@
 // Decided to make this a different module to reduce the amount of macros needed in the 'real' z80_top module
 
 `timescale 1ns/1ps
+
 `define USE_AXI_KEYBOARD
+`define NO_INCLUDES
 module z80_top #(
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
     parameter integer C_S00_AXI_ADDR_WIDTH = 4

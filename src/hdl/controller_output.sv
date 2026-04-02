@@ -1,7 +1,9 @@
 `timescale 1ns/1ps
+`ifndef NO_INCLUDES
 `include "reg_name.sv"
 `include "mux_enums.sv"
-
+`include "uop.sv"
+`endif
 /**
  * module that provides the signal output logic for the controller.
  */

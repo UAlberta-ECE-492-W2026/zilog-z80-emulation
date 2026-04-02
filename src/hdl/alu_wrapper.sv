@@ -1,5 +1,7 @@
 `timescale 1ns/1ps
+`ifndef NO_INCLUDES
 `include "alu_op.sv"
+`endif
 
 module alu_wrapper #() 
 (

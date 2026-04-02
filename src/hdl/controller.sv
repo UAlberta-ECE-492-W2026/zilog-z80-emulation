@@ -1,6 +1,7 @@
 `timescale 1ns/1ps
+`ifndef NO_INCLUDES
 `include "mop.sv"
-
+`endif
 /** Module for the controller of the datapath controller architecture.
  */
 module controller (c_to_dp_intf.controller intf);

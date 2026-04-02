@@ -1,6 +1,8 @@
 `timescale 1ns/1ps
+`ifndef NO_INCLUDES
 `include "reg_name.sv"
 `include "exx_type.sv"
+`endif
 
 module register_file
 (

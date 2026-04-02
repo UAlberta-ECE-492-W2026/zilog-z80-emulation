@@ -1,11 +1,13 @@
 `timescale 1ns/1ps
+`ifndef NO_INCLUDES
 `include "alu_op.sv"
 `include "mop.sv"
 `include "exx_type.sv"
 `include "reg_name.sv"
 `include "f_op.sv"
 `include "mux_enums.sv"
-
+`include "uop.sv"
+`endif
 /**
 Interface for the connection between the controller and the datapath.
  */

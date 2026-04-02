@@ -1,5 +1,7 @@
-//`timescale 1ns/1ps
+`timescale 1ns/1ps
+`ifndef NO_INCLUDES
 `include "program_ram.sv"
+`endif
 
 // the interface specifies the following:
 //inputs 

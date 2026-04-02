@@ -58,12 +58,7 @@ module z80_top_for_testing #(
         .char_ram_data(char_ram_data), 
         .override_instruciton(1'b1), 
         .override_instruciton_data(instruction), 
-        .test_ram(test_ram),
-        /* verilator lint_off PINCONNECTEMPTY */
-        .axi_data_in(),
-        .axi_ready(),
-        .axi_valid()
-        /* verilator lint_on PINCONNECTEMPTY */
+        .test_ram(test_ram)
     );
 
     vga_out #() vga_out(

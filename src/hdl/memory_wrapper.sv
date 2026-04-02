@@ -11,8 +11,10 @@
 // memory_in, (aka data_out_8)
 // instruction_in (aka data_out_32)
 module memory_wrapper #(
+    `ifdef USE_AXI_KEYBOARD
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
     parameter integer C_S00_AXI_ADDR_WIDTH = 4
+    `endif
 )(
 
     c_to_dp_intf.memory_wrapper intf,

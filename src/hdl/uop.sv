@@ -33,21 +33,13 @@ package uop;
                   ld_reg_a_imm_1,
                   ld_reg_b_imm_1,
 
-                  read_mrbuff_reg_b_imm_0_1, //F
-                  read_mrbuff_reg_b_imm_0_2,
-                  read_mrbuff_reg_b_1,
-                  read_mrbuff_reg_b_2, /* imm_0 is polluted during cc,
-                                        need forwarding */
-                  read_mrbuff_imm_1_1, // 13
-                  read_mrbuff_imm_1_2,
-                  read_mbuff_mrbuff_1,
-                  read_mbuff_mrbuff_2,
-                  read16_reg_a_reg_b_imm_0_1,
-                  read16_reg_a_reg_b_imm_0_2,
-                  read16_reg_a_reg_b_1, /* pure passthrough */
-                  read16_reg_a_reg_b_2, /* pure passthrough */
-                  read16_reg_a_imm_1_1,
-                  read16_reg_a_imm_1_2,
+                  read_mrbuff_reg_b_imm_0, //F
+                  read_mrbuff_reg_b,
+                  read_mrbuff_imm_1, // 13
+                  read_mbuff_mrbuff,
+                  read16_reg_a_reg_b_imm_0,
+                  read16_reg_a_reg_b,
+                  read16_reg_a_imm_1,
 
                   /* write control */
                   write_reg_bH, //1d

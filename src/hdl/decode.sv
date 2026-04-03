@@ -1088,7 +1088,7 @@ module decode #(
             output_op = SET_b_mRd;
             reg_a = IX;
             imm_0 = op_2;
-            imm_1 = {{13{1'b0}}, op_1[5:3]};
+            imm_1 = {{13{1'b0}}, op_3[5:3]};
             instruction_length = 4;
         end else if (op_0 == 8'hFD
                      && op_1 == 8'hCB
@@ -1097,7 +1097,7 @@ module decode #(
             output_op = SET_b_mRd;
             reg_a = IY;
             imm_0 = op_2;
-            imm_1 = {{13{1'b0}}, op_1[5:3]};
+            imm_1 = {{13{1'b0}}, op_3[5:3]};
             instruction_length = 4;
 
             /* RES b, m */

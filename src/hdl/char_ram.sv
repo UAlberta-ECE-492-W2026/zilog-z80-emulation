@@ -32,8 +32,6 @@ always_ff @(posedge clk) begin
     end
     if (r_en) begin
         data_out <= RW[address[12:0]];
-    end else begin
-        data_out <= 0;
     end
 end
 

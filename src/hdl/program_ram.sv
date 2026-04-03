@@ -29,9 +29,6 @@ module program_ram #()(
         if (r_en) begin
             data_out_8 <= mem[address - 256];
             data_out_32 <= {mem[address - 256], mem[address - 255], mem[address - 254],mem[address - 253]};
-        end else begin
-            data_out_8 <= 0;
-            data_out_32 <= 0;
         end
     end
 

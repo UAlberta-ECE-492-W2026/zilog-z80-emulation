@@ -11,118 +11,125 @@ package uop;
      logic.
      */
     typedef enum {invalid,
-                        reset,
+                  reset,
 
-                        nop,
-                        fetch,
-                        commit_fetch,
+                  nop,
+                  fetch,
+                  commit_fetch,
 
-                        /* PC ops */
-                        pc_m2, // 5
-                        pc_m1,
-                        pc_next,
+                  /* PC ops */
+                  pc_m2, // 5
+                  pc_m1,
+                  pc_next,
 
-                        /* sp ops */
-                        sp_m1, //8
-                        sp_m1_2, /* the second stack pointer reduce in seq */
-                        sp_p2,
+                  /* sp ops */
+                  sp_m1, //8
+                  sp_m1_2, /* the second stack pointer reduce in seq */
+                  sp_p2,
 
-                        /* load related */
-                        ld_reg_a_reg_b, //B
-                        ld_reg_a_imm_0,
-                        ld_reg_a_imm_1,
-                        ld_reg_b_imm_1,
+                  /* load related */
+                  ld_reg_a_reg_b, //B
+                  ld_reg_a_imm_0,
+                  ld_reg_a_imm_1,
+                  ld_reg_b_imm_1,
 
-                        read_mrbuff_reg_b_imm_0, //F
-                        read_mrbuff_reg_b, /* imm_0 is polluted during cc,
-                                            need forwarding */
-                        read_mrbuff_imm_1,
-                        read_mbuff_mrbuff,
-                        read16_reg_a_reg_b_imm_0,
-                        read16_reg_a_reg_b, /* pure passthrough */
-                        read16_reg_a_imm_1,
+                  read_mrbuff_reg_b_imm_0, //F
+                  read_mrbuff_reg_b, /* imm_0 is polluted during cc,
+                                        need forwarding */
+                  read_mrbuff_imm_1,
+                  read_mbuff_mrbuff,
+                  read16_reg_a_reg_b_imm_0,
+                  read16_reg_a_reg_b, /* pure passthrough */
+                  read16_reg_a_imm_1,
 
-                        /* write control */
-                        write_reg_bH, //14
-                        write_reg_bH_addr_p1,
-                        write_reg_bL,
-                        write_mrbuffL_p1,
-                        write_mrbuffL_m1,
-                        write_imm_0,
-                        write_imm_1H,
-                        write_imm_1H_addr_p1,
-                        write_imm_1L,
-                        write_obuffL,
-                        write_obuffH_addr_p1,
+                  /* write control */
+                  write_reg_bH, //14
+                  write_reg_bH_addr_p1,
+                  write_reg_bL,
+                  write_mrbuffL_p1,
+                  write_mrbuffL_m1,
+                  write_imm_0,
+                  write_imm_1H,
+                  write_imm_1H_addr_p1,
+                  write_imm_1L,
+                  write_obuffL,
+                  write_obuffH_addr_p1,
 
-                        /* buffer control */
-                        buff_addr_reg_a, //1F
-                        buff_addr_reg_a_2,
-                        buff_addr_reg_a_imm_1,
-                        buff_addr_reg_b_imm_1,
-                        buff_addr_imm_1,
+                  /* buffer control */
+                  buff_addr_reg_a, //1F
+                  buff_addr_reg_a_2,
+                  buff_addr_reg_a_imm_1,
+                  buff_addr_reg_b_imm_1,
+                  buff_addr_imm_1,
 
-                        /* operand buffer */
-                        ld_obuff_reg_a, //24
+                  /* operand buffer */
+                  ld_obuff_reg_a, //24
 
-                        /* exchange */
-                        ex_de_hl, //25
-                        ex_af_afp,
-                        exx,
+                  /* exchange */
+                  ex_de_hl, //25
+                  ex_af_afp,
+                  exx,
 
-                        /* arithmetic */
-                        add_reg_a_reg_b, //28
-                        add_reg_a_imm_1,
-                        add_reg_a_mrbuff,
-                        adc_reg_a_reg_b,
-                        adc_reg_a_imm_1,
-                        adc_reg_a_mrbuff,
-                        sub_reg_a_reg_b,
-                        sub_reg_a_imm_1,
-                        sub_reg_a_mrbuff,
-                        sbc_reg_a_reg_b,
-                        sbc_reg_a_imm_1,
-                        sbc_reg_a_mrbuff,
-                        and_reg_a_reg_b,
-                        and_reg_a_imm_1,
-                        and_reg_a_mrbuff,
-                        or_reg_a_reg_b,
-                        or_reg_a_imm_1,
-                        or_reg_a_mrbuff,
-                        xor_reg_a_reg_b,
-                        xor_reg_a_imm_1,
-                        xor_reg_a_mrbuff,
-                        cp_reg_a_reg_b,
-                        cp_reg_a_imm_1,
-                        cp_reg_a_mrbuff,
+                  /* arithmetic */
+                  add_reg_a_reg_b, //28
+                  add_reg_a_imm_1,
+                  add_reg_a_mrbuff,
+                  adc_reg_a_reg_b,
+                  adc_reg_a_imm_1,
+                  adc_reg_a_mrbuff,
+                  sub_reg_a_reg_b,
+                  sub_reg_a_imm_1,
+                  sub_reg_a_mrbuff,
+                  sbc_reg_a_reg_b,
+                  sbc_reg_a_imm_1,
+                  sbc_reg_a_mrbuff,
+                  and_reg_a_reg_b,
+                  and_reg_a_imm_1,
+                  and_reg_a_mrbuff,
+                  or_reg_a_reg_b,
+                  or_reg_a_imm_1,
+                  or_reg_a_mrbuff,
+                  xor_reg_a_reg_b,
+                  xor_reg_a_imm_1,
+                  xor_reg_a_mrbuff,
+                  cp_reg_a_reg_b,
+                  cp_reg_a_imm_1,
+                  cp_reg_a_mrbuff,
 
-                        dec_reg_b,
+                  dec_reg_b,
 
-                        /* general purpose group */
-                        daa, //40
-                        cpl,
-                        neg,
-                        ccf, 
-                        scf,
+                  /* general purpose group */
+                  daa, //40
+                  cpl,
+                  neg,
+                  ccf,
+                  scf,
 
-                        /* rotate/shift */
-                        rlc_reg_a,//45
-                        rlc_mbuff_mrbuff,
-                        rl_reg_a,
-                        rl_mbuff_mrbuff,
-                        rrc_reg_a,
-                        rrc_mbuff_mrbuff,
-                        rr_reg_a,
-                        rr_mbuff_mrbuff,
-                        sla_reg_a,
-                        sla_mbuff_mrbuff,
-                        sra_reg_a,
-                        sra_mbuff_mrbuff,
-                        srl_reg_a,
-                        srl_mbuff_mrbuff,
-                        rld,
-                        rrd
+                  /* rotate/shift */
+                  rlc_reg_a,//45
+                  rlc_mbuff_mrbuff,
+                  rl_reg_a,
+                  rl_mbuff_mrbuff,
+                  rrc_reg_a,
+                  rrc_mbuff_mrbuff,
+                  rr_reg_a,
+                  rr_mbuff_mrbuff,
+                  sla_reg_a,
+                  sla_mbuff_mrbuff,
+                  sra_reg_a,
+                  sra_mbuff_mrbuff,
+                  srl_reg_a,
+                  srl_mbuff_mrbuff,
+                  rld,
+                  rrd,
 
-                        } uop_t;
+                  /* bit instruction group */
+                  bit_reg_a, // 55
+                  bit_mrbuff,
+                  set_reg_a,
+                  set_mrbuff,
+                  res_reg_a,
+                  res_mrbuff
+                  } uop_t;
 endpackage
 `endif

@@ -26,7 +26,10 @@ module alu_wrapper #()
 
     wire [7:0] out_8;
     wire [15:0] out_16;
-    assign out = (alu_16b_mode == 1) ? out_16 : {8'h00, out_8};
+    assign out = (is_bit_op == 1) ? {8'h00, bit_out_8}
+                 : ((alu_16b_mode == 1)
+                    ? out_16
+                    : {8'h00, out_8});
 
     wire [5:0] flags_8;
     wire [5:0] flags_16;
@@ -45,7 +48,6 @@ module alu_wrapper #()
 
     wire [7:0]  bit_out_8;
 
-    assign out = is_bit_op ? {8'h00, bit_out_8} : ((alu_16b_mode == 1) ? out_16 : {8'h00, out_8});
 
     alu #(8) alu_8 (
         .a(a[7:0]),

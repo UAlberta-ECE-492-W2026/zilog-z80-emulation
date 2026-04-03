@@ -1,8 +1,19 @@
 #include <stdlib.h>
 #include <iostream>
+#include <stdio.h>
 #include <verilated.h>
 #include <verilated_vcd_c.h>
 #include "Vz80_top_for_testing.h"
+
+int trace_pc(Vz80_top_for_testing* dut, int last_pc, FILE * trace_file) {
+    int current_pc;
+    current_pc = (int) dut->special_reg_set[4];
+    if (current_pc != last_pc) {
+        fprintf(trace_file, "%04X\n", current_pc);
+        last_pc = current_pc;
+    }
+    return last_pc;
+}
 
 int main (int argc, char *argv[]) {
     Verilated::commandArgs(argc, argv);
@@ -14,9 +25,15 @@ int main (int argc, char *argv[]) {
     dut->trace(m_trace, 5);
     m_trace->open("waveform.vcd");
 
+    FILE * pc_trace;
+    pc_trace = fopen("pc_trace.log", "w");
+
     dut->clk = 0;
     dut->buttons = 1;
     dut->override_instruction = 0;
+
+    int last_pc = 0;
+    int exit_pc = 268;
 
     // same convention as in other tbs: each clock is 10 units long
     // this is an arbitrary decision really
@@ -27,6 +44,7 @@ int main (int argc, char *argv[]) {
         dut->eval();
         m_trace->dump(sim_time);
         sim_time += 5;
+        last_pc = trace_pc(dut, last_pc,pc_trace);
     }
 
     dut->buttons = 0; // turn off the reset signal
@@ -38,6 +56,10 @@ int main (int argc, char *argv[]) {
         sim_time += 5;
         if (dut->write_char == 1) {
             printf((const char *)&dut->keyboard_char_output);
+        }
+        last_pc = trace_pc(dut, last_pc, pc_trace);
+        if (last_pc == exit_pc) {
+            break;
         }
     }
 

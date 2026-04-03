@@ -29,7 +29,6 @@ module controller_output (
                 intf.write_back_sel = WB_MUX_ALU;
             end
             uop::fetch: begin
-                intf.ir_en = 1;
                 intf.reg_a_sel = PC;
                 intf.enable_and_set_alu_opcode(ALU_PASS_A,
                                                .mux_a(A_MUX_REG));
@@ -38,9 +37,7 @@ module controller_output (
                 intf.mem_r_en = 1;
             end
             uop::commit_fetch: begin
-                intf.enable_and_set_alu_opcode(ALU_PASS_A,
-                                               .mux_a(A_MUX_REG));
-                intf.alu_16b_mode = 1;
+                intf.ir_en = 1;
             end
             uop::pc_m2: begin
                 intf.reg_a_sel = PC;

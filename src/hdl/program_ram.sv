@@ -16,6 +16,8 @@ module program_ram #()(
     output logic [31:0] data_out_32
 );
     logic [7:0] mem[0:60159]; // total space is 2^ 16 - (2^8) - (2^12 + 2 ^10)
+    wire [15:0] local_address;
+    assign local_address = address - 256;
 
     initial begin
         // this should work with vivado as well as verilator
@@ -24,11 +26,11 @@ module program_ram #()(
 
     always_ff @(posedge clk) begin
         if (w_en) begin
-            mem[address - 256] <= data_in;
+            mem[local_address] <= data_in;
         end
         if (r_en) begin
-            data_out_8 <= mem[address - 256];
-            data_out_32 <= {mem[address - 256], mem[address - 255], mem[address - 254],mem[address - 253]};
+            data_out_8 <= mem[local_address];
+            data_out_32 <= {mem[local_address], mem[local_address+1], mem[local_address+2],mem[local_address+3]};
         end
     end
 

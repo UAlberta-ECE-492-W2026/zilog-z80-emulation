@@ -211,24 +211,36 @@ module memory_wrapper #(
     `endif
 
     // data_out combining (avoiding a tristate bus since verilator gets unhappy about that)
+    reg r_en_config_ROM_last,
+        r_en_program_RAM_last,
+        r_en_char_RAM_last,
+        r_en_keyboard_IO_last;
+    
+    always_ff @(posedge intf.clk) begin
+        r_en_config_ROM_last <= r_en_config_ROM;
+        r_en_program_RAM_last <= r_en_program_RAM;
+        r_en_char_RAM_last <= r_en_char_RAM;
+        r_en_keyboard_IO_last <= r_en_keyboard_IO;
+    end
+
     always_comb begin
         data_out_32 = 0;
         `ifdef Z80_TOP_TESTING
-        if (intf.mem_r_en && address <= 16'h000f) begin
+        if (r_en_config_ROM_last && address <= 16'h000f) begin
             data_out_32 = data_out_32_config_ROM;
-            intf.memory_in = test_ram_data[test_mem_addr];
-        end else if (r_en_config_ROM) begin
+            intf.memory_in = test_ram_out;
+        end else if (r_en_config_ROM_last) begin
         `else
-        if (r_en_config_ROM) begin
+        if (r_en_config_ROM_last) begin
         `endif
             data_out_32 = data_out_32_config_ROM;
             intf.memory_in = data_out_config_ROM;
-        end else if (r_en_program_RAM) begin
+        end else if (r_en_program_RAM_last) begin
             data_out_32 = data_out_32_program_RAM;
             intf.memory_in = data_out_program_RAM;
-        end else if (r_en_char_RAM) begin
+        end else if (r_en_char_RAM_last) begin
             intf.memory_in = data_out_char_RAM;
-        end else if (r_en_keyboard_IO) begin
+        end else if (r_en_keyboard_IO_last) begin
             intf.memory_in = data_out_keyboard_IO;
         end else begin
             intf.memory_in = 8'h00;
@@ -241,6 +253,7 @@ module memory_wrapper #(
     reg [7:0] test_ram_data [0:7];
 
     wire [2:0] test_mem_addr;
+    reg [7:0] test_ram_out;
     assign test_mem_addr = address[2:0];
     assign test_ram = test_ram_data;
 
@@ -250,6 +263,9 @@ module memory_wrapper #(
         end else begin
             if (intf.mem_w_en) begin
                 test_ram_data[test_mem_addr] <= data_in;
+            end
+            if (intf.mem_r_en) begin
+                test_ram_out <= test_ram_data[test_mem_addr];
             end
         end
     end

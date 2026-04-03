@@ -828,6 +828,26 @@ module controller_output (
                 intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
                 intf.mem_w_en = 1;
             end
+            uop::res_reg_a: begin
+                intf.reg_a_sel = intf.reg_a_sel_out;
+                intf.imm_1_to_imm();
+                intf.enable_and_set_reg_w(intf.reg_a_sel_out);
+                intf.enable_and_set_alu_opcode(ALU_RESBIT,
+                                               .mux_a(A_MUX_REG),
+                                               .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 0;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::res_mrbuff: begin
+                intf.imm_1_to_imm();
+                intf.enable_and_set_alu_opcode(ALU_RESBIT,
+                                               .mux_a(A_MUX_MEMORY_READ_BUFF),
+                                               .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 0;
+                intf.mem_mux_sel = MEM_MUX_BUFFERED;
+                intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
+                intf.mem_w_en = 1;
+            end
             default: begin
             end
           endcase; // case (current_state)

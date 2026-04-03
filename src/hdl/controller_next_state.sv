@@ -241,14 +241,14 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   LD_mRd_R: set_next_state(uop::write_reg_bL);
                   LD_mRd_n: set_next_state(uop::write_imm_1L);
                   SET_b_mRd,
-                    RES_b_mRd,
-                    RLC_mRd,
-                    RL_mRd,
-                    RRC_mRd,
-                    RR_mRd,
-                    SLA_mRd,
-                    SRA_mRd,
-                    SRL_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0);
+                  RES_b_mRd,
+                  RLC_mRd,
+                  RL_mRd,
+                  RRC_mRd,
+                  RR_mRd,
+                  SLA_mRd,
+                  SRA_mRd,
+                  SRL_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0);
                   default: set_next_state(uop::invalid);
                 endcase;
             end

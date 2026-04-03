@@ -13,8 +13,7 @@ module program_ram #()(
     output logic [7:0]  data_out_8,
     output logic [31:0] data_out_32
 );
-    logic [7:0] mem[0:255];
-    //logic [7:0] mem[0:60159]; // total space is 2^ 16 - (2^8) - (2^12 + 2 ^10)
+    logic [7:0] mem[0:60159]; // total space is 2^ 16 - (2^8) - (2^12 + 2 ^10)
 
     initial begin
         // this should work with vivado as well as verilator

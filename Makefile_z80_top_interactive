@@ -1,7 +1,7 @@
 .PHONY: clean run_top
 
 waveform.vcd: ./obj_dir/Vz80_top_for_testing
-	@./obj_dir/Vz80_top_for_testing +verilator+rand+reset+2
+	@./obj_dir/Vz80_top_for_testing
 
 ./obj_dir/Vz80_top_for_testing: .stamp.verilate
 	make -C obj_dir -f Vz80_top_for_testing.mk Vz80_top_for_testing

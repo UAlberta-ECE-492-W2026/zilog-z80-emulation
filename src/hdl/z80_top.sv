@@ -59,7 +59,7 @@ module z80_top #(
 
     c_to_dp_intf intf();
     // debug clock
-    assign intf.clk = switches[0] ? switches[1] : clk;
+    assign intf.clk = clk;
     assign intf.reset =  buttons[0];
 
     controller #() controller (intf);

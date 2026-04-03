@@ -42,3 +42,7 @@
 
 out/*
 obj_dir/*
+
+*.vcd
+*.stamp*
+*.log

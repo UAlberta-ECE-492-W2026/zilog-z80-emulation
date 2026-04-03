@@ -282,8 +282,8 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                 endcase;
             end
 
-            uop::read_mrbuff_reg_b_imm_0_1: set_next_state(uop::read_mrbuff_reg_b_imm_0_2);
-            uop::read_mrbuff_reg_b_imm_0_2: begin
+            //uop::read_mrbuff_reg_b_imm_0_1: set_next_state(uop::read_mrbuff_reg_b_imm_0_2);
+            uop::read_mrbuff_reg_b_imm_0_1: begin
                 case(ctrl_intf.mop_out)
                   LD_R_mRd, EX_mR_R, POP_R: set_next_state(uop::read16_reg_a_reg_b_imm_0_1);
                   ADD_R_mRd: set_next_state(uop::add_reg_a_mrbuff);
@@ -310,20 +310,22 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   default: set_next_state(uop::invalid);
                 endcase;
             end
-            uop::read_mrbuff_imm_1_1: set_next_state(uop::read_mrbuff_imm_1_2);
-            uop::read_mrbuff_imm_1_2: begin
+            //uop::read_mrbuff_imm_1_1: set_next_state(uop::read_mrbuff_imm_1_2);
+            uop::read_mrbuff_imm_1_1: begin
               case(ctrl_intf.mop_out)
                 LD_R_mnn: set_next_state(uop::read16_reg_a_imm_1_1);
                 default: set_next_state(uop::invalid);
               endcase
             end
-            uop::read16_reg_a_reg_b_1: set_next_state(uop::read16_reg_a_reg_b_2);
-            uop::read16_reg_a_reg_b_2: case(ctrl_intf.mop_out)
-                                       RET, RET_cc: set_next_state(uop::sp_p2);
-                                       default: set_next_state(uop::invalid);
-                                     endcase
-            uop::read16_reg_a_reg_b_imm_0_1: set_next_state(uop::read16_reg_a_reg_b_imm_0_2);
-            uop::read16_reg_a_reg_b_imm_0_2: begin
+            //uop::read16_reg_a_reg_b_1: set_next_state(uop::read16_reg_a_reg_b_2);
+            uop::read16_reg_a_reg_b_1: begin
+              case(ctrl_intf.mop_out)
+                RET, RET_cc: set_next_state(uop::sp_p2);
+                default: set_next_state(uop::invalid);
+              endcase
+            end
+            //uop::read16_reg_a_reg_b_imm_0_1: set_next_state(uop::read16_reg_a_reg_b_imm_0_2);
+            uop::read16_reg_a_reg_b_imm_0_1: begin
                 case(ctrl_intf.mop_out)
                   LD_R_mRd: set_next_state(uop::pc_next);
                   POP_R: set_next_state(uop::sp_p2);
@@ -331,15 +333,15 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   default: set_next_state(uop::invalid);
                 endcase;
             end
-            uop::read16_reg_a_imm_1_1: set_next_state(uop::read16_reg_a_imm_1_2);
-            uop::read16_reg_a_imm_1_2: begin
+            //uop::read16_reg_a_imm_1_1: set_next_state(uop::read16_reg_a_imm_1_2);
+            uop::read16_reg_a_imm_1_1: begin
               case(ctrl_intf.mop_out)
                 LD_R_mnn: set_next_state(uop::pc_next);
                 default: set_next_state(uop::invalid);
               endcase
             end
-            uop::read_mbuff_mrbuff_1: set_next_state(uop::read_mbuff_mrbuff_2);
-            uop::read_mbuff_mrbuff_2: begin
+            //uop::read_mbuff_mrbuff_1: set_next_state(uop::read_mbuff_mrbuff_2);
+            uop::read_mbuff_mrbuff_1: begin
                 case(ctrl_intf.mop_out)
                   INC_mRd: set_next_state(uop::write_mrbuffL_p1);
                   DEC_mRd: set_next_state(uop::write_mrbuffL_m1);

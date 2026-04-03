@@ -24,18 +24,17 @@ module char_ram #()(
 localparam total_chars = 80 * 60;
 logic [7:0] RW[0:total_chars - 1];
 
-assign char_ram_data = RW[char_ram_address[12:0]];
 
 always_ff @(posedge clk) begin
+    char_ram_data <= RW[char_ram_address[12:0]];
     if ( w_en ) begin
         RW[address[12:0]] <= data_in;
     end
-end
-always_comb begin
-    if (r_en)
-        data_out = RW[address[12:0]];
-    else
-        data_out = 8'hZZ;
+    if (r_en) begin
+        data_out <= RW[address[12:0]];
+    end else begin
+        data_out <= 0;
+    end
 end
 
 endmodule

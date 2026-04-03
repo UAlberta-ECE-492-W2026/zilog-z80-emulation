@@ -58,8 +58,8 @@ package uop;
                   /* buffer control */
                   buff_addr_reg_a, //1F
                   buff_addr_reg_a_2,
-                  buff_addr_reg_a_imm_1,
-                  buff_addr_reg_b_imm_1,
+                  buff_addr_reg_a_imm_0,
+                  buff_addr_reg_b_imm_0,
                   buff_addr_imm_1,
 
                   /* operand buffer */

@@ -434,7 +434,7 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_reset()); /* the test for the bit instruction group */
         //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
         testvectors.push_back(cons_test(32'hcb590000, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // bit       3,c
-        testvectors.push_back(cons_test(32'h0e080000, 16'h0050, 16'h0008, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // bit       3,c
+        testvectors.push_back(cons_test(32'h0e080000, 16'h0050, 16'h0008, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // ld        c,08
         testvectors.push_back(cons_test(32'hcb590000, 16'h0010, 16'h0008, 16'h0000, 16'h0000, 16'h0007, 64'h0000000000000000)); // bit       3,c
         testvectors.push_back(cons_reset());
         testvectors.push_back(cons_test(32'hddcb0266, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // bit       4,(ix + 2)
@@ -443,6 +443,14 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hddcb0266, 16'h0011, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 64'h0000100000000000)); // bit       4,(ix + 2)
         testvectors.push_back(cons_reset());
         testvectors.push_back(cons_test(32'hcbf00000, 16'h0000, 16'h4000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // set       6,h
+        testvectors.push_back(cons_test(32'hdd210400, 16'h0000, 16'h4000, 16'h0004, 16'h0000, 16'h0007, 64'h0000000000000000)); // ld        ix,$0004
+        testvectors.push_back(cons_test(32'hddcb02ee, 16'h0000, 16'h4000, 16'h0004, 16'h0000, 16'h000b, 64'h0000000000002000)); // set       5,(ix + 2)
+        testvectors.push_back(cons_test(32'hdd210200, 16'h0000, 16'h4000, 16'h0002, 16'h0000, 16'h000f, 64'h0000000000002000)); // ld        ix,$0002
+        testvectors.push_back(cons_test(32'hdd3602ff, 16'h0000, 16'h4000, 16'h0002, 16'h0000, 16'h0013, 64'h00000000ff002000)); // ld        (ix+$02),$ff
+        testvectors.push_back(cons_test(32'hddcb0296, 16'h0000, 16'h4000, 16'h0002, 16'h0000, 16'h0017, 64'h00000000fb002000)); // res       2,(ix + 2)
+        testvectors.push_back(cons_test(32'h0eff0000, 16'h0000, 16'h40ff, 16'h0002, 16'h0000, 16'h0019, 64'h00000000fb002000)); // ld        c,ff
+        testvectors.push_back(cons_test(32'hcb890000, 16'h0000, 16'h40fd, 16'h0002, 16'h0000, 16'h001b, 64'h00000000fb002000)); // res       1,c
+
 
         reset_tb();
         ->test_start;

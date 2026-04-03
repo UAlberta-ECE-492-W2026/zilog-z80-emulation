@@ -66,7 +66,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   LD_R_R: set_next_state(uop::ld_reg_a_reg_b);
                   LD_R_nn: set_next_state(uop::ld_reg_a_imm_1);
                   LD_R_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0);
-                  LD_mRd_R, LD_mRd_n: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  LD_mRd_R, LD_mRd_n: set_next_state(uop::buff_addr_reg_a_imm_0);
                   LD_R_mnn: set_next_state(uop::read_mrbuff_imm_1);
                   LD_mnn_A, LD_mnn_R: set_next_state(uop::buff_addr_imm_1);
                   PUSH_R: set_next_state(uop::sp_m1);
@@ -99,7 +99,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   CP_R_R: set_next_state(uop::cp_reg_a_reg_b);
                   CP_R_nn: set_next_state(uop::cp_reg_a_imm_1);
                   CP_R_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0);
-                  INC_mRd, DEC_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  INC_mRd, DEC_mRd: set_next_state(uop::buff_addr_reg_a_imm_0);
                   DAA: set_next_state(uop::daa);
                   CPL: set_next_state(uop::cpl);
                   NEG: set_next_state(uop::neg);
@@ -108,26 +108,26 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   NOP: set_next_state(uop::pc_next);
                   HALT: set_next_state(uop::fetch);
                   RLC_R: set_next_state(uop::rlc_reg_a);
-                  RLC_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  RLC_mRd: set_next_state(uop::buff_addr_reg_a_imm_0);
                   RL_R: set_next_state(uop::rl_reg_a);
-                  RL_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  RL_mRd: set_next_state(uop::buff_addr_reg_a_imm_0);
                   RRC_R: set_next_state(uop::rrc_reg_a);
-                  RRC_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  RRC_mRd: set_next_state(uop::buff_addr_reg_a_imm_0);
                   RR_R: set_next_state(uop::rr_reg_a);
-                  RR_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  RR_mRd: set_next_state(uop::buff_addr_reg_a_imm_0);
                   SLA_R: set_next_state(uop::sla_reg_a);
-                  SLA_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  SLA_mRd: set_next_state(uop::buff_addr_reg_a_imm_0);
                   SRA_R: set_next_state(uop::sra_reg_a);
-                  SRA_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  SRA_mRd: set_next_state(uop::buff_addr_reg_a_imm_0);
                   SRL_R: set_next_state(uop::srl_reg_a);
-                  SRL_mRd: set_next_state(uop::buff_addr_reg_a_imm_1);
+                  SRL_mRd: set_next_state(uop::buff_addr_reg_a_imm_0);
                   RLD, RRD: set_next_state(uop::buff_addr_reg_a);
                   BIT_b_R: set_next_state(uop::bit_reg_a);
                   SET_b_R: set_next_state(uop::set_reg_a);
                   RES_b_R: set_next_state(uop::res_reg_a);
+                  BIT_b_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0);
                   SET_b_mRd,
-                    RES_b_mRd,
-                    BIT_b_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0);
+                    RES_b_mRd: set_next_state(uop::buff_addr_reg_a_imm_0);
                   JP_nn: set_next_state(uop::ld_reg_a_imm_1);
                   JP_cc_nn: set_next_state(choose_next_jump_state(j_cc,
                                                                   ctrl_intf.f,
@@ -235,11 +235,13 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   default: set_next_state(uop::invalid);
                 endcase;
             end
-            uop::buff_addr_reg_a_imm_1: begin
+            uop::buff_addr_reg_a_imm_0: begin
                 case(ctrl_intf.mop_out)
                   INC_mRd, DEC_mRd: set_next_state(uop::read_mbuff_mrbuff);
                   LD_mRd_R: set_next_state(uop::write_reg_bL);
                   LD_mRd_n: set_next_state(uop::write_imm_1L);
+                  SET_b_mRd,
+                  RES_b_mRd,
                   RLC_mRd,
                   RL_mRd,
                   RRC_mRd,
@@ -250,7 +252,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   default: set_next_state(uop::invalid);
                 endcase;
             end
-            uop::buff_addr_reg_b_imm_1: begin
+            uop::buff_addr_reg_b_imm_0: begin
                 case(ctrl_intf.mop_out)
                   EX_mR_R: set_next_state(uop::write_obuffL);
                   default: set_next_state(uop::invalid);
@@ -320,7 +322,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                 case(ctrl_intf.mop_out)
                   LD_R_mRd: set_next_state(uop::pc_next);
                   POP_R: set_next_state(uop::sp_p2);
-                  EX_mR_R: set_next_state(uop::buff_addr_reg_b_imm_1);
+                  EX_mR_R: set_next_state(uop::buff_addr_reg_b_imm_0);
                   default: set_next_state(uop::invalid);
                 endcase;
             end

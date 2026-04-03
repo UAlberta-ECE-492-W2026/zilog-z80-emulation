@@ -1,4 +1,6 @@
 `timescale 1ns/1ps
+
+`define SV_TESTBENCH
 /* verilator lint_off UNUSEDSIGNAL */
 task display_input_output_expected_z_80_top(input
                                             int        i,

@@ -5,7 +5,9 @@
 `define PROGRAM_RAM
 module program_ram #()(
     input logic         clk,
+    /* verilator lint_off UNUSEDSIGNAL */
     input logic         reset,
+    /* verilator lint_on UNUSEDSIGNAL */
     input logic         w_en,
     input logic         r_en,
     input logic [15:0]  address,
@@ -21,23 +23,15 @@ module program_ram #()(
     end
 
     always_ff @(posedge clk) begin
-        if (reset == 1) begin
-            //mem <= '{default:8'h00}; // can't reset the memory without deleting the preloaded contents!
-        end else begin
-            if (w_en) begin
-                mem[address - 256] <= data_in;
-            end
+        if (w_en) begin
+            mem[address - 256] <= data_in;
+        end
+        if (r_en) begin
+            data_out_8 <= mem[address - 256];
+            data_out_32 <= {mem[address - 256], mem[address - 255], mem[address - 254],mem[address - 253]};
         end
     end
 
-    always_comb begin
-        data_out_8 = 0;
-        data_out_32 = 0;
-        if (r_en) begin
-            data_out_8 = mem[address - 256];
-            data_out_32 = {mem[address - 256], mem[address - 255], mem[address - 254],mem[address - 253]};
-        end
-    end
 
 endmodule
 `endif

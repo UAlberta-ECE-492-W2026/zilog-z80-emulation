@@ -229,6 +229,7 @@ module controller_output (
                 intf.mem_mux_sel = MEM_MUX_UNBUFFERED;
                 intf.mem_read_buff_en = 1;
                 intf.mem_r_en = 1;
+                intf.mem_addr_buff_en = 1;
             end
             uop::read_mrbuff_reg_b: begin
                 intf.reg_a_sel = intf.reg_b_sel_out;
@@ -237,6 +238,7 @@ module controller_output (
                 intf.alu_16b_mode = 1;
                 intf.mem_mux_sel = MEM_MUX_UNBUFFERED;
                 intf.mem_read_buff_en = 1;
+                intf.mem_addr_buff_en = 1;
                 intf.mem_r_en = 1;
             end
             uop::read_mrbuff_imm_1: begin
@@ -245,6 +247,7 @@ module controller_output (
                 intf.alu_16b_mode = 1;
                 intf.mem_read_buff_en = 1;
                 intf.mem_mux_sel = MEM_MUX_UNBUFFERED;
+                intf.mem_addr_buff_en = 1;
                 intf.mem_r_en = 1;
             end
             uop::read16_reg_a_reg_b_imm_0: begin
@@ -257,6 +260,7 @@ module controller_output (
                 intf.alu_16b_mode = 1;
                 intf.write_back_sel = WB_MUX_MEMORY_READ_BUFF;
                 intf.mem_mux_sel = MEM_MUX_UNBUFFERED_P1;
+                intf.mem_addr_buff_en = 1;
                 intf.mem_r_en = 1;
             end
             uop::read16_reg_a_reg_b: begin
@@ -267,6 +271,7 @@ module controller_output (
                 intf.alu_16b_mode = 1;
                 intf.write_back_sel = WB_MUX_MEMORY_READ_BUFF;
                 intf.mem_mux_sel = MEM_MUX_UNBUFFERED_P1;
+                intf.mem_addr_buff_en = 1;
                 intf.mem_r_en = 1;
             end
             uop::read16_reg_a_imm_1: begin
@@ -276,6 +281,7 @@ module controller_output (
                 intf.alu_16b_mode = 1;
                 intf.write_back_sel = WB_MUX_MEMORY_READ_BUFF;
                 intf.mem_mux_sel = MEM_MUX_UNBUFFERED_P1;
+                intf.mem_addr_buff_en = 1;
                 intf.mem_r_en = 1;
             end
             uop::read_mbuff_mrbuff: begin

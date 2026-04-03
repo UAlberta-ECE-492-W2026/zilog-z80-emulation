@@ -56,24 +56,34 @@ module memory_wrapper #(
     // debug
     `ifdef Z80_TOP_TESTING
     , // comma here so that if we don't use the ifdef the last port doesn't have a trailing comma
-    input logic override_instruciton,
-    input logic[31:0] override_instruciton_data,
+    input logic override_instruction,
+    input logic[31:0] override_instruction_data,
     output logic[7:0] test_ram [0:7]
     `endif
+
+    `ifdef SOFTWARE_KEYBOARD
+    ,
+    input logic [7:0] software_keyboard_char_input,
+    output logic [7:0] software_keyboard_char_output,
+    output logic software_keyboard_read_char,
+    output logic software_keyboard_write_char
+    `endif
 );  
-    wire [31:0] data_out_32;
+    reg [31:0] data_out_32;
 
     /* verilator lint_off UNUSEDSIGNAL */
     wire w_en_config_ROM;
     wire r_en_config_ROM;
     wire [15:0] address_config_ROM;
     wire [7:0] data_out_config_ROM;
+    wire [31:0] data_out_32_config_ROM;
     /* verilator lint_on UNUSEDSIGNAL */
 
     wire w_en_program_RAM;
     wire r_en_program_RAM;
     wire [15:0] address_program_RAM;
     wire [7:0] data_out_program_RAM;
+    wire [31:0] data_out_32_program_RAM;
 
     wire w_en_char_RAM;
     wire r_en_char_RAM;
@@ -140,6 +150,7 @@ module memory_wrapper #(
     
     // TODO: config ROM
     assign data_out_config_ROM = 8'h00;
+    assign data_out_32_config_ROM = 32'hC3010000; // JP 0x0100, i.e. the start of the program RAM
 
     program_ram #()program_ram(
         .clk(intf.clk),
@@ -147,7 +158,7 @@ module memory_wrapper #(
         .w_en(w_en_program_RAM),
         .r_en(r_en_program_RAM),
         .data_out_8(data_out_program_RAM),
-        .data_out_32(data_out_32),
+        .data_out_32(data_out_32_program_RAM),
         .address(address_program_RAM),
         .data_in(data_in)
     );
@@ -190,21 +201,30 @@ module memory_wrapper #(
         .s00_axi_rready(s00_axi_rready)
     );
     assign data_out_keyboard_IO = 8'h00;
+    `elsif SOFTWARE_KEYBOARD
+    assign data_out_keyboard_IO = software_keyboard_char_input;
+    assign software_keyboard_char_output = data_in;
+    assign software_keyboard_read_char = r_en_keyboard_IO;
+    assign software_keyboard_write_char = w_en_keyboard_IO;
     `else
     assign data_out_keyboard_IO = 8'h00;
     `endif
 
     // data_out combining (avoiding a tristate bus since verilator gets unhappy about that)
     always_comb begin
+        data_out_32 = 0;
         `ifdef Z80_TOP_TESTING
-        if (intf.mem_r_en && address <= 16'h000F) begin
+        if (intf.mem_r_en && address <= 16'h0007) begin
+            data_out_32 = data_out_32_config_ROM;
             intf.memory_in = test_ram_data[test_mem_addr];
         end else if (r_en_config_ROM) begin
         `else
         if (r_en_config_ROM) begin
         `endif
+            data_out_32 = data_out_32_config_ROM;
             intf.memory_in = data_out_config_ROM;
         end else if (r_en_program_RAM) begin
+            data_out_32 = data_out_32_program_RAM;
             intf.memory_in = data_out_program_RAM;
         end else if (r_en_char_RAM) begin
             intf.memory_in = data_out_char_RAM;
@@ -237,7 +257,7 @@ module memory_wrapper #(
 
     // optional instruction override function for use with the top tb
     `ifdef Z80_TOP_TESTING
-    assign intf.instruction_in = override_instruciton ? override_instruciton_data : data_out_32;
+    assign intf.instruction_in = override_instruction ? override_instruction_data : data_out_32;
     `else
     assign intf.instruction_in = data_out_32;
     `endif

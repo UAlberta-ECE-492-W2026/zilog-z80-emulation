@@ -15,6 +15,11 @@ module program_ram #()(
 );
     logic [7:0] mem[256:60415]; // total space is 2^ 16 - (2^8) - (2^12 + 2 ^10)
 
+    initial begin
+        // this should work with vivado as well as verilator
+        $readmemb("zilog-z80-emulation-software/internal_programs/hello_world/hello_world.vivado", mem, 256, 60415);
+    end
+
     always_ff @(posedge clk) begin
         if (reset == 1) begin
             mem <= '{default:8'h00};

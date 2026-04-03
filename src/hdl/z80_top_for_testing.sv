@@ -3,6 +3,7 @@
 `timescale 1ns/1ps
 
 `define Z80_TOP_TESTING
+//`define SOFTWARE_KEYBOARD
 module z80_top_for_testing #(
 )(
     // display driving outputs
@@ -11,7 +12,6 @@ module z80_top_for_testing #(
     output logic [3:0] red,        //! red channel (4-bit)
     output logic [3:0] green,      //! green channel (4-bit)
     output logic [3:0] blue,        //! blue channel (4-bit)
-    output uop::uop_t state,
 
     // debug inputs and outputs. TODO: attach these to something
     /* verilator lint_off UNUSEDSIGNAL */
@@ -28,7 +28,18 @@ module z80_top_for_testing #(
     output logic [7:0] main_reg_set [0:7],
     output logic [15:0] special_reg_set [0:4],
     input logic [31:0] instruction,
-    output logic [7:0] test_ram [0:7]
+    input logic override_instruction,
+    output logic [7:0] test_ram [0:7],
+    output uop::uop_t state
+
+    `ifdef SOFTWARE_KEYBOARD
+    ,
+    input logic [7:0] keyboard_char_input,
+    output logic [7:0] keyboard_char_output,
+    output logic read_char,
+    output logic write_char
+
+    `endif
 );
     import uop::*;
     
@@ -56,9 +67,16 @@ module z80_top_for_testing #(
         .intf(intf), 
         .char_ram_address(char_ram_address), 
         .char_ram_data(char_ram_data), 
-        .override_instruciton(1'b1), 
-        .override_instruciton_data(instruction), 
+        .override_instruction(override_instruction), 
+        .override_instruction_data(instruction), 
         .test_ram(test_ram)
+        `ifdef SOFTWARE_KEYBOARD
+        ,
+        .software_keyboard_char_input(keyboard_char_input),
+        .software_keyboard_char_output(keyboard_char_output),
+        .software_keyboard_read_char(read_char),
+        .software_keyboard_write_char(write_char)
+        `endif
     );
 
     vga_out #() vga_out(

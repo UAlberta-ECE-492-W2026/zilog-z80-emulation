@@ -1071,12 +1071,16 @@ module decode #(
             imm_1 = {{13{1'b0}}, op_3[5:3]};
             update_flags = 6'b011010;
             instruction_length = 4;
-        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b11 && ! (op_1[2:0] == 3'b110)) begin // SET b, r
+        end else if (op_0 == 8'hCB
+                     && op_1[7:6] == 2'b11
+                     && ! (op_1[2:0] == 3'b110)) begin // SET b, r
             output_op = SET_b_R;
             reg_a = reg_from_r(op_1[2:0]);
             imm_1 = {{13{1'b0}}, op_1[5:3]};
             instruction_length = 2;
-        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b11 && op_1[2:0] == 3'b110) begin // SET b, HL
+        end else if (op_0 == 8'hCB
+                     && op_1[7:6] == 2'b11
+                     && op_1[2:0] == 3'b110) begin // SET b, HL
             output_op = SET_b_mRd;
             reg_a = HL;
             imm_1 = {{13{1'b0}}, op_1[5:3]};
@@ -1101,27 +1105,37 @@ module decode #(
             instruction_length = 4;
 
             /* RES b, m */
-        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b10 && ! (op_1[2:0] == 3'b110)) begin // RES b, r
+        end else if (op_0 == 8'hCB
+                     && op_1[7:6] == 2'b10
+                     && !(op_1[2:0] == 3'b110)) begin // RES b, r
             output_op = RES_b_R;
             reg_a = reg_from_r(op_1[2:0]);
             imm_1 = {{13{1'b0}}, op_1[5:3]};
             instruction_length = 2;
-        end else if (op_0 == 8'hCB && op_1[7:6] == 2'b10 && op_1[2:0] == 3'b110) begin // RES b, HL
+        end else if (op_0 == 8'hCB
+                     && op_1[7:6] == 2'b10
+                     && op_1[2:0] == 3'b110) begin // RES b, HL
             output_op = RES_b_mRd;
             reg_a = HL;
             imm_1 = {{13{1'b0}}, op_1[5:3]};
             instruction_length = 2;
-        end else if (op_0 == 8'hDD && op_1 == 8'hCB && op_3[7:6] == 2'b10 && op_3[2:0] == 3'b110) begin // RES b, IX
+        end else if (op_0 == 8'hDD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b10
+                     && op_3[2:0] == 3'b110) begin // RES b, IX
             output_op = RES_b_mRd;
             reg_a = IX;
             imm_0 = op_2;
-            imm_1 = {{13{1'b0}}, op_1[5:3]};
+            imm_1 = {{13{1'b0}}, op_3[5:3]};
             instruction_length = 4;
-        end else if (op_0 == 8'hFD && op_1 == 8'hCB && op_3[7:6] == 2'b10 && op_3[2:0] == 3'b110) begin // RES b, IY
+        end else if (op_0 == 8'hFD
+                     && op_1 == 8'hCB
+                     && op_3[7:6] == 2'b10
+                     && op_3[2:0] == 3'b110) begin // RES b, IY
             output_op = RES_b_mRd;
             reg_a = IY;
             imm_0 = op_2;
-            imm_1 = {{13{1'b0}}, op_1[5:3]};
+            imm_1 = {{13{1'b0}}, op_3[5:3]};
             instruction_length = 4;
 
         // Jump

@@ -137,6 +137,7 @@ module z80_top_tb #() ();
         .main_reg_set(main_reg_set),
         .special_reg_set(special_reg_set),
         .instruction(instruction),
+        .override_instruction(1'b1),
         .test_ram(test_ram),
         .state(state)
     );

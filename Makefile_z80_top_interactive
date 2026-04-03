@@ -1,0 +1,15 @@
+.PHONY: clean run_top
+
+waveform.vcd: ./obj_dir/Vz80_top_for_testing
+	@./obj_dir/Vz80_top_for_testing +verilator+rand+reset+2
+
+./obj_dir/Vz80_top_for_testing: .stamp.verilate
+	make -C obj_dir -f Vz80_top_for_testing.mk Vz80_top_for_testing
+
+.stamp.verilate: ./src/hdl/z80_top_for_testing.sv ./src/sim/z80_top_tb_interactive.cpp 
+	verilator --trace-vcd --trace-structs --no-trace-top -Wall -cc z80_top_for_testing --exe ./src/sim/z80_top_tb_interactive.cpp +incdir+./src/enum +incdir+./src/hdl
+	@touch .stamp.verilate
+
+
+clean:
+	rm -rf ./obj_dir/ ./out .stamp*

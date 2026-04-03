@@ -13,19 +13,19 @@ module program_ram #()(
     output logic [7:0]  data_out_8,
     output logic [31:0] data_out_32
 );
-    logic [7:0] mem[256:60415]; // total space is 2^ 16 - (2^8) - (2^12 + 2 ^10)
+    logic [7:0] mem[0:60159]; // total space is 2^ 16 - (2^8) - (2^12 + 2 ^10)
 
     initial begin
         // this should work with vivado as well as verilator
-        $readmemb("zilog-z80-emulation-software/internal_programs/hello_world/hello_world.vivado", mem, 256, 60415);
+        $readmemb("zilog-z80-emulation-software/internal_programs/hello_world/hello_world.vivado", mem, 0, 60159);
     end
 
     always_ff @(posedge clk) begin
         if (reset == 1) begin
-            mem <= '{default:8'h00};
+            //mem <= '{default:8'h00}; // can't reset the memory without deleting the preloaded contents!
         end else begin
             if (w_en) begin
-                mem[address] <= data_in;
+                mem[address - 256] <= data_in;
             end
         end
     end
@@ -34,8 +34,8 @@ module program_ram #()(
         data_out_8 = 0;
         data_out_32 = 0;
         if (r_en) begin
-            data_out_8 = mem[address];
-            data_out_32 = {mem[address + 0], mem[address + 1], mem[address + 2],mem[address + 3]};
+            data_out_8 = mem[address - 256];
+            data_out_32 = {mem[address - 256], mem[address - 255], mem[address - 254],mem[address - 253]};
         end
     end
 

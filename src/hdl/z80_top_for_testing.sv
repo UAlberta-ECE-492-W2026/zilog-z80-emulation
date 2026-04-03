@@ -3,7 +3,7 @@
 `timescale 1ns/1ps
 
 `define Z80_TOP_TESTING
-//`define SOFTWARE_KEYBOARD
+`define SOFTWARE_KEYBOARD
 module z80_top_for_testing #(
 )(
     // display driving outputs

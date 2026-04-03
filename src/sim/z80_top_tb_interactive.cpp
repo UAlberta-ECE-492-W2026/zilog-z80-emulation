@@ -4,8 +4,6 @@
 #include <verilated_vcd_c.h>
 #include "Vz80_top_for_testing.h"
 
-#define SOFTWARE_KEYBOARD
-
 int main (int argc, char *argv[]) {
     Verilated::commandArgs(argc, argv);
 
@@ -23,7 +21,7 @@ int main (int argc, char *argv[]) {
     // same convention as in other tbs: each clock is 10 units long
     // this is an arbitrary decision really
     vluint64_t sim_time = 0; 
-
+    printf("Testbench Start!\n");
     while (sim_time < 25) {
         dut->clk ^= 1;
         dut->eval();
@@ -33,14 +31,17 @@ int main (int argc, char *argv[]) {
 
     dut->buttons = 0; // turn off the reset signal
 
-    while (sim_time < 2500) {
+    while (sim_time < 2500000) {
         dut->clk ^= 1;
         dut->eval();
         m_trace->dump(sim_time);
         sim_time += 5;
+        if (dut->write_char == 1) {
+            printf((const char *)&dut->keyboard_char_output);
+        }
     }
 
-    printf("Exit!\n");
+    printf("\nTestbench Exit!\n");
     m_trace->close();
     delete dut;
     return 0;

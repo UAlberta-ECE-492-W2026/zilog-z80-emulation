@@ -150,7 +150,7 @@ module memory_wrapper #(
     
     // TODO: config ROM
     assign data_out_config_ROM = 8'h00;
-    assign data_out_32_config_ROM = 32'hC3010000; // JP 0x0100, i.e. the start of the program RAM
+    assign data_out_32_config_ROM = 32'hC3000100; // JP 0x0100, i.e. the start of the program RAM
 
     program_ram #()program_ram(
         .clk(intf.clk),
@@ -214,7 +214,7 @@ module memory_wrapper #(
     always_comb begin
         data_out_32 = 0;
         `ifdef Z80_TOP_TESTING
-        if (intf.mem_r_en && address <= 16'h0007) begin
+        if (intf.mem_r_en && address <= 16'h000f) begin
             data_out_32 = data_out_32_config_ROM;
             intf.memory_in = test_ram_data[test_mem_addr];
         end else if (r_en_config_ROM) begin

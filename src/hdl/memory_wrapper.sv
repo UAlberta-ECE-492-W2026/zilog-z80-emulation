@@ -22,7 +22,8 @@ module memory_wrapper #(
     /* verilator lint_off UNUSEDSIGNAL */
     input logic[15:0] char_ram_address,
     /* verilator lint_on UNUSEDSIGNAL */
-    output logic[7:0] char_ram_data
+    output logic[7:0] char_ram_data,
+    output reg [7:0] memory_mapped_display_byte
 
     // AXI
     /* verilator lint_off UNUSEDSIGNAL */
@@ -54,7 +55,7 @@ module memory_wrapper #(
     /* verilator lint_on UNUSEDSIGNAL */
     
     // debug
-    `ifdef Z80_TOP_TESTING
+    `ifdef Z80_MEMORY_DEBUG
     , // comma here so that if we don't use the ifdef the last port doesn't have a trailing comma
     input logic override_instruction,
     input logic[31:0] override_instruction_data,
@@ -210,6 +211,16 @@ module memory_wrapper #(
     assign data_out_keyboard_IO = 8'h00;
     `endif
 
+    always_ff @(posedge intf.clk) begin
+        if (intf.reset) begin
+            memory_mapped_display_byte <= 0;
+        end else begin
+            if (intf.mem_w_en && address == 16'hFFF3) begin
+                memory_mapped_display_byte <= data_in;
+            end 
+        end
+    end
+
     // data_out combining (avoiding a tristate bus since verilator gets unhappy about that)
     reg r_en_config_ROM_last,
         r_en_program_RAM_last,
@@ -225,7 +236,7 @@ module memory_wrapper #(
 
     always_comb begin
         data_out_32 = 0;
-        `ifdef Z80_TOP_TESTING
+        `ifdef Z80_MEMORY_DEBUG
         if (r_en_config_ROM_last && address <= 16'h000f) begin
             data_out_32 = data_out_32_config_ROM;
             intf.memory_in = test_ram_out;
@@ -249,7 +260,7 @@ module memory_wrapper #(
 
     // optional test ram for use with the top level tb. 
     // aliased to every 8b chunk for writes. 
-    `ifdef Z80_TOP_TESTING
+    `ifdef Z80_MEMORY_DEBUG
     reg [7:0] test_ram_data [0:7];
 
     wire [2:0] test_mem_addr;
@@ -272,7 +283,7 @@ module memory_wrapper #(
     `endif
 
     // optional instruction override function for use with the top tb
-    `ifdef Z80_TOP_TESTING
+    `ifdef Z80_MEMORY_DEBUG
     assign intf.instruction_in = override_instruction ? override_instruction_data : data_out_32;
     `else
     assign intf.instruction_in = data_out_32;

@@ -10,7 +10,7 @@
 
 module datapath(
     c_to_dp_intf.datapath intf
-    `ifdef Z80_TOP_TESTING
+    `ifdef Z80_REGISTER_FILE_DEBUG
     ,
     output logic [7:0] debug_main_reg_set [0:7],
     output logic [15:0] debug_special_reg_set [0:4]
@@ -108,7 +108,7 @@ module datapath(
         .f_toggle(f_toggle),
         .f_w_en(intf.f_w_en),
         .f(intf.f)
-         `ifdef Z80_TOP_TESTING
+         `ifdef Z80_REGISTER_FILE_DEBUG
         ,
         .debug_main_reg_set(debug_main_reg_set),
         .debug_special_reg_set(debug_special_reg_set)

@@ -50,8 +50,8 @@ int main (int argc, char *argv[]) {
 
     dut->buttons = 0; // turn off the reset signal
 
-    //while (sim_time < 2500000) {
-    while (true) {
+    while (sim_time < 1000000) {
+    //while (true) {
         dut->clk ^= 1;
         dut->eval();
         if (sim_time < TRACE_LENGTH) {

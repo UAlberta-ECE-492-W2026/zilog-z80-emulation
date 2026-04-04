@@ -11,9 +11,11 @@ module z80_top_tb_compile_only #() ();
     logic [3:0] blue;        //! blue channel (4-bit)
 
     // debug inputs and outputs. TODO: attach these to something
-    logic[3:0] buttons;
+    logic[3:0] buttons = 0;
+    logic[3:0] switches = 0;
     logic[3:0] LEDs;
-
+    logic [3:0] je;
+    logic [3:0] jd;
     // clock
     logic clk;
     /* verilator lint_on UNUSEDSIGNAL */
@@ -28,6 +30,9 @@ module z80_top_tb_compile_only #() ();
         .green(green),
         .blue(blue),
         .buttons(buttons),
+        .switches(switches),
+        .je(je),
+        .jd(jd),
         .LEDs(LEDs),
         .clk(clk)
     );

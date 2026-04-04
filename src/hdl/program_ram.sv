@@ -21,8 +21,7 @@ module program_ram #()(
 
     initial begin
         // this should work with vivado as well as verilator
-        //$readmemb("zilog-z80-emulation-software/internal_programs/hello_world/hello_world.vivado", mem, 0, 60159);
-        $readmemb("zilog-z80-emulation-software/internal_programs/prime_printer/prime_printer.vivado", mem, 0, 60159);
+        $readmemb("F:\\School\\School U\\t9\\ECE_492\\zilog-z80-emulation\\zilog-z80-emulation-software\\internal_programs\\blinker\\blinker.vivado", mem, 0, 60159);
     end
 
     always_ff @(posedge clk) begin

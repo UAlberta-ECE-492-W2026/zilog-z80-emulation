@@ -128,7 +128,7 @@ module z80_top #(
             4'h9: decode_digit = 7'b110_1111;
             4'hA: decode_digit = 7'b111_0111;
             4'hb: decode_digit = 7'b111_1100;
-            4'hC: decode_digit = 7'b000_1111;
+            4'hC: decode_digit = 7'b011_1001;
             4'hd: decode_digit = 7'b101_1110;
             4'hE: decode_digit = 7'b111_1001;
             4'hF: decode_digit = 7'b111_0001;

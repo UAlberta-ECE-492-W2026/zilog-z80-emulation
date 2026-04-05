@@ -157,7 +157,6 @@ module memory_wrapper #(
         .clk(intf.clk),
         .reset(intf.reset),
         .w_en(w_en_program_RAM),
-        .r_en(r_en_program_RAM),
         .data_out_8(data_out_program_RAM),
         .data_out_32(data_out_32_program_RAM),
         .address(address_program_RAM),
@@ -169,7 +168,6 @@ module memory_wrapper #(
         .data_out(data_out_char_RAM),
         .address(address_char_RAM),
         .w_en(w_en_char_RAM),
-        .r_en(r_en_char_RAM),
         .data_in(data_in),
         .char_ram_address(char_ram_address),
         .char_ram_data(char_ram_data)

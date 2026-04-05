@@ -159,13 +159,13 @@ module z80_top_tb #() ();
         test_frame_state = 0;
         wait (test_start.triggered);
         forever begin
-            @(state == uop::setup_fetch && ! clk);
+            @(state == uop::fetch && ! clk);
             ->frame_start;
             test_frame_state = 1;
             @(posedge clk);
             #( clock_period / 8 );
             test_frame_state = 2;
-            @(state == uop::setup_fetch);
+            @(state == uop::fetch);
             ->frame_end;
             test_frame_state = 3;
         end

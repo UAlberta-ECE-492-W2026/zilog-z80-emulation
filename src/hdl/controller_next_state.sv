@@ -59,9 +59,6 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
         else
           case (ctrl_intf.current_state)
             uop::reset: begin
-              set_next_state(uop::setup_fetch);
-            end
-            uop::setup_fetch: begin
               set_next_state(uop::fetch);
             end
             uop::fetch: begin
@@ -112,7 +109,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   CCF: set_next_state(uop::ccf);
                   SCF: set_next_state(uop::scf);
                   NOP: set_next_state(uop::pc_next);
-                  HALT: set_next_state(uop::setup_fetch);
+                  HALT: set_next_state(uop::fetch);
                   RLC_R: set_next_state(uop::rlc_reg_a);
                   RLC_mRd: set_next_state(uop::buff_addr_reg_a_imm_0);
                   RL_R: set_next_state(uop::rl_reg_a);
@@ -163,18 +160,18 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                             CALL_cc_nn: set_next_state(choose_next_jump_state(j_cc,
                                                                               ctrl_intf.f,
                                                                               uop::sp_m1,
-                                                                              uop::setup_fetch));
+                                                                              uop::fetch));
 
-                            default: set_next_state(uop::setup_fetch);
+                            default: set_next_state(uop::fetch);
                           endcase
 
             /* invalid case handling */
-            uop::invalid: set_next_state(uop::setup_fetch);
+            uop::invalid: set_next_state(uop::fetch);
 
             /* load group */
             uop::ld_reg_a_reg_b: begin
                 case(ctrl_intf.mop_out)
-                  JP_R: set_next_state(uop::setup_fetch);
+                  JP_R: set_next_state(uop::fetch);
                   default: set_next_state(uop::pc_next);
                 endcase;
             end
@@ -183,7 +180,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
             end
             uop::ld_reg_a_imm_1: begin
                 case(ctrl_intf.mop_out)
-                  JP_nn, JP_cc_nn: set_next_state(uop::setup_fetch);
+                  JP_nn, JP_cc_nn: set_next_state(uop::fetch);
                   LD_R_nn: set_next_state(uop::pc_next);
                   default: set_next_state(uop::invalid);
                 endcase;
@@ -191,7 +188,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
             uop::ld_reg_b_imm_1: begin
                 case(ctrl_intf.mop_out)
                   CALL_cc_nn,
-                  CALL_nn: set_next_state(uop::setup_fetch);
+                  CALL_nn: set_next_state(uop::fetch);
                   default: set_next_state(uop::invalid);
                 endcase;
             end
@@ -216,7 +213,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
             uop::sp_p2: begin
                 case(ctrl_intf.mop_out)
                   RET_cc,
-                  RET: set_next_state(uop::setup_fetch);
+                  RET: set_next_state(uop::fetch);
                   POP_R: set_next_state(uop::pc_next);
                   default: set_next_state(uop::invalid);
                 endcase;
@@ -452,7 +449,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
             end
             uop::add_reg_a_imm_1: begin
                 case(ctrl_intf.mop_out)
-                  JR_e, JR_cc_e, DJNZ_e: set_next_state(uop::setup_fetch);
+                  JR_e, JR_cc_e, DJNZ_e: set_next_state(uop::fetch);
                   default: set_next_state(uop::pc_next);
                 endcase;
             end
@@ -580,7 +577,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
               uop::bit_reg_a: set_next_state(uop::pc_next);
 
 
-            default: set_next_state(uop::setup_fetch);
+            default: set_next_state(uop::fetch);
           endcase;
 
     end;

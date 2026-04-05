@@ -19,8 +19,6 @@ module z80_top_tb_program #() ();
     // clock
     logic clk;
     /* verilator lint_on UNUSEDSIGNAL */
-
-    assign buttons = 4'b0000;
     
     initial begin
         clk = 0;

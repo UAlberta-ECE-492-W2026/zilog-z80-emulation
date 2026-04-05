@@ -148,7 +148,7 @@ module z80_top_tb #() ();
     task reset_tb;
         begin
             tb_reset = 1;
-            repeat(2) @(posedge clk);
+            repeat(4) @(posedge clk);
             tb_reset = 0;
             @(posedge clk);
         end
@@ -159,13 +159,13 @@ module z80_top_tb #() ();
         test_frame_state = 0;
         wait (test_start.triggered);
         forever begin
-            @(state == uop::fetch && ! clk);
+            @(state == uop::setup_fetch && ! clk);
             ->frame_start;
             test_frame_state = 1;
             @(posedge clk);
             #( clock_period / 8 );
             test_frame_state = 2;
-            @(state == uop::fetch);
+            @(state == uop::setup_fetch);
             ->frame_end;
             test_frame_state = 3;
         end
@@ -454,7 +454,6 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hcb890000, 16'h0000, 16'h40fd, 16'h0002, 16'h0000, 16'h001b, 64'h00000000fb002000)); // res       1,c
 
 
-        reset_tb();
         ->test_start;
 
 

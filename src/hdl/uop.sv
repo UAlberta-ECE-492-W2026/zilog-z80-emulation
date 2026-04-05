@@ -14,6 +14,7 @@ package uop;
                   reset,
 
                   nop,
+                  setup_fetch,
                   fetch,
                   commit_fetch,
 

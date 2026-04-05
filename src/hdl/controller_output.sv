@@ -21,14 +21,9 @@ module controller_output (
             uop::reset: begin
             end
             uop::nop: begin
-                intf.disable_reg_w();
-                intf.enable_and_set_alu_opcode(ALU_ADD,
-                                               .mux_a(A_MUX_REG),
-                                               .mux_b(B_MUX_INSTRUCTION_LENGTH));
-                intf.alu_16b_mode = 1;
-                intf.write_back_sel = WB_MUX_ALU;
+                intf.set_default_outputs();
             end
-            uop::fetch: begin
+            uop::setup_fetch: begin
                 intf.reg_a_sel = PC;
                 intf.enable_and_set_alu_opcode(ALU_PASS_A,
                                                .mux_a(A_MUX_REG));
@@ -36,8 +31,11 @@ module controller_output (
                 intf.mem_mux_sel = MEM_MUX_UNBUFFERED;
                 intf.mem_r_en = 1;
             end
-            uop::commit_fetch: begin
+            uop::fetch: begin
                 intf.ir_en = 1;
+            end
+            uop::commit_fetch: begin
+                
             end
             uop::pc_m2: begin
                 intf.reg_a_sel = PC;

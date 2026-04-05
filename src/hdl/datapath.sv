@@ -37,20 +37,20 @@ module datapath(
     wire [5:0] alu_f_reset;
     wire [5:0] alu_f_toggle;
 
-    reg  [31:0] buffered_instruction;
-    assign ir_buff_out = buffered_instruction;
-    always @(intf.ir_en or intf.instruction_in) begin
-        if (intf.ir_en) begin
-            buffered_instruction <= intf.instruction_in;
-        end
-    end
-    // buffer #(32) instruction_buff(
-    //     .in(intf.instruction_in),
-    //     .w(intf.ir_en),
-    //     .clk(intf.clk),
-    //     .reset(intf.reset),
-    //     .out(ir_buff_out)
-    // );
+    // reg  [31:0] buffered_instruction;
+    // assign ir_buff_out = buffered_instruction;
+    // always @(intf.ir_en or intf.instruction_in) begin
+    //     if (intf.ir_en) begin
+    //         buffered_instruction <= intf.instruction_in;
+    //     end
+    // end
+    buffer #(32) instruction_buff(
+        .in(intf.instruction_in),
+        .w(intf.ir_en),
+        .clk(intf.clk),
+        .reset(intf.reset),
+        .out(ir_buff_out)
+    );
 
 
     // instruction related stuff

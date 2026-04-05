@@ -47,8 +47,12 @@ module z80_top #(
 
     c_to_dp_intf intf();
     logic slow_clk;
-
+    
+    `ifdef USE_SLOW_CLOCK
     assign intf.clk = slow_clk;
+    `else
+    assign intf.clk = clk;
+    `endif
     assign intf.reset =  buttons[0];
     assign led6_r = intf.clk;
     assign led6_g = intf.reset;

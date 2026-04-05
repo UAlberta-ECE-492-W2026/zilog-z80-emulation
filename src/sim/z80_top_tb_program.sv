@@ -1,7 +1,6 @@
 `timescale 1ns/1ps
-// empty tb just to test if verilator compiles everything
 
-module z80_top_tb_compile_only #() ();
+module z80_top_tb_program #() ();
     // display driving outputs
     /* verilator lint_off UNUSEDSIGNAL */
     logic hsync;            //! horizontal sync (active LOW)
@@ -16,24 +15,31 @@ module z80_top_tb_compile_only #() ();
     logic[3:0] LEDs;
     logic [3:0] je;
     logic [3:0] jd;
+    logic led6_r, led6_g;
     // clock
     logic clk;
     /* verilator lint_on UNUSEDSIGNAL */
 
     assign buttons = 4'b0000;
-    assign clk = 0;
+    
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;
+    end
 
     z80_top #() z80_top (
-        .hsync(hsync),
-        .vsync(vsync),
-        .red(red),
-        .green(green),
-        .blue(blue),
+        //.hsync(hsync),
+        //.vsync(vsync),
+        //.red(red),
+        //.green(green),
+        //.blue(blue),
         .buttons(buttons),
         .switches(switches),
         .je(je),
         .jd(jd),
         .LEDs(LEDs),
+        .led6_g(led6_g),
+        .led6_r(led6_r),
         .clk(clk)
     );
 

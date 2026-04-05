@@ -20,9 +20,22 @@ module z80_top_tb_program #() ();
     logic clk;
     /* verilator lint_on UNUSEDSIGNAL */
     
+    task reset_tb;
+        begin
+            buttons[0] = 1;
+            repeat(2) @(posedge clk);
+            buttons[0] = 0;
+            @(posedge clk);
+        end
+    endtask
+    
     initial begin
         clk = 0;
         forever #5 clk = ~clk;
+    end
+    
+    initial begin
+        reset_tb();
     end
 
     z80_top #() z80_top (

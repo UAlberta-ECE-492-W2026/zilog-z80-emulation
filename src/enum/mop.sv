@@ -15,10 +15,10 @@
 /* verilator lint_off UNUSEDSIGNAL */
 typedef enum { 
 // misc
-    INVALID,
+    INVALID, // 0
 
 // load
-    LD_R_R,
+    LD_R_R, //1
     LD_R_nn,
     LD_R_mRd,
     LD_mRd_R,
@@ -30,7 +30,7 @@ typedef enum {
     POP_R,
 
 // Exchange, Block Transfer, and Search
-    EX_DE_HL,
+    EX_DE_HL, //b
     EX_AF_AFp,
     EXX,
     EX_mR_R,
@@ -38,7 +38,7 @@ typedef enum {
     CP_block,
 
 // Arithmetic
-    ADD_R_R,
+    ADD_R_R, //11
     ADD_R_nn,
     ADD_R_mRd,
     ADC_R_R,
@@ -53,7 +53,7 @@ typedef enum {
     AND_R_R,
     AND_R_nn,
     AND_R_mRd,
-    OR_R_R,
+    OR_R_R, //20
     OR_R_nn,
     OR_R_mRd,
     XOR_R_R,
@@ -66,12 +66,12 @@ typedef enum {
     DEC_mRd,
 
 //General-Purpose Arithmetic and CPU Control
-    DAA,
+    DAA, //2b
     CPL,
     NEG,
     CCF,
     SCF,
-    NOP,
+    NOP, //30
     HALT,
     DI,
     EI,
@@ -80,7 +80,7 @@ typedef enum {
     IM2,
 
 // Rotate and Shift
-    RLC_R,
+    RLC_R, //37
     RLC_mRd,
     RL_R,
     RL_mRd,
@@ -89,7 +89,7 @@ typedef enum {
     RR_R,
     RR_mRd,
     SLA_R,
-    SLA_mRd,
+    SLA_mRd, //40
     SRA_R,
     SRA_mRd,
     SRL_R,
@@ -98,7 +98,7 @@ typedef enum {
     RRD,
 
 // Bit Set, Reset, and Test
-    BIT_b_R,
+    BIT_b_R, //47
     BIT_b_mRd,
     SET_b_R,
     SET_b_mRd,
@@ -106,7 +106,7 @@ typedef enum {
     RES_b_mRd,
 
 // Jump 
-    JP_nn,
+    JP_nn, //4d
     JP_cc_nn,
     JR_e,
     JR_cc_e,
@@ -114,7 +114,7 @@ typedef enum {
     DJNZ_e,
 
 // Call and Return
-    CALL_nn,
+    CALL_nn, //53
     CALL_cc_nn,
     RET,
     RET_cc,
@@ -123,7 +123,7 @@ typedef enum {
     RST_p,
 
 // Input and Output Group
-    IN_R_mn,
+    IN_R_mn, //5a
     IN_R_mR,
     INI,
     INIR,

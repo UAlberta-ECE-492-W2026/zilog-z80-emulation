@@ -15,7 +15,7 @@
 /* verilator lint_off UNUSEDSIGNAL */
 typedef enum { 
 // misc
-    INVALID, //0
+    INVALID, // 0
 
 // load
     LD_R_R, //1
@@ -30,7 +30,7 @@ typedef enum {
     POP_R, 
 
 // Exchange, Block Transfer, and Search
-    EX_DE_HL, //B
+    EX_DE_HL, // B
     EX_AF_AFp,
     EXX,
     EX_mR_R,
@@ -72,7 +72,7 @@ typedef enum {
     CCF,
     SCF,
     NOP, //30
-    HALT, 
+    HALT,
     DI,
     EI,
     IM0,
@@ -80,7 +80,7 @@ typedef enum {
     IM2,
 
 // Rotate and Shift
-    RLC_R,
+    RLC_R, //37
     RLC_mRd,
     RL_R,
     RL_mRd,
@@ -90,7 +90,7 @@ typedef enum {
     RR_mRd,
     SLA_R,
     SLA_mRd, //40
-    SRA_R, 
+    SRA_R,
     SRA_mRd,
     SRL_R,
     SRL_mRd,

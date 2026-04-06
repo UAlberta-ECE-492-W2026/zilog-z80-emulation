@@ -4,7 +4,7 @@
 // see the Memory Map tab of the Instruction Table sheet
 module memory_decoder
 (
-    input logic [15:0] address,
+ input wire logic [15:0] address,
     input logic w_en,
     input logic r_en,
 

@@ -99,8 +99,12 @@ module memory_wrapper #(
     /* verilator lint_on UNUSEDSIGNAL */
 
     // mux outputs
-    reg [15:0] address;
-    reg [7:0] data_in;
+    // reg [15:0] address_reg;
+    // wire [15:0] address_wire;
+    /* verilator lint_off UNOPTFLAT */
+    logic [15:0] address;
+    /* verilator lint_on UNOPTFLAT */
+    reg [7:0]  data_in;
 
     // mem data mux
     always_comb begin

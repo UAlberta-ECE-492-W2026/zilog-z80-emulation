@@ -28,7 +28,7 @@ module register_file
     input  wire [5:0]   f_toggle,
     input  wire         f_w_en, // write enable for flags. note that a reg write to f can still happen if f_w_en = 0
     output wire [5:0]   f
-    `ifdef Z80_TOP_TESTING
+    `ifdef Z80_REGISTER_FILE_DEBUG
     ,
     output logic [7:0] debug_main_reg_set [0:7],
     output logic [15:0] debug_special_reg_set [0:4]
@@ -53,7 +53,7 @@ module register_file
     assign internal_f_reset     = {f_reset[5:4], 1'b0, f_reset[3], 1'b0, f_reset[2:0]};
     assign internal_f_toggle    = {f_toggle[5:4], 1'b0, f_toggle[3], 1'b0, f_toggle[2:0]};
     
-    `ifdef Z80_TOP_TESTING
+    `ifdef Z80_REGISTER_FILE_DEBUG
     assign debug_main_reg_set = main_reg_set;
     assign debug_special_reg_set = special_reg_set;
     `endif

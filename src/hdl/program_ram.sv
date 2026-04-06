@@ -9,7 +9,6 @@ module program_ram #()(
     input logic         reset,
     /* verilator lint_on UNUSEDSIGNAL */
     input logic         w_en,
-    input logic         r_en,
     input logic [15:0]  address,
     input logic [7:0]   data_in,
     output logic [7:0]  data_out_8,
@@ -21,17 +20,17 @@ module program_ram #()(
 
     initial begin
         // this should work with vivado as well as verilator
-        $readmemb("zilog-z80-emulation-software/internal_programs/hello_world/hello_world.vivado", mem, 0, 60159);
+        $readmemb("F:\\School\\School U\\t9\\ECE_492\\zilog-z80-emulation\\zilog-z80-emulation-software\\internal_programs\\blinker\\blinker.vivado", mem, 0, 60159);
+        //$readmemb("zilog-z80-emulation-software/internal_programs/blinker/blinker.vivado", mem, 0, 60159);
+
     end
 
     always_ff @(posedge clk) begin
         if (w_en) begin
             mem[local_address] <= data_in;
         end
-        if (r_en) begin
-            data_out_8 <= mem[local_address];
-            data_out_32 <= {mem[local_address], mem[local_address+1], mem[local_address+2],mem[local_address+3]};
-        end
+        data_out_8 <= mem[local_address];
+        data_out_32 <= {mem[local_address], mem[local_address+1], mem[local_address+2],mem[local_address+3]};
     end
 
 

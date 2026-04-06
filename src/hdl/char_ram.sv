@@ -18,7 +18,6 @@ module char_ram #()(
     output logic [7:0] char_ram_data,
 
     input  logic w_en,
-    input  logic r_en,
     input  logic [7:0] data_in
 );
 localparam total_chars = 80 * 60;
@@ -30,9 +29,7 @@ always_ff @(posedge clk) begin
     if ( w_en ) begin
         RW[address[12:0]] <= data_in;
     end
-    if (r_en) begin
-        data_out <= RW[address[12:0]];
-    end
+    data_out <= RW[address[12:0]];
 end
 
 endmodule

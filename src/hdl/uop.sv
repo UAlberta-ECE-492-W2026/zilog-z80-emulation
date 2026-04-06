@@ -18,24 +18,24 @@ package uop;
                   commit_fetch,
 
                   /* PC ops */
-                  pc_m2, // 5
+                  pc_m2, // 4
                   pc_m1,
                   pc_next,
 
                   /* sp ops */
-                  sp_m1, //8
+                  sp_m1, //7
                   sp_m1_2, /* the second stack pointer reduce in seq */
                   sp_p2,
 
                   /* load related */
-                  ld_reg_a_reg_b, //B
+                  ld_reg_a_reg_b, //A
                   ld_reg_a_imm_0,
                   ld_reg_a_imm_1,
                   ld_reg_b_imm_1,
                 
-                  read_mrbuff_reg_b_imm_0_setup, //F
-                  read_mrbuff_reg_b_imm_0, //10
-                  read_mrbuff_reg_b_setup,
+                  read_mrbuff_reg_b_imm_0_setup, //E
+                  read_mrbuff_reg_b_imm_0,
+                  read_mrbuff_reg_b_setup, //10
                   read_mrbuff_reg_b,
                   read_mrbuff_imm_1_setup,
                   read_mrbuff_imm_1,
@@ -49,11 +49,11 @@ package uop;
                   read16_reg_a_imm_1,
 
                   /* write control */
-                  write_reg_bH, //1D
+                  write_reg_bH, //1E
                   write_reg_bH_addr_p1,
                   write_reg_bL,
-                  write_mrbuffL_p1,//20
-                  write_mrbuffL_m1,
+                  write_mrbuffL_p1,
+                  write_mrbuffL_m1,//20
                   write_imm_0,
                   write_imm_1H,
                   write_imm_1H_addr_p1,
@@ -62,22 +62,22 @@ package uop;
                   write_obuffH_addr_p1,
 
                   /* buffer control */
-                  buff_addr_reg_a, //28
+                  buff_addr_reg_a, //27
                   buff_addr_reg_a_2,
                   buff_addr_reg_a_imm_0,
                   buff_addr_reg_b_imm_0,
                   buff_addr_imm_1,
 
                   /* operand buffer */
-                  ld_obuff_reg_a, //2D
+                  ld_obuff_reg_a, //2C
 
                   /* exchange */
-                  ex_de_hl, //2E
+                  ex_de_hl, //2D
                   ex_af_afp,
-                  exx, //30
+                  exx,
 
                   /* arithmetic */
-                  add_reg_a_reg_b, //31
+                  add_reg_a_reg_b, //30
                   add_reg_a_imm_1,
                   add_reg_a_mrbuff,
                   adc_reg_a_reg_b,
@@ -92,8 +92,8 @@ package uop;
                   and_reg_a_reg_b,
                   and_reg_a_imm_1,
                   and_reg_a_mrbuff,
-                  or_reg_a_reg_b, //40
-                  or_reg_a_imm_1,
+                  or_reg_a_reg_b,
+                  or_reg_a_imm_1, //40
                   or_reg_a_mrbuff, 
                   xor_reg_a_reg_b,
                   xor_reg_a_imm_1,
@@ -102,19 +102,19 @@ package uop;
                   cp_reg_a_imm_1,
                   cp_reg_a_mrbuff,
 
-                  dec_reg_b, // 49
+                  dec_reg_b, // 48
 
                   /* general purpose group */
-                  daa, //4A
+                  daa, //49
                   cpl,
                   neg,
                   ccf,
                   scf,
 
                   /* rotate/shift */
-                  rlc_reg_a,//4F
-                  rlc_mbuff_mrbuff, //50
-                  rl_reg_a,
+                  rlc_reg_a,//4E
+                  rlc_mbuff_mrbuff, 
+                  rl_reg_a,//50
                   rl_mbuff_mrbuff,
                   rrc_reg_a,
                   rrc_mbuff_mrbuff,
@@ -130,7 +130,7 @@ package uop;
                   rrd,
 
                   /* bit instruction group */
-                  bit_reg_a, // 5F
+                  bit_reg_a, // 5E
                   bit_mrbuff,
                   set_reg_a,
                   set_mrbuff,

@@ -2,7 +2,8 @@
 
 `timescale 1ns/1ps
 
-`define Z80_TOP_TESTING
+`define Z80_REGISTER_FILE_DEBUG
+`define Z80_MEMORY_DEBUG
 `ifndef SV_TESTBENCH
 `define SOFTWARE_KEYBOARD
 `endif
@@ -42,11 +43,13 @@ module z80_top_for_testing #(
     output logic write_char
 
     `endif
-);
-    import uop::*;
-    
+);    
     logic[15:0] char_ram_address;
     logic[7:0] char_ram_data;
+
+    /* verilator lint_off UNUSEDSIGNAL */
+    wire [7:0] memory_mapped_display_byte;
+    /* verilator lint_on UNUSEDSIGNAL */
 
     assign LEDs = 4'b1111;
 
@@ -71,6 +74,7 @@ module z80_top_for_testing #(
         .char_ram_data(char_ram_data), 
         .override_instruction(override_instruction), 
         .override_instruction_data(instruction), 
+        .memory_mapped_display_byte(memory_mapped_display_byte),
         .test_ram(test_ram)
         `ifdef SOFTWARE_KEYBOARD
         ,

@@ -27,15 +27,15 @@ typedef enum {
     LD_mnn_A,
     LD_mnn_R,
     PUSH_R,
-    POP_R,
+    POP_R, 
 
 // Exchange, Block Transfer, and Search
-    EX_DE_HL, //b
+    EX_DE_HL, // B
     EX_AF_AFp,
     EXX,
     EX_mR_R,
     LD_block,
-    CP_block,
+    CP_block, //10
 
 // Arithmetic
     ADD_R_R, //11
@@ -66,7 +66,7 @@ typedef enum {
     DEC_mRd,
 
 //General-Purpose Arithmetic and CPU Control
-    DAA, //2b
+    DAA, //2B
     CPL,
     NEG,
     CCF,
@@ -106,11 +106,11 @@ typedef enum {
     RES_b_mRd,
 
 // Jump 
-    JP_nn, //4d
+    JP_nn, //4D
     JP_cc_nn,
     JR_e,
-    JR_cc_e,
-    JP_R,
+    JR_cc_e, // 50
+    JP_R, 
     DJNZ_e,
 
 // Call and Return
@@ -123,14 +123,14 @@ typedef enum {
     RST_p,
 
 // Input and Output Group
-    IN_R_mn, //5a
+    IN_R_mn, //5A
     IN_R_mR,
     INI,
     INIR,
     IND,
     INDR,
-    OUT_mn_R,
-    OUT_mR_R,
+    OUT_mn_R, //60
+    OUT_mR_R, 
     OUTI,
     OTIR,
     OUTD,

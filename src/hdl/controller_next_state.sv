@@ -58,6 +58,9 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
         if (ctrl_intf.reset) set_next_state(uop::reset);
         else
           case (ctrl_intf.current_state)
+            uop::reset: begin
+              set_next_state(uop::fetch);
+            end
             uop::fetch: begin
               set_next_state(uop::commit_fetch);
             end

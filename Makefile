@@ -8,10 +8,6 @@
 .PHONY: clean
 
 
-# The make target for the ALU test benches. The stem matching is done for the
-# rest of the ALU testbench names.
-# Example:
-# 	make obj_dir/Valu_8_tb
 obj_dir/Valu_%: ./src/hdl/alu_status.sv ./src/hdl/alu.sv ./src/sim/alu_%.sv ./src/enum/alu_op.sv
 	verilator --binary -j 0 -Wall -cc $^ --top-module alu_$* --timing +incdir+./src/enum
 
@@ -30,6 +26,7 @@ run_alu_%: obj_dir/Valu_% out/sim
 	./$<
 
 clean:
+	$(MAKE) -f Makefile_z80_top_interactive clean
 	rm -rf ./obj_dir/ ./out
 
 # end

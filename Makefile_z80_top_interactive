@@ -4,9 +4,9 @@ waveform.vcd: ./obj_dir/Vz80_top_for_testing
 	@./obj_dir/Vz80_top_for_testing
 
 ./obj_dir/Vz80_top_for_testing: .stamp.verilate
-	make -C obj_dir -f Vz80_top_for_testing.mk Vz80_top_for_testing
+	$(MAKE) -C obj_dir -f Vz80_top_for_testing.mk Vz80_top_for_testing
 
-.stamp.verilate: ./src/hdl/z80_top_for_testing.sv ./src/sim/z80_top_tb_interactive.cpp 
+.stamp.verilate: ./src/hdl/z80_top_for_testing.sv ./src/sim/z80_top_tb_interactive.cpp clean
 	verilator --trace-vcd --trace-structs --no-trace-top -Wall -cc z80_top_for_testing --exe ./src/sim/z80_top_tb_interactive.cpp +incdir+./src/enum +incdir+./src/hdl
 	@touch .stamp.verilate
 

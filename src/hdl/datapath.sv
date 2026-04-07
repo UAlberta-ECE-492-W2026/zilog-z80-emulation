@@ -37,25 +37,33 @@ module datapath(
     wire [5:0] alu_f_reset;
     wire [5:0] alu_f_toggle;
 
-//    reg  [31:0] buffered_instruction;
-//    assign ir_buff_out = buffered_instruction;
-//    always @(intf.ir_en or intf.instruction_in) begin
-//        if (intf.ir_en) begin
-//            buffered_instruction <= intf.instruction_in;
-//        end
-//    end
-     buffer #(32) instruction_buff(
-         .in(intf.instruction_in),
-         .w(intf.ir_en),
-         .clk(intf.clk),
-         .reset(intf.reset),
-         .out(ir_buff_out)
-     );
+    // latches do not synthisise correctly, but my hacky workaround does not play nice with verilator
+    `ifdef SV_TESTBENCH
+    reg  [31:0] buffered_instruction;
+    assign ir_buff_out = buffered_instruction;
+    always @(intf.ir_en or intf.instruction_in) begin
+        if (intf.ir_en) begin
+            buffered_instruction <= intf.instruction_in;
+        end
+    end
+    `else
+    buffer #(32) instruction_buff(
+        .in(intf.instruction_in),
+        .w(intf.ir_en),
+        .clk(intf.clk),
+        .reset(intf.reset),
+        .out(ir_buff_out)
+    );
+    `endif
 
 
     // instruction related stuff
     decode #() decode (
-        .input_op(intf.ir_en? intf.instruction_in : ir_buff_out),
+        `ifdef SV_TESTBENCH
+        .input_op(ir_buff_out),
+        `else
+        .input_op(intf.ir_en ? intf.instruction_in : ir_buff_out),
+        `endif
         .enable(1'b1),
         .output_op(intf.mop_out),
         .reg_a(intf.reg_a_sel_out),

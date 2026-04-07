@@ -101,9 +101,7 @@ module vga_out
 
     logic [2:0] px_1_clk_delay;
     logic visible_1_clk_delay;
-    logic [7:0] font_row;  //!row of ascii character to be printed
     logic pixel_on;  //!pixel enable signal
-    logic [10:0] font_address;
     always_ff @( posedge pixel_clk ) begin
         px_1_clk_delay <= x[2:0];
         visible_1_clk_delay <= visible;

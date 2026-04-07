@@ -47,8 +47,7 @@ module memory_decoder
         else if(address <= 16'hEBFF) begin  // Memory location for char RAM
             w_en_program_RAM = w_en;
             r_en_program_RAM = r_en;
-            address_program_RAM = address; 
-            // program ram is mapped directly to the actual address range, i.e. starting from index 0x00FF.
+            address_program_RAM = address - 16'h0100; 
         end
 
         else if(address <= 16'hFFEF) begin

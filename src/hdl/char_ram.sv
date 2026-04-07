@@ -22,10 +22,11 @@ module char_ram #()(
 );
 localparam total_chars = 80 * 60;
 logic [7:0] RW[0:total_chars - 1];
+assign char_ram_data = RW[char_ram_address[12:0]];
 
 
 always_ff @(posedge clk) begin
-    char_ram_data <= RW[char_ram_address[12:0]];
+    //char_ram_data <= RW[char_ram_address[12:0]];
     if ( w_en ) begin
         RW[address[12:0]] <= data_in;
     end

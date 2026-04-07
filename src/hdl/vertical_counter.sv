@@ -6,7 +6,9 @@
 //! requires 525 pixels total per line.
 //! The increase of 45 pixels is due to the front and back porch (and etc) of the VGA signal.
 
-module vertical_counter
+module vertical_counter #(
+    parameter reg[15:0] V_TOTAL = 1125
+)
 (
 input logic clk,
 input logic reset, //! synchronous reset for stable startup
@@ -20,7 +22,7 @@ always@(posedge clk) begin
     end
     else begin
         if (enable_vertical_counter == 1'b1) begin
-            if (vertical_count_value < 1124) begin
+            if (vertical_count_value < V_TOTAL - 1) begin
                 vertical_count_value <= vertical_count_value + 1; //! incremental vertical count value to next pixel
             end
             else begin

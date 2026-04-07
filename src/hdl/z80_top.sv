@@ -5,11 +5,11 @@
 module z80_top #(
 )(
     // display driving outputs
-    //output logic hsync,            //! horizontal sync (active LOW)
-    //output logic vsync,            //! vertical sync (active LOW)
-    //output logic [3:0] red,        //! red channel (4-bit)
-    //output logic [3:0] green,      //! green channel (4-bit)
-    //output logic [3:0] blue,        //! blue channel (4-bit)
+    output logic hsync,            //! horizontal sync (active LOW)
+    output logic vsync,            //! vertical sync (active LOW)
+    output logic [3:0] red,        //! red channel (4-bit)
+    output logic [3:0] green,      //! green channel (4-bit)
+    output logic [3:0] blue,        //! blue channel (4-bit)
 
     // debug inputs and outputs. TODO: attach these to something
     /* verilator lint_off UNUSEDSIGNAL */
@@ -17,7 +17,7 @@ module z80_top #(
     input logic[3:0] switches,
     output logic[3:0] LEDs,
     output logic [3:0] je,
-    output logic [3:0] jd,
+    output logic [3:0] ja,
     output logic led6_r,
     output logic led6_g,
     /* verilator lint_on UNUSEDSIGNAL */
@@ -28,14 +28,6 @@ module z80_top #(
     // AXI interface missing
 ); 
     /* verilator lint_off UNUSEDSIGNAL */
-    // temp since the VGA uses the same pmod as the seven segment display
-    logic hsync;            //! horizontal sync (active LOW)
-    logic vsync;            //! vertical sync (active LOW)
-    logic [3:0] red;        //! red channel (4-bit)
-    logic [3:0] green;      //! green channel (4-bit)
-    logic [3:0] blue;        //! blue channel (4-bit)
-    
-    
     logic [7:0] main_reg_set [0:7];
     logic [15:0] special_reg_set [0:4];
     /* verilator lint_on UNUSEDSIGNAL */
@@ -58,14 +50,16 @@ module z80_top #(
     assign led6_g = intf.reset;
     
     reg [31:0]div_count;
-    always_ff @(posedge clk) begin
-        if (div_count == 40000000)
+    always_ff @(posedge clk) begin 
+        if (intf.reset) begin
             div_count <= 0;
-        else
-            div_count <= div_count + 1;
-
-        if (div_count == 40000000)
+            slow_clk <= 0;
+        end else if (div_count == 1) begin// 40000000 here is good for debugging
+            div_count <= 0;
             slow_clk <= ~slow_clk;
+        end else begin
+            div_count <= div_count + 1;
+        end
     end
 
     reg [7:0] byte_to_display;
@@ -99,16 +93,18 @@ module z80_top #(
     end
     assign LEDs = byte_to_display[3:0];
     
-    logic display_clk;
-    reg [31:0]div_display_count;
+    logic ssd_clk;
+    reg [31:0]ssd_display_count;
     always_ff @(posedge clk) begin
-        if (div_display_count == 400000)
-            div_display_count <= 0;
-        else
-            div_display_count <= div_display_count + 1;
-
-        if (div_display_count == 400000)
-            display_clk <= ~display_clk;
+        if (intf.reset) begin
+            ssd_display_count <= 0;
+            ssd_clk <= 0;
+        end else if (ssd_display_count == 400000) begin
+            ssd_clk <= ~ssd_clk;
+            ssd_display_count <= 0;
+        end else begin
+            ssd_display_count <= ssd_display_count + 1;
+        end   
     end
 
     // the byte -> seven segment display mapping
@@ -138,12 +134,29 @@ module z80_top #(
     /* verilator lint_on UNUSEDSIGNAL */
 
     always_comb begin
-        if (display_clk) begin
+        if (ssd_clk) begin
             je[3] = 1'b0;
-            {je[2:0], jd[3:0]} = decode_digit(byte_to_display[3:0]);
+            {je[2:0], ja[3:0]} = decode_digit(byte_to_display[3:0]);
         end else begin
             je[3] = 1'b1;
-            {je[2:0], jd[3:0]} = decode_digit(byte_to_display[7:4]);
+            {je[2:0], ja[3:0]} = decode_digit(byte_to_display[7:4]);
+        end
+    end
+    
+    // Clock divider to drive the vga
+    logic [2:0] pixel_div_count;
+    logic pixel_clk;
+    //assign pixel_clk = clk;
+
+    always_ff @(posedge clk) begin
+        if (intf.reset) begin
+            pixel_div_count <= 0;
+            pixel_clk <= 0;
+        end else if (pixel_div_count == 0) begin
+            pixel_div_count <= 0;
+            pixel_clk <= ~pixel_clk;
+        end else begin
+            pixel_div_count <= pixel_div_count + 1;
         end
     end
 
@@ -164,7 +177,7 @@ module z80_top #(
     );
 
     vga_out #() vga_out(
-        .clk(clk),
+        .pixel_clk(pixel_clk),
         .reset(buttons[0]),
         .hsync(hsync),
         .vsync(vsync),

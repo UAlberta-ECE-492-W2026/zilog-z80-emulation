@@ -26,23 +26,22 @@ module vga_out
     // Clock divider to drive the external counters to the module
     logic [2:0] div_count;
     logic pixel_clk;
-    assign pixel_clk = clk;
+    //assign pixel_clk = clk;
 
-//    always_ff @(posedge clk) begin
-//        if (reset) begin
-//            div_count <= 0;
-//            pixel_clk <= 0;
-//        end
-//        else begin
-//            if (div_count == 4)
-//                div_count <= 0;
-//            else
-//                div_count <= div_count + 1;
-
-//            if (div_count == 2 || div_count == 4)
-//                pixel_clk <= ~pixel_clk;
-//        end
-//    end
+    always_ff @(posedge clk) begin
+        if (reset) begin
+            div_count <= 0;
+            pixel_clk <= 0;
+        end
+        else begin
+            if (div_count == 0) begin
+                div_count <= 0;
+                pixel_clk <= ~pixel_clk;
+            end else begin
+                div_count <= div_count + 1;
+            end
+        end
+    end
 
 
     // TODO: make these not local
@@ -74,21 +73,21 @@ module vga_out
     logic [10:0] address_rom;
     
     horizontal_counter #(H_TOTAL) VGA_horizontal (
-        .clk(clk),
+        .clk(pixel_clk),
         .reset(reset),
         .enable_vertical_counter(enable_vertical_counter),
         .horizontal_count_value(horizontal_count_value)
     );
 
     vertical_counter #(V_TOTAL) VGA_vertical (
-        .clk(clk),
+        .clk(pixel_clk),
         .reset(reset),
         .enable_vertical_counter(enable_vertical_counter),
         .vertical_count_value(vertical_count_value)
     );
 
     font_rom font_rom (
-        .clk(clk),
+        .clk(pixel_clk),
         .data_out(data_out_rom),
         .address(address_rom)
     );
@@ -114,15 +113,19 @@ module vga_out
 
     logic [7:0]  ascii;
     logic visible;
+    logic background;
 
     always_comb begin
         ascii = 0;
         char_ram_address = 0;
         visible = 0;
+        background = 0;
         if ((row < 60) && (col < 80)) begin
             char_ram_address = row * 80 + col;
             ascii = char_ram_data;  // returned from char RAM
             visible = 1;
+        end else if (horizontal_count_value < H_VISIBLE && vertical_count_value < V_VISIBLE) begin
+            background = 1;
         end
     end
 
@@ -131,7 +134,7 @@ module vga_out
     logic [7:0] font_row;  //!row of ascii character to be printed
     logic pixel_on;  //!pixel enable signal
     logic [10:0] font_address;
-    always_ff @( posedge clk ) begin
+    always_ff @( posedge pixel_clk ) begin
         px_1_clk_delay <= px;
         visible_1_clk_delay <= visible;
     end
@@ -154,8 +157,11 @@ module vga_out
             red   = 4'hF;
             green = 4'hF;
             blue  = 4'hF;
-        end
-        else begin
+        end else if (background) begin
+            red   = 4'h4;
+            green = 4'h4;
+            blue  = 4'h4;
+        end else begin
             red   = 4'h0;
             green = 4'h0;
             blue  = 4'h0;

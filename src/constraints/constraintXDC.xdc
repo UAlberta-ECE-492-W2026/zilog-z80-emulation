@@ -7,7 +7,7 @@
 ## Clock signal
 set_property -dict { PACKAGE_PIN K17 IOSTANDARD LVCMOS33 } [get_ports {clk}]
 #create_clock -name sys_clk -period 22.6 [get_ports {clk}]
-create_clock -name sys_clk -period 30 [get_ports {clk}]
+create_clock -name sys_clk -period 25 [get_ports {clk}]
 
 #set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets buttons_IBUF[1]]
 

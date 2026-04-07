@@ -10,7 +10,7 @@
 
 module vga_out
 (
-    input  logic clk,              //! 125 MHz pixel clock from Zybo z-7
+    input  logic pixel_clk,        //! pixel clock from top. Correct frequency depends on the number of pixels per frame. Ideally pixel_clk frequency / (H_TOTAL * V_TOTAL) = ~60Hz
     input  logic reset,            //! synchronous reset for counters
     output logic hsync,            //! horizontal sync (active LOW)
     output logic vsync,            //! vertical sync (active LOW)
@@ -22,26 +22,6 @@ module vga_out
     output logic [15:0] char_ram_address,
     input logic [7:0] char_ram_data
 );
-
-    // Clock divider to drive the external counters to the module
-    logic [2:0] div_count;
-    logic pixel_clk;
-    //assign pixel_clk = clk;
-
-    always_ff @(posedge clk) begin
-        if (reset) begin
-            div_count <= 0;
-            pixel_clk <= 0;
-        end
-        else begin
-            if (div_count == 0) begin
-                div_count <= 0;
-                pixel_clk <= ~pixel_clk;
-            end else begin
-                div_count <= div_count + 1;
-            end
-        end
-    end
 
 
     // TODO: make these not local
@@ -58,17 +38,12 @@ module vga_out
     localparam V_SYNC    = 6;
     localparam V_BACK    = 29;
     localparam V_TOTAL   = 806;
-
-
     /* verilator lint_on UNUSEDPARAM */
     
-    //localparam CHAR_ROWS = V_VISIBLE / 8;
-    //localparam CHAR_COLL = H_VISIBLE / 8;
-
     //! Signals from external modules
     logic enable_vertical_counter;           
-    logic [15:0] horizontal_count_value;     
-    logic [15:0] vertical_count_value;    
+    logic [15:0] x;     
+    logic [15:0] y;    
     reg [7:0] data_out_rom;
     logic [10:0] address_rom;
     
@@ -76,14 +51,14 @@ module vga_out
         .clk(pixel_clk),
         .reset(reset),
         .enable_vertical_counter(enable_vertical_counter),
-        .horizontal_count_value(horizontal_count_value)
+        .horizontal_count_value(x)
     );
 
     vertical_counter #(V_TOTAL) VGA_vertical (
         .clk(pixel_clk),
         .reset(reset),
         .enable_vertical_counter(enable_vertical_counter),
-        .vertical_count_value(vertical_count_value)
+        .vertical_count_value(y)
     );
 
     font_rom font_rom (
@@ -93,17 +68,12 @@ module vga_out
     );
     
     //! Sync pulses are active LOW
-    assign hsync = ~((horizontal_count_value >= (H_VISIBLE + H_FRONT)) &&
-                     (horizontal_count_value <  (H_VISIBLE + H_FRONT + H_SYNC)));
+    assign hsync = ~((x >= (H_VISIBLE + H_FRONT)) &&
+                     (x <  (H_VISIBLE + H_FRONT + H_SYNC)));
 
-    assign vsync = ~((vertical_count_value >= (V_VISIBLE + V_FRONT)) &&
-                     (vertical_count_value <  (V_VISIBLE + V_FRONT + V_SYNC)));
+    assign vsync = ~((y >= (V_VISIBLE + V_FRONT)) &&
+                     (y <  (V_VISIBLE + V_FRONT + V_SYNC)));
 
-    //! Current pixel coordinates from external counters
-    logic [15:0] x;
-    logic [15:0] y;
-    assign x = horizontal_count_value[15:0];
-    assign y = vertical_count_value[15:0];
 
     //! Dividing by 8 to determine character cell position
     logic [15:0] col;   
@@ -124,7 +94,7 @@ module vga_out
             char_ram_address = row * 80 + col;
             ascii = char_ram_data;  // returned from char RAM
             visible = 1;
-        end else if (horizontal_count_value < H_VISIBLE && vertical_count_value < V_VISIBLE) begin
+        end else if (x < H_VISIBLE && y < V_VISIBLE) begin
             background = 1;
         end
     end
@@ -135,21 +105,12 @@ module vga_out
     logic pixel_on;  //!pixel enable signal
     logic [10:0] font_address;
     always_ff @( posedge pixel_clk ) begin
-        px_1_clk_delay <= px;
+        px_1_clk_delay <= x[2:0];
         visible_1_clk_delay <= visible;
     end
 
-    //! the lower 3 bits gives the specific pixel inside current cell
-    logic [2:0] px;
-    logic [2:0] py;
-    assign px = x[2:0];
-    assign py = y[2:0];
-
-    assign font_address = ({3'b0, ascii} << 3) + {8'b0, py};
-    assign address_rom = font_address;  //! send address to font ROM
-    assign font_row = data_out_rom[7:0];  //! bitmap row returned from ROM
-
-    assign pixel_on = font_row[7 - px_1_clk_delay];  //! select horizontal pixel inside font
+    assign address_rom = ({3'b0, ascii} << 3) + {8'b0, y[2:0]};
+    assign pixel_on = data_out_rom[7 - px_1_clk_delay];  //! select horizontal pixel inside font
 
     //! Drive RGB colour outputs
     always_comb begin

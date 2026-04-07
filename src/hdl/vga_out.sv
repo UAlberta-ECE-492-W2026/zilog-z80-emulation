@@ -26,38 +26,39 @@ module vga_out
     // Clock divider to drive the external counters to the module
     logic [2:0] div_count;
     logic pixel_clk;
+    assign pixel_clk = clk;
 
-    always_ff @(posedge clk) begin
-        if (reset) begin
-            div_count <= 0;
-            pixel_clk <= 0;
-        end
-        else begin
-            if (div_count == 4)
-                div_count <= 0;
-            else
-                div_count <= div_count + 1;
+//    always_ff @(posedge clk) begin
+//        if (reset) begin
+//            div_count <= 0;
+//            pixel_clk <= 0;
+//        end
+//        else begin
+//            if (div_count == 4)
+//                div_count <= 0;
+//            else
+//                div_count <= div_count + 1;
 
-            if (div_count == 2 || div_count == 4)
-                pixel_clk <= ~pixel_clk;
-        end
-    end
+//            if (div_count == 2 || div_count == 4)
+//                pixel_clk <= ~pixel_clk;
+//        end
+//    end
 
 
     // TODO: make these not local
     //! VGA timing parameters
     /* verilator lint_off UNUSEDPARAM */
-    localparam H_VISIBLE = 1920;
-    localparam H_FRONT   = 88;
-    localparam H_SYNC    = 44;
-    localparam H_BACK    = 148;
-    localparam H_TOTAL   = 2200;
+    localparam H_VISIBLE = 1024;
+    localparam H_FRONT   = 24;
+    localparam H_SYNC    = 136;
+    localparam H_BACK    = 160;
+    localparam H_TOTAL   = 1344;
 
-    localparam V_VISIBLE = 1080;
-    localparam V_FRONT   = 4;
-    localparam V_SYNC    = 5;
-    localparam V_BACK    = 36;
-    localparam V_TOTAL   = 1125;
+    localparam V_VISIBLE = 768;
+    localparam V_FRONT   = 3;
+    localparam V_SYNC    = 6;
+    localparam V_BACK    = 29;
+    localparam V_TOTAL   = 806;
 
 
     /* verilator lint_on UNUSEDPARAM */
@@ -150,9 +151,9 @@ module vga_out
     //! Drive RGB colour outputs
     always_comb begin
         if (visible_1_clk_delay && pixel_on) begin
-            red   = 4'h0;
+            red   = 4'hF;
             green = 4'hF;
-            blue  = 4'h0;
+            blue  = 4'hF;
         end
         else begin
             red   = 4'h0;

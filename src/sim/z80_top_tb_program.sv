@@ -14,7 +14,7 @@ module z80_top_tb_program #() ();
     logic[3:0] switches = 0;
     logic[3:0] LEDs;
     logic [3:0] je;
-    logic [3:0] jd;
+    logic [3:0] ja;
     logic led6_r, led6_g;
     // clock
     logic clk;
@@ -47,7 +47,7 @@ module z80_top_tb_program #() ();
         .buttons(buttons),
         .switches(switches),
         .je(je),
-        .jd(jd),
+        .ja(ja),
         .LEDs(LEDs),
         .led6_g(led6_g),
         .led6_r(led6_r),

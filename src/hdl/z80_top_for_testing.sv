@@ -2,6 +2,7 @@
 
 `timescale 1ns/1ps
 
+`define USING_VERILATOR
 `define Z80_REGISTER_FILE_DEBUG
 `define Z80_MEMORY_DEBUG
 `ifndef SV_TESTBENCH
@@ -86,7 +87,7 @@ module z80_top_for_testing #(
     );
 
     vga_out #() vga_out(
-        .clk(clk),
+        .pixel_clk(clk),
         .reset(buttons[0]),
         .hsync(hsync),
         .vsync(vsync),

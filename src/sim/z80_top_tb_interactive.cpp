@@ -50,8 +50,8 @@ int main (int argc, char *argv[]) {
 
     dut->buttons = 0; // turn off the reset signal
 
-    while (sim_time < 1000000) {
-    //while (true) {
+    //while (sim_time < 10000000) {
+    while (true) {
         dut->clk ^= 1;
         dut->eval();
         if (sim_time < TRACE_LENGTH) {
@@ -60,6 +60,11 @@ int main (int argc, char *argv[]) {
         sim_time += 5;
         if (dut->write_char == 1 && dut->clk == 0) {
             printf((const char *)&dut->keyboard_char_output);
+        }
+        char c;
+        if (dut->read_char) {
+            std::cin.get(c);
+            dut->keyboard_char_input = c;
         }
         pc = trace_pc(dut, pc_trace);
         if (pc == exit_pc) {

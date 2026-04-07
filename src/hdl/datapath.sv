@@ -38,7 +38,7 @@ module datapath(
     wire [5:0] alu_f_toggle;
 
     // latches do not synthisise correctly, but my hacky workaround does not play nice with verilator
-    `ifdef SV_TESTBENCH
+    `ifdef USING_VERILATOR
     reg  [31:0] buffered_instruction;
     assign ir_buff_out = buffered_instruction;
     always @(intf.ir_en or intf.instruction_in) begin
@@ -59,7 +59,7 @@ module datapath(
 
     // instruction related stuff
     decode #() decode (
-        `ifdef SV_TESTBENCH
+        `ifdef USING_VERILATOR
         .input_op(ir_buff_out),
         `else
         .input_op(intf.ir_en ? intf.instruction_in : ir_buff_out),

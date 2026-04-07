@@ -6,7 +6,9 @@
 //! requires 800 pixels total per line.
 //! The increase of 160 pixels is due to the front and back porch (and etc) of the VGA signal.
 
-module horizontal_counter
+module horizontal_counter #(
+    parameter reg[15:0] H_TOTAL = 2200
+)
 (
 input logic clk,
 input logic reset, //! synchronous reset for stable startup
@@ -20,7 +22,7 @@ always@(posedge clk) begin
         enable_vertical_counter <= 0; //! ensure vertical counter is not triggered
     end
     else begin
-        if (horizontal_count_value < 2199) begin
+        if (horizontal_count_value < H_TOTAL - 1) begin
             horizontal_count_value <= horizontal_count_value + 1; //! increment horizontal counter to next pixel
             enable_vertical_counter <= 0; //! stay on current vertical line
         end

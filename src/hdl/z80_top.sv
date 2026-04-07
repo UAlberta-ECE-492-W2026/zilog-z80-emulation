@@ -152,7 +152,7 @@ module z80_top #(
         if (intf.reset) begin
             pixel_div_count <= 0;
             pixel_clk <= 0;
-        end else if (pixel_div_count == 1) begin
+        end else if (pixel_div_count == 0) begin
             pixel_div_count <= 0;
             pixel_clk <= ~pixel_clk;
         end else begin

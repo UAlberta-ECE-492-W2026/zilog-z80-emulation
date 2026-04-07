@@ -5,9 +5,9 @@
 ## - rename the used ports (in each line, after get_ports) according to the top level signal names in the project
 
 ## Clock signal
+# note that the period should not be changed. It will confuse vivado but the FPGA will still run the clock at 125MHz
 set_property -dict { PACKAGE_PIN K17 IOSTANDARD LVCMOS33 } [get_ports {clk}]
-#create_clock -name sys_clk -period 22.6 [get_ports {clk}]
-create_clock -name sys_clk -period 25 [get_ports {clk}]
+create_clock -name sys_clk -period 8 [get_ports {clk}]
 
 #set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets buttons_IBUF[1]]
 

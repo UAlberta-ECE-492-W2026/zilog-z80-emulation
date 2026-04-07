@@ -72,14 +72,14 @@ module vga_out
     reg [7:0] data_out_rom;
     logic [10:0] address_rom;
     
-    horizontal_counter VGA_horizontal (
+    horizontal_counter #(H_TOTAL) VGA_horizontal (
         .clk(clk),
         .reset(reset),
         .enable_vertical_counter(enable_vertical_counter),
         .horizontal_count_value(horizontal_count_value)
     );
 
-    vertical_counter VGA_vertical (
+    vertical_counter #(V_TOTAL) VGA_vertical (
         .clk(clk),
         .reset(reset),
         .enable_vertical_counter(enable_vertical_counter),
@@ -99,11 +99,6 @@ module vga_out
     assign vsync = ~((vertical_count_value >= (V_VISIBLE + V_FRONT)) &&
                      (vertical_count_value <  (V_VISIBLE + V_FRONT + V_SYNC)));
 
-    //! Visible region is 640x480
-    logic visible;
-    assign visible = (horizontal_count_value < H_VISIBLE) &&
-                     (vertical_count_value   < V_VISIBLE);
-
     //! Current pixel coordinates from external counters
     logic [15:0] x;
     logic [15:0] y;
@@ -116,18 +111,19 @@ module vga_out
     assign col = x >> 3;
     assign row = y >> 3;
 
-    //! the lower 3 bits gives the specific pixel inside current cell
-    logic [2:0] px;
-    logic [2:0] py;
-    assign px = x[2:0];
-    assign py = y[2:0];
-
-    //! Character memory address (row * 80 + col)
     logic [7:0]  ascii;
+    logic visible;
 
-    // TODO: THIS IS USED AS THE OUTPUT TO THE CHAR RAM
-    assign char_ram_address = row * 80 + col;
-    assign ascii = visible ? char_ram_data : 8'd0;  //!ASCII returned from RAM
+    always_comb begin
+        ascii = 0;
+        char_ram_address = 0;
+        visible = 0;
+        if ((row < 60) && (col < 80)) begin
+            char_ram_address = row * 80 + col;
+            ascii = char_ram_data;  // returned from char RAM
+            visible = 1;
+        end
+    end
 
     logic [2:0] px_1_clk_delay;
     logic visible_1_clk_delay;
@@ -138,6 +134,12 @@ module vga_out
         px_1_clk_delay <= px;
         visible_1_clk_delay <= visible;
     end
+
+    //! the lower 3 bits gives the specific pixel inside current cell
+    logic [2:0] px;
+    logic [2:0] py;
+    assign px = x[2:0];
+    assign py = y[2:0];
 
     assign font_address = ({3'b0, ascii} << 3) + {8'b0, py};
     assign address_rom = font_address;  //! send address to font ROM

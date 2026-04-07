@@ -5,11 +5,11 @@
 module z80_top #(
 )(
     // display driving outputs
-    //output logic hsync,            //! horizontal sync (active LOW)
-    //output logic vsync,            //! vertical sync (active LOW)
-    //output logic [3:0] red,        //! red channel (4-bit)
-    //output logic [3:0] green,      //! green channel (4-bit)
-    //output logic [3:0] blue,        //! blue channel (4-bit)
+    output logic hsync,            //! horizontal sync (active LOW)
+    output logic vsync,            //! vertical sync (active LOW)
+    output logic [3:0] red,        //! red channel (4-bit)
+    output logic [3:0] green,      //! green channel (4-bit)
+    output logic [3:0] blue,        //! blue channel (4-bit)
 
     // debug inputs and outputs. TODO: attach these to something
     /* verilator lint_off UNUSEDSIGNAL */
@@ -17,7 +17,7 @@ module z80_top #(
     input logic[3:0] switches,
     output logic[3:0] LEDs,
     output logic [3:0] je,
-    output logic [3:0] jd,
+    output logic [3:0] ja,
     output logic led6_r,
     output logic led6_g,
     /* verilator lint_on UNUSEDSIGNAL */
@@ -28,14 +28,6 @@ module z80_top #(
     // AXI interface missing
 ); 
     /* verilator lint_off UNUSEDSIGNAL */
-    // temp since the VGA uses the same pmod as the seven segment display
-    logic hsync;            //! horizontal sync (active LOW)
-    logic vsync;            //! vertical sync (active LOW)
-    logic [3:0] red;        //! red channel (4-bit)
-    logic [3:0] green;      //! green channel (4-bit)
-    logic [3:0] blue;        //! blue channel (4-bit)
-    
-    
     logic [7:0] main_reg_set [0:7];
     logic [15:0] special_reg_set [0:4];
     /* verilator lint_on UNUSEDSIGNAL */
@@ -58,13 +50,13 @@ module z80_top #(
     assign led6_g = intf.reset;
     
     reg [31:0]div_count;
-    always_ff @(posedge clk) begin
-        if (div_count == 40000000)
+    always_ff @(posedge clk) begin 
+        if (div_count == 100000)// 40000000 here is good for debugging
             div_count <= 0;
         else
             div_count <= div_count + 1;
 
-        if (div_count == 40000000)
+        if (div_count == 100000)
             slow_clk <= ~slow_clk;
     end
 
@@ -140,10 +132,10 @@ module z80_top #(
     always_comb begin
         if (display_clk) begin
             je[3] = 1'b0;
-            {je[2:0], jd[3:0]} = decode_digit(byte_to_display[3:0]);
+            {je[2:0], ja[3:0]} = decode_digit(byte_to_display[3:0]);
         end else begin
             je[3] = 1'b1;
-            {je[2:0], jd[3:0]} = decode_digit(byte_to_display[7:4]);
+            {je[2:0], ja[3:0]} = decode_digit(byte_to_display[7:4]);
         end
     end
 

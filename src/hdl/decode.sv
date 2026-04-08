@@ -404,7 +404,7 @@ module decode #(
             update_flags = 6'b111110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPIR
-            output_op = CPD_block;
+            output_op = CPI_block;
             reg_a = A;
             reg_b = HL;
             imm_0 = 0;
@@ -412,7 +412,7 @@ module decode #(
             update_flags = 6'b111110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hA9) begin // CPD
-            output_op = CPI_block;
+            output_op = CPD_block;
             reg_a = A;
             reg_b = HL;
             imm_0 = 0;

@@ -489,6 +489,17 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'heda10000, 16'h0046, 16'hfffe, 16'h0000, 16'h0000, 16'h0011, 64'h00000000adde0000)); // cpi
         testvectors.push_back(cons_test(32'heda10000, 16'h0046, 16'hfffd, 16'h0000, 16'h0000, 16'h0013, 64'h00000000adde0000)); // cpi
         testvectors.push_back(cons_test(32'heda10000, 16'h0016, 16'hfffc, 16'h0000, 16'h0000, 16'h0015, 64'h00000000adde0000)); // cpi
+        testvectors.push_back(cons_reset()); /* the test for cpd */
+        //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
+        testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
+        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01010000, 16'h0000, 16'h0001, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, 1
+        testvectors.push_back(cons_test(32'h21070000, 16'h0000, 16'h0001, 16'h0000, 16'h0000, 16'h000e, 64'h00000000adde0000)); // ld hl, 7
+        testvectors.push_back(cons_test(32'heda90000, 16'h0042, 16'h0000, 16'h0000, 16'h0000, 16'h0010, 64'h00000000adde0000)); // cpd
+        testvectors.push_back(cons_test(32'heda90000, 16'h0046, 16'hffff, 16'h0000, 16'h0000, 16'h0012, 64'h00000000adde0000)); // cpd
+        testvectors.push_back(cons_test(32'heda90000, 16'h0016, 16'hfffe, 16'h0000, 16'h0000, 16'h0014, 64'h00000000adde0000)); // cpd
+        testvectors.push_back(cons_test(32'h01010000, 16'h0016, 16'h0001, 16'h0000, 16'h0000, 16'h0017, 64'h00000000adde0000)); // ld bc, 1
+        testvectors.push_back(cons_test(32'heda90000, 16'h0012, 16'h0000, 16'h0000, 16'h0000, 16'h0019, 64'h00000000adde0000)); // cpd
 
         ->test_start;
 

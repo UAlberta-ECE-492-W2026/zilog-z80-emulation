@@ -913,7 +913,7 @@ module controller_output (
                 intf.enable_and_set_reg_w(BC);
                 intf.enable_and_set_alu_opcode(ALU_LDx,
                                                 .mux_a(A_MUX_REG));
-                intf.alu_16b_mode = 0;
+                intf.alu_16b_mode = 1;
                 intf.update_flags = (intf.mop_out == CPI_block
                                      || intf.mop_out == CPD_block)
                   ? intf.update_flags_out 

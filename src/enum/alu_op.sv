@@ -29,7 +29,8 @@ typedef enum {
     ALU_PASS_A,
     ALU_PASS_B,
     ALU_DAA,
-    ALU_CPL
+    ALU_CPL,
+    ALU_LDx // for LDI_block and LDD_block mops. these have special flag behavior.
 } alu_op;
 
 typedef enum { 
@@ -41,7 +42,8 @@ typedef enum {
     OR_OP, 
     XOR_OP, 
     DAA_OP,
-    CPL_OP
+    CPL_OP,
+    LDx_OP
 } alu_status_op;
 /* verilator lint_on UNDRIVEN */
 /* verilator lint_on UNUSEDSIGNAL */

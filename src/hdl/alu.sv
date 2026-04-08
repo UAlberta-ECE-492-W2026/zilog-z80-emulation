@@ -202,6 +202,10 @@ module  alu #(
 			ALU_PASS_B: begin
 				out_var = b;
 			end
+            ALU_LDx: begin
+                status_opcode = LDx_OP;
+                out_var = a - 1;
+            end
         	default: begin
 				out_var = 0;
 			end

@@ -452,7 +452,33 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hddcb0296, 16'h0000, 16'h4000, 16'h0002, 16'h0000, 16'h0017, 64'h00000000fb002000)); // res       2,(ix + 2)
         testvectors.push_back(cons_test(32'h0eff0000, 16'h0000, 16'h40ff, 16'h0002, 16'h0000, 16'h0019, 64'h00000000fb002000)); // ld        c,ff
         testvectors.push_back(cons_test(32'hcb890000, 16'h0000, 16'h40fd, 16'h0002, 16'h0000, 16'h001b, 64'h00000000fb002000)); // res       1,c
-
+        testvectors.push_back(cons_reset());
+        testvectors.push_back(cons_test(32'hdd36000a, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0a00000000000000)); // ld        (ix+$00),$0a
+        testvectors.push_back(cons_test(32'hdd36010b, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0009, 64'h0a0b000000000000)); // ld        (ix+$01),$0b
+        testvectors.push_back(cons_test(32'hdd36020c, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h000d, 64'h0a0b0c0000000000)); // ld        (ix+$02),$0c
+        testvectors.push_back(cons_test(32'hdd36030d, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0011, 64'h0a0b0c0d00000000)); // ld        (ix+$03),$0d
+        testvectors.push_back(cons_test(32'h11070000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0014, 64'h0a0b0c0d00000000)); // ld        de,$0007
+        testvectors.push_back(cons_test(32'h21030000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0017, 64'h0a0b0c0d00000000)); // ld        hl,$0003
+        testvectors.push_back(cons_test(32'heda80000, 16'h0004, 16'h00ff, 16'h0000, 16'h0000, 16'h0019, 64'h0a0b0c0d0000000d)); // ldd
+        testvectors.push_back(cons_test(32'heda00000, 16'h0004, 16'h00fe, 16'h0000, 16'h0000, 16'h001b, 64'h0a0b0c0d00000c0d)); // ldi
+        testvectors.push_back(cons_test(32'hdd360700, 16'h0004, 16'h00fe, 16'h0000, 16'h0000, 16'h001f, 64'h0a0b0c0d00000c00)); // ld        (ix+$07),$00
+        testvectors.push_back(cons_test(32'hdd360600, 16'h0004, 16'h00fe, 16'h0000, 16'h0000, 16'h0023, 64'h0a0b0c0d00000000)); // ld        (ix+$06),$00
+        testvectors.push_back(cons_test(32'h01040000, 16'h0004, 16'h0004, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d00000000)); // ld        bc,$0004
+        testvectors.push_back(cons_test(32'hedb80000, 16'h0004, 16'h0003, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d0000000d)); // lddr
+        testvectors.push_back(cons_test(32'hedb80000, 16'h0004, 16'h0002, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d00000c0d)); // lddr //this is an issue with our tb, in real code lddr should act ok
+        testvectors.push_back(cons_test(32'hedb80000, 16'h0004, 16'h0001, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d000b0c0d)); // lddr
+        testvectors.push_back(cons_test(32'hedb80000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0028, 64'h0a0b0c0d0a0b0c0d)); // lddr
+        testvectors.push_back(cons_test(32'hdd360700, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h002c, 64'h0a0b0c0d0a0b0c00)); // ld        (ix+$07),$00
+        testvectors.push_back(cons_test(32'hdd360600, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0030, 64'h0a0b0c0d0a0b0000)); // ld        (ix+$06),$00
+        testvectors.push_back(cons_test(32'hdd360500, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0034, 64'h0a0b0c0d0a000000)); // ld        (ix+$05),$00
+        testvectors.push_back(cons_test(32'hdd360400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0038, 64'h0a0b0c0d00000000)); // ld        (ix+$04),$00
+        testvectors.push_back(cons_test(32'h01040000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h003b, 64'h0a0b0c0d00000000)); // ld        bc,$0004
+        testvectors.push_back(cons_test(32'h11040000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h003e, 64'h0a0b0c0d00000000)); // ld        de,$0004
+        testvectors.push_back(cons_test(32'h21000000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d00000000)); // ld        hl,$0000
+        testvectors.push_back(cons_test(32'hedb00000, 16'h0004, 16'h0003, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a000000)); // ldir
+        testvectors.push_back(cons_test(32'hedb00000, 16'h0004, 16'h0002, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a0b0000)); // ldir
+        testvectors.push_back(cons_test(32'hedb00000, 16'h0004, 16'h0001, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a0b0c00)); // ldir
+        testvectors.push_back(cons_test(32'hedb00000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0043, 64'h0a0b0c0d0a0b0c0d)); // ldir
 
         ->test_start;
 

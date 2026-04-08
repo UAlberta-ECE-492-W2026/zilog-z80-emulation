@@ -363,25 +363,31 @@ module decode #(
             reg_b = SP;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hA0) begin // LDI
-            output_op = LD_block;
-            imm_0 = 8'h01; // for LD_block imm_0 is added to DE and HL
+            output_op = LDI_block;
+            reg_a = DE;
+            reg_b = HL;
+            imm_1 = 0; // 1 for repeating LDI_block
             update_flags = 6'b001110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hB0) begin // LDIR
-            output_op = LD_block;
-            imm_0 = 8'h01; 
-            imm_1 = 16'hFFFE; // -2. Add to PC.
+            output_op = LDI_block;
+            reg_a = DE;
+            reg_b = HL;
+            imm_1 = 1; // 1 for repeating LDI_block
             update_flags = 6'b001110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hA8) begin // LDD
-            output_op = LD_block;
-            imm_0 = 8'hFF; // -1. make sure to sign extend
+            output_op = LDD_block;
+            reg_a = DE;
+            reg_b = HL;
+            imm_1 = 0;
             update_flags = 6'b001110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hB8) begin // LDDR
-            output_op = LD_block;
-            imm_0 = 8'hFF; // -1. make sure to sign extend
-            imm_1 = 16'hFFFE; // -2. Add to PC.
+            output_op = LDD_block;
+            reg_a = DE;
+            reg_b = HL;
+            imm_1 = 1;
             update_flags = 6'b001110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hA1) begin // CPI

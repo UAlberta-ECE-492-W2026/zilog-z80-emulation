@@ -253,7 +253,7 @@ interface c_to_dp_intf();
 
     modport controller_next_state(
                              input current_state, mop_out, reset, f, raw_f,
-                                   imm_0_out,
+                                   imm_0_out, imm_1_out,
                              import set_next_state
                              );
     

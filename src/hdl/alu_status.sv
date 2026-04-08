@@ -180,6 +180,11 @@ module  alu_status #(
 				h_var = 1;
 				n_var = 1;
 			end
+			LDx_OP: begin
+				h_var = 0;
+				pv_var = ~(op_result == 0);
+				n_var = 0;
+			end
         	default: begin
            	end
         endcase

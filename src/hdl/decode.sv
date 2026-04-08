@@ -34,6 +34,9 @@ module decode #(
     wire [7:0] op_2;
     wire [7:0] op_3;
 
+    // parameters
+    parameter logic [5:0] cpx_flag_update = 6'b111110;
+
     // defail to X if disabled. will output mop INVALID
     assign op_0 = enable ? input_op[31:24] : 'X;
     assign op_1 = enable ? input_op[23:16] : 'X;
@@ -401,15 +404,15 @@ module decode #(
             reg_b = HL;
             imm_0 = 0;
             imm_1 = 16'h0;
-            update_flags = 6'b111110;
+            update_flags = cpx_flag_update;
             instruction_length = 2;
-        end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPIR
+        end else if (op_0 == 8'hED && op_1 == 8'hB1) begin // CPIR
             output_op = CPI_block;
             reg_a = A;
             reg_b = HL;
             imm_0 = 0;
             imm_1 = 16'h0001;
-            update_flags = 6'b111110;
+            update_flags = cpx_flag_update;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hA9) begin // CPD
             output_op = CPD_block;
@@ -417,7 +420,7 @@ module decode #(
             reg_b = HL;
             imm_0 = 0;
             imm_1 = 16'h0;
-            update_flags = 6'b111110;
+            update_flags = cpx_flag_update;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPDR
             output_op = CPD_block;
@@ -425,7 +428,7 @@ module decode #(
             reg_b = HL;
             imm_0 = 0;
             imm_1 = 16'h0001;
-            update_flags = 6'b111110;
+            update_flags = cpx_flag_update;
             instruction_length = 2;
 
         // 8b Arithmetic

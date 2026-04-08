@@ -5,7 +5,7 @@
 #include <verilated_vcd_c.h>
 #include "Vz80_top_for_testing.h"
 
-#define TRACE_LENGTH 1000
+#define TRACE_LENGTH 10000
 
 int trace_pc(Vz80_top_for_testing* dut, FILE * trace_file) {
     int current_pc;
@@ -14,6 +14,14 @@ int trace_pc(Vz80_top_for_testing* dut, FILE * trace_file) {
         fprintf(trace_file, "%04X\n", current_pc);
     }
     return current_pc;
+}
+
+void safe_char_print(const char * c) {
+    if (*c < 32) {
+        printf("\n"); // basically ignore control chars
+    } else {
+        printf(c);
+    }
 }
 
 int main (int argc, char *argv[]) {
@@ -34,7 +42,7 @@ int main (int argc, char *argv[]) {
     dut->override_instruction = 0;
 
     int pc;
-    int exit_pc = 268;
+    int exit_pc = 0x8092;
 
     // same convention as in other tbs: each clock is 10 units long
     // this is an arbitrary decision really
@@ -50,7 +58,7 @@ int main (int argc, char *argv[]) {
 
     dut->buttons = 0; // turn off the reset signal
 
-    //while (sim_time < 10000000) {
+    //while (sim_time < 1000) {
     while (true) {
         dut->clk ^= 1;
         dut->eval();
@@ -59,10 +67,12 @@ int main (int argc, char *argv[]) {
         }
         sim_time += 5;
         if (dut->write_char == 1 && dut->clk == 0) {
-            printf((const char *)&dut->keyboard_char_output);
+            safe_char_print((const char *)&dut->keyboard_char_output);
         }
         char c;
         if (dut->read_char) {
+            // printf("Bad read!");
+            // break;
             std::cin.get(c);
             dut->keyboard_char_input = c;
         }

@@ -390,26 +390,29 @@ module decode #(
             imm_1 = 1;
             update_flags = 6'b001110;
             instruction_length = 2;
-        end else if (op_0 == 8'hED && op_1 == 8'hA1) begin // CPI
+        end else if (op_0 == 8'hED
+                     && op_1 == 8'hA1) begin // CPI
+            /* Special encoding for the CP group of instructions. Bit 0 of
+             imm_1 denotes increment when 0, and denotes decrement when 1.
+              */
             output_op = CP_block;
-            imm_0 = 8'h01; // for CP_block imm_0 is added to HL
+            reg_a = HL;
+            imm_1 = 16'h0;
             update_flags = 6'b111110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPIR
             output_op = CP_block;
-            imm_0 = 8'h01; // for CP_block imm_0 is added to HL
-            imm_1 = 16'hFFFE; // -2. Add to PC.
+            imm_1 = 16'h0;
             update_flags = 6'b111110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hA9) begin // CPD
             output_op = CP_block;
-            imm_0 = 8'hFF; // -1 add to HL
+            imm_1 = 16'h0001;
             update_flags = 6'b111110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPDR
             output_op = CP_block;
-            imm_0 = 8'hFF; // -1 add to HL
-            imm_1 = 16'hFFFE; // -2. Add to PC.
+            imm_1 = 16'h0001;
             update_flags = 6'b111110;
             instruction_length = 2;
 

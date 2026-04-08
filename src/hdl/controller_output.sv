@@ -584,7 +584,10 @@ module controller_output (
                                                .mux_b(B_MUX_MEMORY_READ_BUFF));
                 intf.forward_decode_16b_alu();
                 intf.f_w_en = 1;
-                intf.update_flags = intf.update_flags_out;
+                intf.update_flags = (intf.mop_out == CPI_block
+                                     || intf.mop_out == CPD_block) ?
+                                    intf.update_flags_out & 6'b111010
+                                    : intf.update_flags_out;
             end
             uop::dec_reg_b: begin
                 intf.reg_a_sel = intf.reg_b_sel_out;
@@ -911,7 +914,11 @@ module controller_output (
                 intf.enable_and_set_alu_opcode(ALU_LDx,
                                                 .mux_a(A_MUX_REG));
                 intf.alu_16b_mode = 0;
-                intf.update_flags = intf.update_flags_out;
+                intf.update_flags = (intf.mop_out == CPI_block
+                                     || intf.mop_out == CPD_block)
+                  ? intf.update_flags_out 
+                                    & 6'b000100
+                                    : intf.update_flags_out;
                 intf.f_w_en = 1;
                 intf.write_back_sel = WB_MUX_ALU;
             end

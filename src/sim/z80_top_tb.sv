@@ -479,6 +479,12 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hedb00000, 16'h0004, 16'h0002, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a0b0000)); // ldir
         testvectors.push_back(cons_test(32'hedb00000, 16'h0004, 16'h0001, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a0b0c00)); // ldir
         testvectors.push_back(cons_test(32'hedb00000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0043, 64'h0a0b0c0d0a0b0c0d)); // ldir
+        testvectors.push_back(cons_reset()); /* the test for the bit instruction group */
+        //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
+        testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
+        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01010000, 16'h0000, 16'h0001, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'heda10000, 16'h0042, 16'h0000, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // ld ($0004), de
 
         ->test_start;
 

@@ -393,25 +393,37 @@ module decode #(
         end else if (op_0 == 8'hED
                      && op_1 == 8'hA1) begin // CPI
             /* Special encoding for the CP group of instructions. Bit 0 of
-             imm_1 denotes increment when 0, and denotes decrement when 1.
+             imm_1 denotes if the R variant of the instruction should be
+             applied.
               */
-            output_op = CP_block;
-            reg_a = HL;
+            output_op = CPI_block;
+            reg_a = A;
+            reg_b = HL;
+            imm_0 = 0;
             imm_1 = 16'h0;
             update_flags = 6'b111110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPIR
-            output_op = CP_block;
-            imm_1 = 16'h0;
-            update_flags = 6'b111110;
-            instruction_length = 2;
-        end else if (op_0 == 8'hED && op_1 == 8'hA9) begin // CPD
-            output_op = CP_block;
+            output_op = CPD_block;
+            reg_a = A;
+            reg_b = HL;
+            imm_0 = 0;
             imm_1 = 16'h0001;
             update_flags = 6'b111110;
             instruction_length = 2;
+        end else if (op_0 == 8'hED && op_1 == 8'hA9) begin // CPD
+            output_op = CPI_block;
+            reg_a = A;
+            reg_b = HL;
+            imm_0 = 0;
+            imm_1 = 16'h0;
+            update_flags = 6'b111110;
+            instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPDR
-            output_op = CP_block;
+            output_op = CPD_block;
+            reg_a = A;
+            reg_b = HL;
+            imm_0 = 0;
             imm_1 = 16'h0001;
             update_flags = 6'b111110;
             instruction_length = 2;

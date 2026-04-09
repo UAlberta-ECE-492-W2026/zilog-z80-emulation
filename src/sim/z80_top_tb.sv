@@ -500,13 +500,28 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'heda90000, 16'h0016, 16'hfffe, 16'h0000, 16'h0000, 16'h0014, 64'h00000000adde0000)); // cpd
         testvectors.push_back(cons_test(32'h01010000, 16'h0016, 16'h0001, 16'h0000, 16'h0000, 16'h0017, 64'h00000000adde0000)); // ld bc, 1
         testvectors.push_back(cons_test(32'heda90000, 16'h0012, 16'h0000, 16'h0000, 16'h0000, 16'h0019, 64'h00000000adde0000)); // cpd
-        testvectors.push_back(cons_reset()); /* the test for cpir */
+        testvectors.push_back(cons_reset()); /* the test for cpir bc runout */
         //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
         testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
         testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
         testvectors.push_back(cons_test(32'h01040000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, 1
         testvectors.push_back(cons_test(32'h3ede0000, 16'hde00, 16'h0004, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // ld a, de
-        testvectors.push_back(cons_test(32'hedb10000, 16'hde16, 16'h0004, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // ld a, de
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h0003, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h0002, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h0001, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde82, 16'h0000, 16'h0000, 16'h0000, 16'h000f, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_reset()); /* the test for cpir bc match */
+        //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
+        testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
+        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01ff0000, 16'h0000, 16'h00ff, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, ff
+        testvectors.push_back(cons_test(32'h3ede0000, 16'hde00, 16'h00ff, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // ld a, de
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h00fe, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h00fd, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h00fc, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h00fb, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde06, 16'h00fa, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde46, 16'h00f9, 16'h0000, 16'h0000, 16'h000f, 64'h00000000adde0000)); // cpir
 
         ->test_start;
 

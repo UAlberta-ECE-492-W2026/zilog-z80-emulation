@@ -606,8 +606,8 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
             uop::de_m1: set_next_state(uop::bc_m1);
             uop::bc_m1: case(ctrl_intf.mop_out)
                           CPI_block, CPD_block: if (ctrl_intf.imm_1_out[0]
-                                                    && ~ctrl_intf.raw_f[2]
-                                                    && ~ctrl_intf.f[2]) begin
+                                                    && ctrl_intf.raw_f[2]
+                                                    && ~ctrl_intf.f[4]) begin
                               /* in this case, we must loop */
                               set_next_state(uop::fetch);
                           end else begin

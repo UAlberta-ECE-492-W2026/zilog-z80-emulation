@@ -46,9 +46,13 @@ module alu_bit_op(
                 raw_var[4] = ~bit_val;  // Z
                 raw_var[3] = 1'b1;      // H
 
+                set_var[5]   = (bit_index == 7) && bit_val;
                 set_var[4]   = ~bit_val;  // set Z when tested bit is 0
                 set_var[3]   = 1'b1;      // set H
+                set_var[2]   = ~bit_val;
+                reset_var[5]   = ~((bit_index == 7) && bit_val);
                 reset_var[4] = bit_val;   // clear Z when tested bit is 1
+                reset_var[2] = bit_val;
                 reset_var[1] = 1'b1;      // clear N
             end
             ALU_SETBIT: begin

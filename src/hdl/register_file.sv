@@ -27,18 +27,15 @@ module register_file
     input  wire [5:0]   f_reset,
     input  wire [5:0]   f_toggle,
     input  wire         f_w_en, // write enable for flags. note that a reg write to f can still happen if f_w_en = 0
-    output wire [5:0]   f
-    `ifdef Z80_REGISTER_FILE_DEBUG
-    ,
+    output wire [5:0]   f,
     output logic [7:0] debug_main_reg_set [0:7],
     output logic [15:0] debug_special_reg_set [0:4]
-    `endif
 );
-    reg [7:0] main_reg_set [0:7]; // In order A F B C D E H L
-    reg [7:0] alt_reg_set [0:7]; // Same as above, but alternate bank
+    reg [7:0] main_reg_set [0:7]/*verilator public*/; // In order A F B C D E H L
+    reg [7:0] alt_reg_set [0:7]/*verilator public*/; // Same as above, but alternate bank
 
     /* verilator lint_off UNUSEDSIGNAL */ // ?????
-    reg [15:0] special_reg_set [0:4]; // IR IX IY SP PC
+    reg [15:0] special_reg_set [0:4]/*verilator public*/; // IR IX IY SP PC
     /* verilator lint_on UNUSEDSIGNAL */
 
     wire [7:0] internal_f_set;
@@ -53,10 +50,8 @@ module register_file
     assign internal_f_reset     = {f_reset[5:4], 1'b0, f_reset[3], 1'b0, f_reset[2:0]};
     assign internal_f_toggle    = {f_toggle[5:4], 1'b0, f_toggle[3], 1'b0, f_toggle[2:0]};
     
-    `ifdef Z80_REGISTER_FILE_DEBUG
     assign debug_main_reg_set = main_reg_set;
     assign debug_special_reg_set = special_reg_set;
-    `endif
     
     // reg_sel unused?
     // verilator lint_off UNUSEDSIGNAL
@@ -128,12 +123,27 @@ module register_file
         reg_b = read_from_reg_file(reg_b_sel);
     end
 
-    // async reset. not sure if this is a good idea
     always_ff @(posedge clk) begin
         //reset
         if (reset) begin
-            main_reg_set    <= '{default:8'h00};
-            alt_reg_set     <= '{default:8'h00};
+            main_reg_set[0]    <= 0;
+            main_reg_set[1]    <= 8'h40;
+            main_reg_set[2]    <= 0;
+            main_reg_set[3]    <= 0;
+            main_reg_set[4]    <= 0;
+            main_reg_set[5]    <= 0;
+            main_reg_set[6]    <= 0;
+            main_reg_set[7]    <= 0;
+
+            alt_reg_set[0]    <= 0;
+            alt_reg_set[1]    <= 8'h40;
+            alt_reg_set[2]    <= 0;
+            alt_reg_set[3]    <= 0;
+            alt_reg_set[4]    <= 0;
+            alt_reg_set[5]    <= 0;
+            alt_reg_set[6]    <= 0;
+            alt_reg_set[7]    <= 0;
+
             special_reg_set <= '{default:16'h0000};
 
         // read/write and flag update
@@ -163,8 +173,18 @@ module register_file
                         alt_reg_set[1]  <= main_reg_set[1];
                     end
                     EXX_ALL: begin
-                        main_reg_set <= alt_reg_set;
-                        alt_reg_set <= main_reg_set;
+                        main_reg_set[2] <= alt_reg_set[2]; // B <=> B'
+                        alt_reg_set[2]  <= main_reg_set[2];
+                        main_reg_set[3] <= alt_reg_set[3]; // C <=> C'
+                        alt_reg_set[3]  <= main_reg_set[3];
+                        main_reg_set[4] <= alt_reg_set[4]; // D <=> D'
+                        alt_reg_set[4]  <= main_reg_set[4];
+                        main_reg_set[5] <= alt_reg_set[5]; // E <=> E'
+                        alt_reg_set[5]  <= main_reg_set[5];
+                        main_reg_set[6] <= alt_reg_set[6]; // H <=> H'
+                        alt_reg_set[6]  <= main_reg_set[6];
+                        main_reg_set[7] <= alt_reg_set[7]; // L <=> L'
+                        alt_reg_set[7]  <= main_reg_set[7];
                     end
                     default:;
                 endcase

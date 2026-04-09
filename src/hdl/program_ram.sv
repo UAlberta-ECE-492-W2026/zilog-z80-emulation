@@ -14,13 +14,16 @@ module program_ram #()(
     output logic [7:0]  data_out_8,
     output logic [31:0] data_out_32
 );
-    logic [7:0] mem[0:60159]; // total space is 2^ 16 - (2^8) - (2^12 + 2 ^10)
+    //logic [7:0] mem[0:60159]; // total space is 2^ 16 - (2^8) - (2^12 + 2 ^10)
+    logic [7:0] mem[0:60416]/*verilator public*/; // total space is 2^ 16 - (2^12 + 2 ^10)
 
     initial begin
         // this should work with vivado as well as verilator
         //$readmemb("F:\\School\\School U\\t9\\ECE_492\\zilog-z80-emulation\\zilog-z80-emulation-software\\internal_programs\\blinker\\blinker.vivado", mem, 0, 60159);
         //$readmemb("zilog-z80-emulation-software/internal_programs/blinker/blinker.vivado", mem, 0, 60159);
-        $readmemb("zilog-z80-emulation-software/external_programs/Advent/Almazar/almazar.vivado", mem, 0, 60159);
+        $readmemb("zilog-z80-emulation-software/internal_programs/prime_printer/prime_printer.vivado", mem, 0, 60416);
+        //$readmemb("zilog-z80-emulation-software/tests/z80test/src/z80doc.vivado", mem, 0, 60159);
+        //$readmemb("zilog-z80-emulation-software/external_programs/Advent/Almazar/almazar.vivado", mem, 0, 60159);
 
     end
 

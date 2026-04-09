@@ -1,10 +1,9 @@
 // Decided to make this a different module to reduce the amount of macros needed in the 'real' z80_top module
 
 `timescale 1ns/1ps
+`include "mop.sv"
 
 `define USING_VERILATOR
-`define Z80_REGISTER_FILE_DEBUG
-`define Z80_MEMORY_DEBUG
 `ifndef SV_TESTBENCH
 `define SOFTWARE_KEYBOARD
 `endif
@@ -31,10 +30,13 @@ module z80_top_for_testing #(
     // debug
     output logic [7:0] main_reg_set [0:7],
     output logic [15:0] special_reg_set [0:4],
+    `ifdef Z80_MEMORY_DEBUG
     input logic [31:0] instruction,
     input logic override_instruction,
     output logic [7:0] test_ram [0:7],
-    output uop::uop_t state
+    `endif
+    output uop::uop_t state,
+    output mop mop_out
 
     `ifdef SOFTWARE_KEYBOARD
     ,
@@ -59,6 +61,7 @@ module z80_top_for_testing #(
     assign intf.reset =  buttons[0];
 
     assign state = intf.current_state;
+    assign mop_out = intf.mop_out;
 
     controller #() controller (intf);
     controller_next_state next_state_logic(.ctrl_intf(intf));
@@ -72,11 +75,13 @@ module z80_top_for_testing #(
     memory_wrapper #() memory_wrapper(
         .intf(intf), 
         .char_ram_address(char_ram_address), 
-        .char_ram_data(char_ram_data), 
+        .char_ram_data(char_ram_data),
+        `ifdef Z80_MEMORY_DEBUG
         .override_instruction(override_instruction), 
         .override_instruction_data(instruction), 
-        .memory_mapped_display_byte(memory_mapped_display_byte),
-        .test_ram(test_ram)
+        .test_ram(test_ram),
+        `endif
+        .memory_mapped_display_byte(memory_mapped_display_byte)
         `ifdef SOFTWARE_KEYBOARD
         ,
         .software_keyboard_char_input(keyboard_char_input),

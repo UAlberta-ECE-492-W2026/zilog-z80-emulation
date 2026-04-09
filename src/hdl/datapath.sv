@@ -9,12 +9,9 @@
 
 
 module datapath(
-    c_to_dp_intf.datapath intf
-    `ifdef Z80_REGISTER_FILE_DEBUG
-    ,
+    c_to_dp_intf.datapath intf,
     output logic [7:0] debug_main_reg_set [0:7],
     output logic [15:0] debug_special_reg_set [0:4]
-    `endif
 );
     /* datapath signals */
     wire [31:0] ir_buff_out;
@@ -84,7 +81,7 @@ module datapath(
         case (intf.f_op)
             F_CCF: begin
                 f_toggle = 6'b000001; // main intent of the CCF instruction
-                f_reset = {2'b00, ~intf.f[0], 3'b000};
+                f_reset = {2'b00, ~intf.f[0], 3'b010};
                 f_set = {2'b00, intf.f[0], 3'b000}; // store last C in H
             end
             F_SCF: begin
@@ -115,12 +112,9 @@ module datapath(
         .f_reset(f_reset),
         .f_toggle(f_toggle),
         .f_w_en(intf.f_w_en),
-        .f(intf.f)
-         `ifdef Z80_REGISTER_FILE_DEBUG
-        ,
+        .f(intf.f),
         .debug_main_reg_set(debug_main_reg_set),
         .debug_special_reg_set(debug_special_reg_set)
-        `endif
     );
 
 

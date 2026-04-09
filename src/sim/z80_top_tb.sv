@@ -459,10 +459,10 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hdd36030d, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0011, 64'h0a0b0c0d00000000)); // ld        (ix+$03),$0d
         testvectors.push_back(cons_test(32'h11070000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0014, 64'h0a0b0c0d00000000)); // ld        de,$0007
         testvectors.push_back(cons_test(32'h21030000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0017, 64'h0a0b0c0d00000000)); // ld        hl,$0003
-        testvectors.push_back(cons_test(32'heda80000, 16'h0004, 16'h00ff, 16'h0000, 16'h0000, 16'h0019, 64'h0a0b0c0d0000000d)); // ldd
-        testvectors.push_back(cons_test(32'heda00000, 16'h0004, 16'h00fe, 16'h0000, 16'h0000, 16'h001b, 64'h0a0b0c0d00000c0d)); // ldi
-        testvectors.push_back(cons_test(32'hdd360700, 16'h0004, 16'h00fe, 16'h0000, 16'h0000, 16'h001f, 64'h0a0b0c0d00000c00)); // ld        (ix+$07),$00
-        testvectors.push_back(cons_test(32'hdd360600, 16'h0004, 16'h00fe, 16'h0000, 16'h0000, 16'h0023, 64'h0a0b0c0d00000000)); // ld        (ix+$06),$00
+        testvectors.push_back(cons_test(32'heda80000, 16'h0004, 16'hffff, 16'h0000, 16'h0000, 16'h0019, 64'h0a0b0c0d0000000d)); // ldd
+        testvectors.push_back(cons_test(32'heda00000, 16'h0004, 16'hfffe, 16'h0000, 16'h0000, 16'h001b, 64'h0a0b0c0d00000c0d)); // ldi
+        testvectors.push_back(cons_test(32'hdd360700, 16'h0004, 16'hfffe, 16'h0000, 16'h0000, 16'h001f, 64'h0a0b0c0d00000c00)); // ld        (ix+$07),$00
+        testvectors.push_back(cons_test(32'hdd360600, 16'h0004, 16'hfffe, 16'h0000, 16'h0000, 16'h0023, 64'h0a0b0c0d00000000)); // ld        (ix+$06),$00
         testvectors.push_back(cons_test(32'h01040000, 16'h0004, 16'h0004, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d00000000)); // ld        bc,$0004
         testvectors.push_back(cons_test(32'hedb80000, 16'h0004, 16'h0003, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d0000000d)); // lddr
         testvectors.push_back(cons_test(32'hedb80000, 16'h0004, 16'h0002, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d00000c0d)); // lddr //this is an issue with our tb, in real code lddr should act ok
@@ -510,7 +510,7 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h0002, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
         testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h0001, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
         testvectors.push_back(cons_test(32'hedb10000, 16'hde82, 16'h0000, 16'h0000, 16'h0000, 16'h000f, 64'h00000000adde0000)); // cpir
-        testvectors.push_back(cons_reset()); /* the test for cpir bc match */
+        testvectors.push_back(cons_reset()); /* the test for cpir A match */
         //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
         testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
         testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
@@ -522,6 +522,17 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h00fb, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
         testvectors.push_back(cons_test(32'hedb10000, 16'hde06, 16'h00fa, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
         testvectors.push_back(cons_test(32'hedb10000, 16'hde46, 16'h00f9, 16'h0000, 16'h0000, 16'h000f, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_reset()); /* the test for cpdr countdown runout */
+        //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
+        testvectors.push_back(cons_test(32'h1101c000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, cool
+        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h0000000001c00000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01040000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h000b, 64'h0000000001c00000)); // ld bc, 1
+        testvectors.push_back(cons_test(32'h21200000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h000e, 64'h0000000001c00000)); // ld hl, 7
+        testvectors.push_back(cons_test(32'h3e010000, 16'h0100, 16'h0004, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // ld a, de
+        testvectors.push_back(cons_test(32'hedb90000, 16'h0106, 16'h0003, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // cpir
+        testvectors.push_back(cons_test(32'hedb90000, 16'h0106, 16'h0002, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // cpir
+        testvectors.push_back(cons_test(32'hedb90000, 16'h0106, 16'h0001, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // cpir
+        testvectors.push_back(cons_test(32'hedb90000, 16'h0102, 16'h0000, 16'h0000, 16'h0000, 16'h0012, 64'h0000000001c00000)); // cpir
 
         ->test_start;
 

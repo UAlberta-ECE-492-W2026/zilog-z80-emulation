@@ -28,6 +28,7 @@ module  alu_status #(
     input wire [alu_width-1:0] op_result,
     input wire [alu_width:0]   result_buffer,
     input alu_status_op opcode,
+	input wire carry_in_enabled, 
    	// op_sign == 1 : negative
    	// op_sign == 0 : positive
    	input wire                 op_sign,
@@ -49,7 +50,7 @@ module  alu_status #(
 	/* verilator lint_on UNUSEDSIGNAL */
 
 	/* verilator lint_off UNUSEDSIGNAL */
-   	reg[4:0] half_buffer;
+   	reg[alu_width-4:0] half_buffer;
 	/* verilator lint_on UNUSEDSIGNAL */
    	reg c_var;
    	reg pv_var;
@@ -65,7 +66,7 @@ module  alu_status #(
    	assign c = c_var;
    	assign n = n_var;
    	assign pv = pv_var;
-   	assign h = (opcode == NUMERIC_OP) ? half_buffer[4] : h_var;
+   	assign h = (opcode == NUMERIC_OP) ? half_buffer[alu_width-4] : h_var;
    	assign s = s_var;
 
     assign uppermost_buffer_bit = result_buffer[alu_width];
@@ -94,9 +95,9 @@ module  alu_status #(
            		s_var = op_result[upper_bit];
            		z_var = (op_result == 0? 1 : 0);
            		if (op_sign == 1) begin
-              		half_buffer = a[3:0] - b[3:0];
+              		half_buffer = a[alu_width - 5:0] - b[alu_width - 5:0] - ((carry_in_enabled && flags_in[0]) ? 1 : 0);
 				end else begin
-             		half_buffer = a[3:0] + b[3:0];
+             		half_buffer = a[alu_width - 5:0] + b[alu_width - 5:0] + ((carry_in_enabled && flags_in[0]) ? 1 : 0);
 				end
         	end
         	SHIFT_OP: begin
@@ -126,11 +127,12 @@ module  alu_status #(
            		s_var = op_result[upper_bit];
            		z_var = (op_result == 0? 1 : 0);
 				h_var = 1;
-				// spec says "P/V is set if overflow; otherwise, it is reset." makes no sense imo
-				pv_var = overflow_check(op_sign,
-                                            a[upper_bit],
-                                            b[upper_bit],
-                                            op_result[upper_bit]);
+				// spec says "P/V is reset if overflow; otherwise, it is reset." makes no sense imo
+				// pv_var = overflow_check(op_sign,
+                //                             a[upper_bit],
+                //                             b[upper_bit],
+                //                             op_result[upper_bit]);
+				pv_var = !(^op_result); //spec is wrong and stupid
 				n_var = 0;
 				c_var = 0;
 			end
@@ -138,11 +140,7 @@ module  alu_status #(
            		s_var = op_result[upper_bit];
            		z_var = (op_result == 0? 1 : 0);
 				//h_var = 0; h already set to 0 by default
-				// spec says "P/V is set if overflow; otherwise, it is reset." makes no sense imo
-				pv_var = overflow_check(op_sign,
-                                            a[upper_bit],
-                                            b[upper_bit],
-                                            op_result[upper_bit]);
+				pv_var = !(^op_result); //spec continues to be wrong and stupid
 				n_var = 0;
 				c_var = 0;
 			end
@@ -151,10 +149,7 @@ module  alu_status #(
            		z_var = (op_result == 0? 1 : 0);
 				//h_var = 0; h already set to 0 by default
 				// pv set to if parity is even
-				pv_var = 1;
-				for (i = 0; i < alu_width; i = i + 1) begin
-					pv_var = pv_var ^ op_result[i];
-				end
+				pv_var = !(^op_result);
 				n_var = 0;
 				c_var = 0;
 			end

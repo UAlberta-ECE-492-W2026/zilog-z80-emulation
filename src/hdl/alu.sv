@@ -40,6 +40,7 @@ module  alu #(
 	reg [7:0]		   mem_rotated;  // updated memory byte RLD/RRD
 
     wire carry_in;
+    reg carry_in_enabled;
     assign carry_in = flags_in[0];
 
 	// set outputs to X if not enabled to aid debugging
@@ -60,6 +61,7 @@ module  alu #(
 		out_var = 0;  // stop latch interference
 		acc_rotated = 8'h00;
 		mem_rotated = 8'h00;
+        carry_in_enabled = 0;
 
         case (opcode)
         	ALU_ADD: begin
@@ -75,12 +77,14 @@ module  alu #(
                 tmp = a + b + carry_in;
                 out_var = tmp[alu_width-1:0];
                 status_b = b + carry_in;
+                carry_in_enabled = 1;
             end
             ALU_SBC: begin
                 tmp = a - b - carry_in;
                 out_var = tmp[alu_width-1:0];
                 status_sign = 1;
                 status_b = b + carry_in;
+                carry_in_enabled = 1;
             end
         	ALU_COMPARE: begin
                /* The compare operation does not output to accumulator, it
@@ -226,7 +230,8 @@ module  alu #(
         .result_buffer(tmp),
         .opcode(status_opcode),
         .op_sign(status_sign),
-        .flags_in(flags_in)
+        .flags_in(flags_in),
+        .carry_in_enabled(carry_in_enabled)
     );
 
 endmodule

@@ -459,10 +459,10 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hdd36030d, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0011, 64'h0a0b0c0d00000000)); // ld        (ix+$03),$0d
         testvectors.push_back(cons_test(32'h11070000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0014, 64'h0a0b0c0d00000000)); // ld        de,$0007
         testvectors.push_back(cons_test(32'h21030000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0017, 64'h0a0b0c0d00000000)); // ld        hl,$0003
-        testvectors.push_back(cons_test(32'heda80000, 16'h0004, 16'h00ff, 16'h0000, 16'h0000, 16'h0019, 64'h0a0b0c0d0000000d)); // ldd
-        testvectors.push_back(cons_test(32'heda00000, 16'h0004, 16'h00fe, 16'h0000, 16'h0000, 16'h001b, 64'h0a0b0c0d00000c0d)); // ldi
-        testvectors.push_back(cons_test(32'hdd360700, 16'h0004, 16'h00fe, 16'h0000, 16'h0000, 16'h001f, 64'h0a0b0c0d00000c00)); // ld        (ix+$07),$00
-        testvectors.push_back(cons_test(32'hdd360600, 16'h0004, 16'h00fe, 16'h0000, 16'h0000, 16'h0023, 64'h0a0b0c0d00000000)); // ld        (ix+$06),$00
+        testvectors.push_back(cons_test(32'heda80000, 16'h0004, 16'hffff, 16'h0000, 16'h0000, 16'h0019, 64'h0a0b0c0d0000000d)); // ldd
+        testvectors.push_back(cons_test(32'heda00000, 16'h0004, 16'hfffe, 16'h0000, 16'h0000, 16'h001b, 64'h0a0b0c0d00000c0d)); // ldi
+        testvectors.push_back(cons_test(32'hdd360700, 16'h0004, 16'hfffe, 16'h0000, 16'h0000, 16'h001f, 64'h0a0b0c0d00000c00)); // ld        (ix+$07),$00
+        testvectors.push_back(cons_test(32'hdd360600, 16'h0004, 16'hfffe, 16'h0000, 16'h0000, 16'h0023, 64'h0a0b0c0d00000000)); // ld        (ix+$06),$00
         testvectors.push_back(cons_test(32'h01040000, 16'h0004, 16'h0004, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d00000000)); // ld        bc,$0004
         testvectors.push_back(cons_test(32'hedb80000, 16'h0004, 16'h0003, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d0000000d)); // lddr
         testvectors.push_back(cons_test(32'hedb80000, 16'h0004, 16'h0002, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d00000c0d)); // lddr //this is an issue with our tb, in real code lddr should act ok

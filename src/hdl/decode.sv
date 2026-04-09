@@ -747,7 +747,7 @@ module decode #(
             output_op = ADD_R_R;
             reg_a = HL;
             reg_b = reg_from_dd(op_0[5:4]); // 'ss' is used in the spec, but it acts the same as dd
-            update_flags = 6'b0010101;
+            update_flags = 6'b001011;
             use_16b_alu = 1;
 
         end else if (op_0 == 8'hED && op_1[7:6] == 2'b01 && op_1[3:0] == 4'b1010) begin // ADC HL, ss

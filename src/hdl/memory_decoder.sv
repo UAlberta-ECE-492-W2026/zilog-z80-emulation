@@ -38,16 +38,16 @@ module memory_decoder
         r_en_keyboard_IO = 0;
         address_keyboard_IO = 0;
 
-        if(address <= 16'h000FF) begin  // Memory location for program RAM
-            w_en_config_ROM = w_en;
-            r_en_config_ROM = r_en;
-            address_config_ROM = address;
-        end
+        // if(address <= 16'h000FF) begin  // Memory location for program RAM
+        //     w_en_config_ROM = w_en;
+        //     r_en_config_ROM = r_en;
+        //     address_config_ROM = address;
+        // end
 
-        else if(address <= 16'hEBFF) begin  // Memory location for char RAM
+        if(address <= 16'hEBFF) begin  // Memory location for char RAM
             w_en_program_RAM = w_en;
             r_en_program_RAM = r_en;
-            address_program_RAM = address - 16'h0100; 
+            address_program_RAM = address; 
         end
 
         else if(address <= 16'hFFEF) begin

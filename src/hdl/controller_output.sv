@@ -119,14 +119,14 @@ module controller_output (
                 intf.enable_and_set_alu_opcode(ALU_ADD, .mux_a(A_MUX_REG), .mux_b(B_MUX_IMM));
                 intf.alu_16b_mode = 1;
                 intf.mem_addr_buff_en = 1;
-                intf.imm_in = {8'h00, intf.imm_0_out};
+                intf.imm_in = 16'(signed'(intf.imm_0_out));
             end
             uop::buff_addr_reg_b_imm_0: begin
                 intf.reg_a_sel = intf.reg_b_sel_out;
                 intf.enable_and_set_alu_opcode(ALU_ADD, .mux_a(A_MUX_REG), .mux_b(B_MUX_IMM));
                 intf.alu_16b_mode = 1;
                 intf.mem_addr_buff_en = 1;
-                intf.imm_in = {8'h00, intf.imm_0_out};
+                intf.imm_in = 16'(signed'(intf.imm_0_out));
             end
             uop::buff_addr_imm_1: begin
                 intf.enable_and_set_alu_opcode(ALU_PASS_B, .mux_b(B_MUX_IMM));
@@ -178,6 +178,8 @@ module controller_output (
                 intf.alu_16b_mode = 0;
                 intf.mem_mux_sel = MEM_MUX_BUFFERED;
                 intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
+                intf.update_flags = intf.update_flags_out;
+                intf.f_w_en = 1;
                 intf.mem_w_en = 1;
             end
             uop::write_mrbuffL_m1: begin
@@ -188,6 +190,8 @@ module controller_output (
                 intf.alu_16b_mode = 0;
                 intf.mem_mux_sel = MEM_MUX_BUFFERED;
                 intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
+                intf.update_flags = intf.update_flags_out;
+                intf.f_w_en = 1;
                 intf.mem_w_en = 1;
             end
             uop::write_imm_1L: begin
@@ -222,7 +226,7 @@ module controller_output (
             end
             uop::read_mrbuff_reg_b_imm_0_setup: begin
                 intf.reg_a_sel = intf.reg_b_sel_out;
-                intf.imm_0_to_imm();
+                intf.imm_in = 16'(signed'(intf.imm_0_out));
                 intf.enable_and_set_alu_opcode(ALU_ADD,
                                                .mux_a(A_MUX_REG),
                                                .mux_b(B_MUX_IMM));

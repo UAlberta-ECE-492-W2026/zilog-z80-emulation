@@ -119,14 +119,14 @@ module controller_output (
                 intf.enable_and_set_alu_opcode(ALU_ADD, .mux_a(A_MUX_REG), .mux_b(B_MUX_IMM));
                 intf.alu_16b_mode = 1;
                 intf.mem_addr_buff_en = 1;
-                intf.imm_in = {8'h00, intf.imm_0_out};
+                intf.imm_in = 16'(signed'(intf.imm_0_out));
             end
             uop::buff_addr_reg_b_imm_0: begin
                 intf.reg_a_sel = intf.reg_b_sel_out;
                 intf.enable_and_set_alu_opcode(ALU_ADD, .mux_a(A_MUX_REG), .mux_b(B_MUX_IMM));
                 intf.alu_16b_mode = 1;
                 intf.mem_addr_buff_en = 1;
-                intf.imm_in = {8'h00, intf.imm_0_out};
+                intf.imm_in = 16'(signed'(intf.imm_0_out));
             end
             uop::buff_addr_imm_1: begin
                 intf.enable_and_set_alu_opcode(ALU_PASS_B, .mux_b(B_MUX_IMM));
@@ -162,6 +162,14 @@ module controller_output (
                 intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
                 intf.mem_w_en = 1;
             end
+            uop::write_mrbuffL: begin
+                intf.enable_and_set_alu_opcode(ALU_PASS_A,
+                                               .mux_a(A_MUX_MEMORY_READ_BUFF));
+                intf.alu_16b_mode = 0;
+                intf.mem_mux_sel = MEM_MUX_BUFFERED;
+                intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
+                intf.mem_w_en = 1;
+            end
             uop::write_mrbuffL_p1: begin
                 intf.set_imm(1);
                 intf.enable_and_set_alu_opcode(ALU_ADD,
@@ -170,6 +178,8 @@ module controller_output (
                 intf.alu_16b_mode = 0;
                 intf.mem_mux_sel = MEM_MUX_BUFFERED;
                 intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
+                intf.update_flags = intf.update_flags_out;
+                intf.f_w_en = 1;
                 intf.mem_w_en = 1;
             end
             uop::write_mrbuffL_m1: begin
@@ -180,6 +190,8 @@ module controller_output (
                 intf.alu_16b_mode = 0;
                 intf.mem_mux_sel = MEM_MUX_BUFFERED;
                 intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
+                intf.update_flags = intf.update_flags_out;
+                intf.f_w_en = 1;
                 intf.mem_w_en = 1;
             end
             uop::write_imm_1L: begin
@@ -214,7 +226,7 @@ module controller_output (
             end
             uop::read_mrbuff_reg_b_imm_0_setup: begin
                 intf.reg_a_sel = intf.reg_b_sel_out;
-                intf.imm_0_to_imm();
+                intf.imm_in = 16'(signed'(intf.imm_0_out));
                 intf.enable_and_set_alu_opcode(ALU_ADD,
                                                .mux_a(A_MUX_REG),
                                                .mux_b(B_MUX_IMM));
@@ -576,7 +588,10 @@ module controller_output (
                                                .mux_b(B_MUX_MEMORY_READ_BUFF));
                 intf.forward_decode_16b_alu();
                 intf.f_w_en = 1;
-                intf.update_flags = intf.update_flags_out;
+                intf.update_flags = (intf.mop_out == CPI_block
+                                     || intf.mop_out == CPD_block) ?
+                                    intf.update_flags_out & 6'b111010
+                                    : intf.update_flags_out;
             end
             uop::dec_reg_b: begin
                 intf.reg_a_sel = intf.reg_b_sel_out;
@@ -856,6 +871,60 @@ module controller_output (
                 intf.mem_mux_sel = MEM_MUX_BUFFERED;
                 intf.mem_data_mux_sel = MEM_DATA_MUX_LOWER;
                 intf.mem_w_en = 1;
+            end
+            uop::hl_p1: begin
+                intf.set_imm(1);
+                intf.reg_a_sel = HL;
+                intf.enable_and_set_reg_w(HL);
+                intf.enable_and_set_alu_opcode(ALU_ADD,
+                                                .mux_a(A_MUX_REG),
+                                                .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 1;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::hl_m1: begin
+                intf.set_imm(-1);
+                intf.reg_a_sel = HL;
+                intf.enable_and_set_reg_w(HL);
+                intf.enable_and_set_alu_opcode(ALU_ADD,
+                                                .mux_a(A_MUX_REG),
+                                                .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 1;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::de_p1: begin
+                intf.set_imm(1);
+                intf.reg_a_sel = DE;
+                intf.enable_and_set_reg_w(DE);
+                intf.enable_and_set_alu_opcode(ALU_ADD,
+                                                .mux_a(A_MUX_REG),
+                                                .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 1;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::de_m1: begin
+                intf.set_imm(-1);
+                intf.reg_a_sel = DE;
+                intf.enable_and_set_reg_w(DE);
+                intf.enable_and_set_alu_opcode(ALU_ADD,
+                                                .mux_a(A_MUX_REG),
+                                                .mux_b(B_MUX_IMM));
+                intf.alu_16b_mode = 1;
+                intf.write_back_sel = WB_MUX_ALU;
+            end
+            uop::bc_m1: begin
+                intf.reg_a_sel = BC;
+                intf.enable_and_set_reg_w(BC);
+                intf.enable_and_set_alu_opcode(ALU_LDx,
+                                                .mux_a(A_MUX_REG));
+                intf.alu_16b_mode = 1;
+                intf.update_flags = (intf.mop_out == CPI_block
+                                     || intf.mop_out == CPD_block)
+                  ? intf.update_flags_out 
+                                    & 6'b000100
+                                    : intf.update_flags_out;
+                intf.f_w_en = 1;
+                intf.write_back_sel = WB_MUX_ALU;
             end
             default: begin
             end

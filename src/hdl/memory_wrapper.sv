@@ -220,23 +220,27 @@ module memory_wrapper #(
     end
 
     // data_out combining (avoiding a tristate bus since verilator gets unhappy about that)
+    /* verilator lint_off UNUSEDSIGNAL */
     reg r_en_config_ROM_last,
         r_en_program_RAM_last,
         r_en_char_RAM_last,
-        r_en_keyboard_IO_last;
+        r_en_keyboard_IO_last,
+        r_en_last;
+    /* verilator lint_on UNUSEDSIGNAL */
     
     always_ff @(posedge intf.clk) begin
         r_en_config_ROM_last <= r_en_config_ROM;
         r_en_program_RAM_last <= r_en_program_RAM;
         r_en_char_RAM_last <= r_en_char_RAM;
         r_en_keyboard_IO_last <= r_en_keyboard_IO;
+        r_en_last <= intf.mem_r_en;
     end
 
     always_comb begin
         data_out_32 = 0;
         `ifdef Z80_MEMORY_DEBUG
-        if (r_en_config_ROM_last && address <= 16'h000f) begin
-            data_out_32 = data_out_32_config_ROM;
+        if (r_en_last && address <= 16'h000f) begin
+            data_out_32 = data_out_32_program_RAM;
             intf.memory_in = test_ram_out;
         end else if (r_en_config_ROM_last) begin
         `else

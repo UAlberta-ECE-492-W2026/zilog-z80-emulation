@@ -34,6 +34,9 @@ module decode #(
     wire [7:0] op_2;
     wire [7:0] op_3;
 
+    // parameters
+    parameter logic [5:0] cpx_flag_update = 6'b111110;
+
     // defail to X if disabled. will output mop INVALID
     assign op_0 = enable ? input_op[31:24] : 'X;
     assign op_1 = enable ? input_op[23:16] : 'X;
@@ -262,7 +265,7 @@ module decode #(
         end else if (op_0 == 8'hED && op_1[7:6] == 2'b01 && op_1[3:0] == 4'b1011) begin // LD dd, (nn)
             output_op = LD_R_mnn;
             reg_a = reg_from_dd(op_1[5:4]);
-            imm_1 = {op_2, op_1};
+            imm_1 = {op_3, op_2};
             instruction_length = 4;
         end else if (op_0 == 8'hDD && op_1 == 8'h2A) begin // LD IX, (nn)
             output_op = LD_R_mnn;
@@ -363,48 +366,69 @@ module decode #(
             reg_b = SP;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hA0) begin // LDI
-            output_op = LD_block;
-            imm_0 = 8'h01; // for LD_block imm_0 is added to DE and HL
+            output_op = LDI_block;
+            reg_a = DE;
+            reg_b = HL;
+            imm_1 = 0; // 1 for repeating LDI_block
             update_flags = 6'b001110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hB0) begin // LDIR
-            output_op = LD_block;
-            imm_0 = 8'h01; 
-            imm_1 = 16'hFFFE; // -2. Add to PC.
+            output_op = LDI_block;
+            reg_a = DE;
+            reg_b = HL;
+            imm_1 = 1; // 1 for repeating LDI_block
             update_flags = 6'b001110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hA8) begin // LDD
-            output_op = LD_block;
-            imm_0 = 8'hFF; // -1. make sure to sign extend
+            output_op = LDD_block;
+            reg_a = DE;
+            reg_b = HL;
+            imm_1 = 0;
             update_flags = 6'b001110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hB8) begin // LDDR
-            output_op = LD_block;
-            imm_0 = 8'hFF; // -1. make sure to sign extend
-            imm_1 = 16'hFFFE; // -2. Add to PC.
+            output_op = LDD_block;
+            reg_a = DE;
+            reg_b = HL;
+            imm_1 = 1;
             update_flags = 6'b001110;
             instruction_length = 2;
-        end else if (op_0 == 8'hED && op_1 == 8'hA1) begin // CPI
-            output_op = CP_block;
-            imm_0 = 8'h01; // for CP_block imm_0 is added to HL
-            update_flags = 6'b111110;
+        end else if (op_0 == 8'hED
+                     && op_1 == 8'hA1) begin // CPI
+            /* Special encoding for the CP group of instructions. Bit 0 of
+             imm_1 denotes if the R variant of the instruction should be
+             applied.
+              */
+            output_op = CPI_block;
+            reg_a = A;
+            reg_b = HL;
+            imm_0 = 0;
+            imm_1 = 16'h0;
+            update_flags = cpx_flag_update;
             instruction_length = 2;
-        end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPIR
-            output_op = CP_block;
-            imm_0 = 8'h01; // for CP_block imm_0 is added to HL
-            imm_1 = 16'hFFFE; // -2. Add to PC.
-            update_flags = 6'b111110;
+        end else if (op_0 == 8'hED && op_1 == 8'hB1) begin // CPIR
+            output_op = CPI_block;
+            reg_a = A;
+            reg_b = HL;
+            imm_0 = 0;
+            imm_1 = 16'h0001;
+            update_flags = cpx_flag_update;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hA9) begin // CPD
-            output_op = CP_block;
-            imm_0 = 8'hFF; // -1 add to HL
-            update_flags = 6'b111110;
+            output_op = CPD_block;
+            reg_a = A;
+            reg_b = HL;
+            imm_0 = 0;
+            imm_1 = 16'h0;
+            update_flags = cpx_flag_update;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'hB9) begin // CPDR
-            output_op = CP_block;
-            imm_0 = 8'hFF; // -1 add to HL
-            imm_1 = 16'hFFFE; // -2. Add to PC.
-            update_flags = 6'b111110;
+            output_op = CPD_block;
+            reg_a = A;
+            reg_b = HL;
+            imm_0 = 0;
+            imm_1 = 16'h0001;
+            update_flags = cpx_flag_update;
             instruction_length = 2;
 
         // 8b Arithmetic
@@ -741,7 +765,7 @@ module decode #(
             output_op = ADD_R_R;
             reg_a = HL;
             reg_b = reg_from_dd(op_0[5:4]); // 'ss' is used in the spec, but it acts the same as dd
-            update_flags = 6'b0010101;
+            update_flags = 6'b001011;
             use_16b_alu = 1;
 
         end else if (op_0 == 8'hED && op_1[7:6] == 2'b01 && op_1[3:0] == 4'b1010) begin // ADC HL, ss

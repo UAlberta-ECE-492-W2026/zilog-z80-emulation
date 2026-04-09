@@ -1,6 +1,5 @@
 `timescale 1ns/1ps
 
-`define Z80_REGISTER_FILE_DEBUG
 
 module z80_top #(
 )(

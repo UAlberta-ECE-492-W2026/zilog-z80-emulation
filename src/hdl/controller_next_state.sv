@@ -78,6 +78,8 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   EX_AF_AFp: set_next_state(uop::ex_af_afp);
                   EXX: set_next_state(uop::exx);
                   EX_mR_R: set_next_state(uop::ld_obuff_reg_a);
+                  CPI_block, CPD_block,
+                  LDI_block, LDD_block: set_next_state(uop::buff_addr_reg_b_imm_0);
                   ADD_R_R: set_next_state(uop::add_reg_a_reg_b);
                   ADD_R_nn: set_next_state(uop::add_reg_a_imm_1);
                   ADD_R_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0_setup);
@@ -166,7 +168,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                           endcase
 
             /* invalid case handling */
-            uop::invalid: set_next_state(uop::fetch);
+            uop::invalid: set_next_state(uop::pc_next);
 
             /* load group */
             uop::ld_reg_a_reg_b: begin
@@ -227,6 +229,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   PUSH_R: set_next_state(uop::write_reg_bH);
                   RLD,
                   RRD: set_next_state(uop::read_mrbuff_reg_b_imm_0_setup);
+                  LDD_block, LDI_block: set_next_state(uop::write_mrbuffL);
                   default: set_next_state(uop::invalid);
                 endcase;
             end
@@ -258,6 +261,8 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
             uop::buff_addr_reg_b_imm_0: begin
                 case(ctrl_intf.mop_out)
                   EX_mR_R: set_next_state(uop::write_obuffL);
+                  CPI_block, CPD_block,
+                  LDI_block, LDD_block: set_next_state(uop::read_mbuff_mrbuff_setup);
                   default: set_next_state(uop::invalid);
                 endcase;
             end
@@ -335,6 +340,8 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                 case(ctrl_intf.mop_out)
                   INC_mRd: set_next_state(uop::write_mrbuffL_p1);
                   DEC_mRd: set_next_state(uop::write_mrbuffL_m1);
+                  CPI_block, CPD_block: set_next_state(uop::cp_reg_a_mrbuff);
+                  LDI_block, LDD_block: set_next_state(uop::buff_addr_reg_a);
                   default: set_next_state(uop::invalid);
                 endcase;
             end
@@ -417,6 +424,13 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                 EX_mR_R: set_next_state(uop::pc_next);
                 default: set_next_state(uop::invalid);
               endcase
+            end
+            uop::write_mrbuffL: begin
+                case(ctrl_intf.mop_out)
+                  LDI_block: set_next_state(uop::hl_p1);
+                  LDD_block: set_next_state(uop::hl_m1);
+                  default: set_next_state(uop::invalid);
+                endcase;
             end
             uop::write_mrbuffL_p1: begin
                 case(ctrl_intf.mop_out)
@@ -539,9 +553,12 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
             uop::and_reg_a_mrbuff,
             uop::or_reg_a_mrbuff,
             uop::xor_reg_a_mrbuff,
-            uop::cp_reg_a_mrbuff:
-            begin
-              set_next_state(uop::pc_next);
+            uop::cp_reg_a_mrbuff: begin
+                case(ctrl_intf.mop_out)
+                  CPI_block: set_next_state(uop::hl_p1);
+                  CPD_block: set_next_state(uop::hl_m1);
+                  default: set_next_state(uop::pc_next);
+                endcase; // case (ctrl_intf.mop_out)
             end
             uop::daa,
             uop::cpl,
@@ -570,13 +587,41 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
             end
 
             uop::set_reg_a,
-              uop::set_mrbuff,
-              uop::res_reg_a,
-              uop::res_mrbuff,
-              uop::bit_mrbuff,
-              uop::bit_reg_a: set_next_state(uop::pc_next);
+            uop::set_mrbuff,
+            uop::res_reg_a,
+            uop::res_mrbuff,
+            uop::bit_mrbuff,
+            uop::bit_reg_a: set_next_state(uop::pc_next);
 
-
+            uop::hl_p1: case(ctrl_intf.mop_out)
+                          LDI_block, LDD_block: set_next_state(uop::de_p1);
+                          CPI_block: set_next_state(uop::bc_m1);
+                          default: set_next_state(uop::invalid);
+                        endcase
+            uop::hl_m1: case(ctrl_intf.mop_out)
+                          CPD_block: set_next_state(uop::bc_m1);
+                          default: set_next_state(uop::de_m1);
+                        endcase
+            uop::de_p1,
+            uop::de_m1: set_next_state(uop::bc_m1);
+            uop::bc_m1: case(ctrl_intf.mop_out)
+                          CPI_block, CPD_block: if (ctrl_intf.imm_1_out[0]
+                                                    && ctrl_intf.raw_f[2]
+                                                    && ~ctrl_intf.f[4]) begin
+                              /* in this case, we must loop */
+                              set_next_state(uop::fetch);
+                          end else begin
+                              set_next_state(uop::pc_next);
+                          end
+                          default: begin
+                              if (~ctrl_intf.raw_f[2]
+                                  || ~ctrl_intf.imm_1_out[0]) begin // BC -1 == 0 or this is not the 'R' version of the instruction
+                                  set_next_state(uop::pc_next);
+                              end else begin // BC - 1 != 0
+                                  set_next_state(uop::fetch); // repeat until BC -1 == 0
+                              end
+                          end
+                        endcase
             default: set_next_state(uop::fetch);
           endcase;
 

@@ -36,7 +36,8 @@ typedef enum {
     EX_mR_R,
     LDI_block,
     LDD_block,//10
-    CP_block, 
+    CPI_block,
+    CPD_block,
 
 // Arithmetic
     ADD_R_R, //12

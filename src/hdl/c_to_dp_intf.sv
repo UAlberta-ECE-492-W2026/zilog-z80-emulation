@@ -214,41 +214,41 @@ interface c_to_dp_intf();
                       );
 
     modport controller_output(output ir_en, o_buff_en,
-                                // ALU
-                                alu_16b_mode, 
-                                update_flags,
-                                imm_in,
+                                     // ALU
+                                     alu_16b_mode,
+                                     update_flags,
+                                     imm_in,
 
                          // register file
-                         output reg_a_sel,
-                                reg_b_sel,
-                                f_w_en,
-                                f_op,
-                                exx_sig,
+                              output reg_a_sel,
+                                     reg_b_sel,
+                                     f_w_en,
+                                     f_op,
+                                     exx_sig,
 
                          // mux
-                         output write_back_sel,
-                                mem_mux_sel,
-                                mem_read_buff_en,
-                                mem_addr_buff_en,
-                                mem_data_mux_sel,
+                              output write_back_sel,
+                                     mem_mux_sel,
+                                     mem_read_buff_en,
+                                     mem_addr_buff_en,
+                                     mem_data_mux_sel,
 
                          // memory interfacing
-                         output mem_r_en,
-                                mem_w_en,
+                              output mem_r_en,
+                                     mem_w_en,
 
-                         input  current_state, reset, reg_a_sel_out,
-                                reg_b_sel_out, imm_0_out, imm_1_out,
-                                update_flags_out,
-                         import disable_alu,
-                         import enable_and_set_alu_opcode,
-                         import set_default_outputs,
-                         import enable_and_set_reg_w,
-                         import disable_reg_w,
-                         import set_imm,
-                         import imm_1_to_imm,
-                         import imm_0_to_imm,
-                         import forward_decode_16b_alu
+                              input  current_state, reset, reg_a_sel_out,
+                                     reg_b_sel_out, imm_0_out, imm_1_out,
+                                     update_flags_out, mop_out,
+                              import disable_alu,
+                              import enable_and_set_alu_opcode,
+                              import set_default_outputs,
+                              import enable_and_set_reg_w,
+                              import disable_reg_w,
+                              import set_imm,
+                              import imm_1_to_imm,
+                              import imm_0_to_imm,
+                              import forward_decode_16b_alu
                          );
 
     modport controller_next_state(

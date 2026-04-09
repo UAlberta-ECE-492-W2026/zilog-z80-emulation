@@ -112,12 +112,9 @@ module datapath(
         .f_reset(f_reset),
         .f_toggle(f_toggle),
         .f_w_en(intf.f_w_en),
-        .f(intf.f)
-         `ifdef Z80_REGISTER_FILE_DEBUG
-        ,
+        .f(intf.f),
         .debug_main_reg_set(debug_main_reg_set),
         .debug_special_reg_set(debug_special_reg_set)
-        `endif
     );
 
 

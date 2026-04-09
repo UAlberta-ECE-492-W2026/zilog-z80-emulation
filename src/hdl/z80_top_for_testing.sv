@@ -1,9 +1,9 @@
 // Decided to make this a different module to reduce the amount of macros needed in the 'real' z80_top module
 
 `timescale 1ns/1ps
+`include "mop.sv"
 
 `define USING_VERILATOR
-//`define Z80_MEMORY_DEBUG
 `ifndef SV_TESTBENCH
 `define SOFTWARE_KEYBOARD
 `endif
@@ -35,7 +35,8 @@ module z80_top_for_testing #(
     input logic override_instruction,
     output logic [7:0] test_ram [0:7],
     `endif
-    output uop::uop_t state
+    output uop::uop_t state,
+    output mop mop_out
 
     `ifdef SOFTWARE_KEYBOARD
     ,
@@ -60,6 +61,7 @@ module z80_top_for_testing #(
     assign intf.reset =  buttons[0];
 
     assign state = intf.current_state;
+    assign mop_out = intf.mop_out;
 
     controller #() controller (intf);
     controller_next_state next_state_logic(.ctrl_intf(intf));

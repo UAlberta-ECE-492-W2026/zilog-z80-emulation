@@ -240,7 +240,7 @@ module memory_wrapper #(
         data_out_32 = 0;
         `ifdef Z80_MEMORY_DEBUG
         if (r_en_last && address <= 16'h000f) begin
-            data_out_32 = data_out_32_config_ROM;
+            data_out_32 = data_out_32_program_RAM;
             intf.memory_in = test_ram_out;
         end else if (r_en_config_ROM_last) begin
         `else

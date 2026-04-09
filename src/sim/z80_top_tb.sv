@@ -1,5 +1,6 @@
 `timescale 1ns/1ps
 
+`define Z80_MEMORY_DEBUG
 `define SV_TESTBENCH
 /* verilator lint_off UNUSEDSIGNAL */
 task display_input_output_expected_z_80_top(input
@@ -479,6 +480,76 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hedb00000, 16'h0004, 16'h0002, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a0b0000)); // ldir
         testvectors.push_back(cons_test(32'hedb00000, 16'h0004, 16'h0001, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a0b0c00)); // ldir
         testvectors.push_back(cons_test(32'hedb00000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0043, 64'h0a0b0c0d0a0b0c0d)); // ldir
+<<<<<<< HEAD
+=======
+        testvectors.push_back(cons_reset()); /* the test for cpi */
+        //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
+        testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
+        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01010000, 16'h0000, 16'h0001, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, 1
+        testvectors.push_back(cons_test(32'heda10000, 16'h0042, 16'h0000, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpi
+        testvectors.push_back(cons_test(32'heda10000, 16'h0046, 16'hffff, 16'h0000, 16'h0000, 16'h000f, 64'h00000000adde0000)); // cpi
+        testvectors.push_back(cons_test(32'heda10000, 16'h0046, 16'hfffe, 16'h0000, 16'h0000, 16'h0011, 64'h00000000adde0000)); // cpi
+        testvectors.push_back(cons_test(32'heda10000, 16'h0046, 16'hfffd, 16'h0000, 16'h0000, 16'h0013, 64'h00000000adde0000)); // cpi
+        testvectors.push_back(cons_test(32'heda10000, 16'h0016, 16'hfffc, 16'h0000, 16'h0000, 16'h0015, 64'h00000000adde0000)); // cpi
+        testvectors.push_back(cons_reset()); /* the test for cpd */
+        //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
+        testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
+        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01010000, 16'h0000, 16'h0001, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, 1
+        testvectors.push_back(cons_test(32'h21070000, 16'h0000, 16'h0001, 16'h0000, 16'h0000, 16'h000e, 64'h00000000adde0000)); // ld hl, 7
+        testvectors.push_back(cons_test(32'heda90000, 16'h0042, 16'h0000, 16'h0000, 16'h0000, 16'h0010, 64'h00000000adde0000)); // cpd
+        testvectors.push_back(cons_test(32'heda90000, 16'h0046, 16'hffff, 16'h0000, 16'h0000, 16'h0012, 64'h00000000adde0000)); // cpd
+        testvectors.push_back(cons_test(32'heda90000, 16'h0016, 16'hfffe, 16'h0000, 16'h0000, 16'h0014, 64'h00000000adde0000)); // cpd
+        testvectors.push_back(cons_test(32'h01010000, 16'h0016, 16'h0001, 16'h0000, 16'h0000, 16'h0017, 64'h00000000adde0000)); // ld bc, 1
+        testvectors.push_back(cons_test(32'heda90000, 16'h0012, 16'h0000, 16'h0000, 16'h0000, 16'h0019, 64'h00000000adde0000)); // cpd
+        testvectors.push_back(cons_reset()); /* the test for cpir bc runout */
+        //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
+        testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
+        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01040000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, 1
+        testvectors.push_back(cons_test(32'h3ede0000, 16'hde00, 16'h0004, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // ld a, de
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h0003, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h0002, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h0001, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde82, 16'h0000, 16'h0000, 16'h0000, 16'h000f, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_reset()); /* the test for cpir A match */
+        //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
+        testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
+        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01ff0000, 16'h0000, 16'h00ff, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, ff
+        testvectors.push_back(cons_test(32'h3ede0000, 16'hde00, 16'h00ff, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // ld a, de
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h00fe, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h00fd, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h00fc, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h00fb, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde06, 16'h00fa, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_test(32'hedb10000, 16'hde46, 16'h00f9, 16'h0000, 16'h0000, 16'h000f, 64'h00000000adde0000)); // cpir
+        testvectors.push_back(cons_reset()); /* the test for cpdr countdown runout */
+        //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
+        testvectors.push_back(cons_test(32'h1101c000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, cool
+        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h0000000001c00000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01040000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h000b, 64'h0000000001c00000)); // ld bc, 4
+        testvectors.push_back(cons_test(32'h21200000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h000e, 64'h0000000001c00000)); // ld hl, 20
+        testvectors.push_back(cons_test(32'h3e010000, 16'h0100, 16'h0004, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // ld a, de
+        testvectors.push_back(cons_test(32'hedb90000, 16'h0106, 16'h0003, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // cpdr
+        testvectors.push_back(cons_test(32'hedb90000, 16'h0106, 16'h0002, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // cpdr
+        testvectors.push_back(cons_test(32'hedb90000, 16'h0106, 16'h0001, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // cpdr
+        testvectors.push_back(cons_test(32'hedb90000, 16'h0102, 16'h0000, 16'h0000, 16'h0000, 16'h0012, 64'h0000000001c00000)); // cpdr
+        testvectors.push_back(cons_reset()); /* the test for cpdr hit */
+        //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
+        testvectors.push_back(cons_test(32'h1101c000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, cool
+        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h0000000001c00000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h11ffff00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h000b, 64'h0000000001c00000)); // ld de, ffff
+        testvectors.push_back(cons_test(32'hed530600, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h000f, 64'h0000000001c0ffff)); // ld ($0006), de
+        testvectors.push_back(cons_test(32'h01ff0000, 16'h0000, 16'h00ff, 16'h0000, 16'h0000, 16'h0012, 64'h0000000001c0ffff)); // ld bc, ff
+        testvectors.push_back(cons_test(32'h21070000, 16'h0000, 16'h00ff, 16'h0000, 16'h0000, 16'h0015, 64'h0000000001c0ffff)); // ld hl, 7
+        testvectors.push_back(cons_test(32'h3e010000, 16'h0100, 16'h00ff, 16'h0000, 16'h0000, 16'h0017, 64'h0000000001c0ffff)); // ld a, de
+        testvectors.push_back(cons_test(32'hedb90000, 16'h0116, 16'h00fe, 16'h0000, 16'h0000, 16'h0017, 64'h0000000001c0ffff)); // cpir
+        testvectors.push_back(cons_test(32'hedb90000, 16'h0116, 16'h00fd, 16'h0000, 16'h0000, 16'h0017, 64'h0000000001c0ffff)); // cpir
+        testvectors.push_back(cons_test(32'hedb90000, 16'h0106, 16'h00fc, 16'h0000, 16'h0000, 16'h0017, 64'h0000000001c0ffff)); // cpir
+        testvectors.push_back(cons_test(32'hedb90000, 16'h0146, 16'h00fb, 16'h0000, 16'h0000, 16'h0019, 64'h0000000001c0ffff)); // cpir
+>>>>>>> origin/main
 
         ->test_start;
 

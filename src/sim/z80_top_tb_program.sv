@@ -1,5 +1,6 @@
 `timescale 1ns/1ps
 
+//tb for use in vivado
 module z80_top_tb_program #() ();
     // display driving outputs
     /* verilator lint_off UNUSEDSIGNAL */
@@ -9,7 +10,6 @@ module z80_top_tb_program #() ();
     logic [3:0] green;      //! green channel (4-bit)
     logic [3:0] blue;        //! blue channel (4-bit)
 
-    // debug inputs and outputs. TODO: attach these to something
     logic[3:0] buttons = 0;
     logic[3:0] switches = 0;
     logic[3:0] LEDs;

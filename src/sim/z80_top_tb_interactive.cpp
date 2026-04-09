@@ -177,7 +177,7 @@ int main (int argc, char *argv[]) {
 
     int clocks = 0;
 
-    int enable_ticks_compare = 0;
+    int enable_ticks_compare = 1;
 
     std::string line0, line1;
 
@@ -198,7 +198,6 @@ int main (int argc, char *argv[]) {
 
     dut->buttons = 0; // turn off the reset signal
 
-    //while (sim_time < 5000) {
     while (true) {
         if (sim_time > MAX_RUNTIME && MAX_RUNTIME > 0) {
             break;
@@ -222,7 +221,7 @@ int main (int argc, char *argv[]) {
             std::cin.get(c);
             dut->keyboard_char_input = c;
         }
-        if sim_time < PC_TRACE_LENGTH{
+        if (sim_time < PC_TRACE_LENGTH) {
             trace_pc(dut, pc_trace);
         }
 
@@ -265,7 +264,7 @@ int main (int argc, char *argv[]) {
             }
         }
 
-        if (dut->state == 3) {
+        if (dut->mop_out == 0x33) {
             break;
         }
     }

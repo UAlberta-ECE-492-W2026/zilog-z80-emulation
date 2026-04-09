@@ -23,6 +23,7 @@ module program_ram #()(
         //$readmemb("zilog-z80-emulation-software/internal_programs/blinker/blinker.vivado", mem, 0, 60159);
         $readmemb("zilog-z80-emulation-software/internal_programs/prime_printer/prime_printer.vivado", mem, 0, 60416);
         //$readmemb("zilog-z80-emulation-software/tests/z80test/src/z80doc.vivado", mem, 0, 60159);
+        //$readmemb("zilog-z80-emulation-software/external_programs/Advent/Almazar/almazar.vivado", mem, 0, 60159);
 
     end
 

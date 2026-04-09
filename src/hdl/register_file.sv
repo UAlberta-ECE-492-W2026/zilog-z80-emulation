@@ -50,10 +50,8 @@ module register_file
     assign internal_f_reset     = {f_reset[5:4], 1'b0, f_reset[3], 1'b0, f_reset[2:0]};
     assign internal_f_toggle    = {f_toggle[5:4], 1'b0, f_toggle[3], 1'b0, f_toggle[2:0]};
     
-    `ifdef Z80_REGISTER_FILE_DEBUG
     assign debug_main_reg_set = main_reg_set;
     assign debug_special_reg_set = special_reg_set;
-    `endif
     
     // reg_sel unused?
     // verilator lint_off UNUSEDSIGNAL

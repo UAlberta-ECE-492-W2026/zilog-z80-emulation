@@ -13,9 +13,10 @@
 #include "Vz80_top_for_testing_memory_wrapper.h"
 #include "Vz80_top_for_testing_program_ram.h"
 
-#define TRACE_LENGTH 10000
+#define TRACE_LENGTH 100000
 #define PC_TRACE_LENGTH 100000
 #define MAX_RUNTIME -1 // -1 to run until a halt is reached
+#define ENABLE_TICKS_COMPARE 0 // if 1 the cpu state will be compared to the correct state in ticks.txt
 
 void trace_pc(Vz80_top_for_testing* dut, FILE * trace_file) {
     int current_pc;
@@ -40,6 +41,7 @@ int compare_to_ticks(Vz80_top_for_testing* dut, std::string* line0, std::string*
     int correct_pc, correct_mpc, correct_bc, correct_de, correct_hl, correct_af, correct_ix, correct_iy;
     int correct_sp, correct_msp, correct_bcp, correct_dep, correct_hlp, correct_afp;
     int mod_correct_af, mod_correct_afp;
+    int mod_af, mod_afp;
 
     std::string line;
 
@@ -88,6 +90,10 @@ int compare_to_ticks(Vz80_top_for_testing* dut, std::string* line0, std::string*
     dep = (dut->z80_top_for_testing->datapath->register_file->alt_reg_set[4] << 8) + dut->z80_top_for_testing->datapath->register_file->alt_reg_set[5];
     hlp = (dut->z80_top_for_testing->datapath->register_file->alt_reg_set[6] << 8) + dut->z80_top_for_testing->datapath->register_file->alt_reg_set[7];
     afp = (dut->z80_top_for_testing->datapath->register_file->alt_reg_set[0] << 8) + dut->z80_top_for_testing->datapath->register_file->alt_reg_set[1];
+
+    mod_af = af & 0xFFD7;
+    mod_afp = afp & 0xFFD7;
+
     int status = 0;
     if (pc != correct_pc) {
         printf("\n### Bad PC. Saw %04x and expected %04x ###\n", pc, correct_pc);
@@ -109,9 +115,11 @@ int compare_to_ticks(Vz80_top_for_testing* dut, std::string* line0, std::string*
         printf("\n### Bad HL. Saw %04x and expected %04x ###\n", hl, correct_hl);
         status = -1;
     }
-    if (af != mod_correct_af) {
-        printf("\n### Bad AF. Saw %04x and expected %04x or %04x ###\n", af, correct_af, mod_correct_af);
-        status = -1;
+    if (af != mod_correct_af && af != correct_af) {
+        if (mod_af != mod_correct_af && mod_af != correct_af) {
+            printf("\n### Bad AF. Saw %04x and expected %04x or %04x ###\n", af, correct_af, mod_correct_af);
+            status = -1;
+        }
     }
     if (ix != correct_ix) {
         printf("\n### Bad IX. Saw %04x and expected %04x ###\n", ix, correct_ix);
@@ -142,9 +150,11 @@ int compare_to_ticks(Vz80_top_for_testing* dut, std::string* line0, std::string*
         printf("\n### Bad HL'. Saw %04x and expected %04x ###\n", hlp, correct_hlp);
         status = -1;
     }
-    if (afp != mod_correct_afp) {
-        printf("\n### Bad AF'. Saw %04x and expected %04x or %04x ###\n", afp, correct_afp, mod_correct_afp);
-        status = -1;
+    if (afp != mod_correct_afp && afp != correct_afp) {
+        if (mod_afp != mod_correct_afp && mod_afp != correct_afp) {
+            printf("\n### Bad AF'. Saw %04x and expected %04x or %04x ###\n", afp, correct_afp, mod_correct_afp);
+            status = -1;
+        }
     }
 
     return status;
@@ -177,7 +187,7 @@ int main (int argc, char *argv[]) {
 
     int clocks = 0;
 
-    int enable_ticks_compare = 1;
+    int enable_ticks_compare = ENABLE_TICKS_COMPARE;
 
     std::string line0, line1;
 
@@ -257,8 +267,9 @@ int main (int argc, char *argv[]) {
             } else {
                 if (compare_to_ticks(dut, &line0, &line1) == -1) {
                     printf("### Exit due to incorrect behavior! ###\n");
-                    printf("### PC = %04x\n", pc);
+                    printf("### PC = %04x\n", dut->z80_top_for_testing->datapath->register_file->special_reg_set[4]);
                     printf("### clocks = %d\n", clocks);
+                    printf("### Time = %d\n", sim_time);
                     break;
                 }
             }

@@ -875,7 +875,7 @@ module controller_output (
                 intf.enable_and_set_alu_opcode(ALU_ADD,
                                                 .mux_a(A_MUX_REG),
                                                 .mux_b(B_MUX_IMM));
-                intf.alu_16b_mode = 0;
+                intf.alu_16b_mode = 1;
                 intf.write_back_sel = WB_MUX_ALU;
             end
             uop::hl_m1: begin
@@ -885,7 +885,7 @@ module controller_output (
                 intf.enable_and_set_alu_opcode(ALU_ADD,
                                                 .mux_a(A_MUX_REG),
                                                 .mux_b(B_MUX_IMM));
-                intf.alu_16b_mode = 0;
+                intf.alu_16b_mode = 1;
                 intf.write_back_sel = WB_MUX_ALU;
             end
             uop::de_p1: begin
@@ -895,7 +895,7 @@ module controller_output (
                 intf.enable_and_set_alu_opcode(ALU_ADD,
                                                 .mux_a(A_MUX_REG),
                                                 .mux_b(B_MUX_IMM));
-                intf.alu_16b_mode = 0;
+                intf.alu_16b_mode = 1;
                 intf.write_back_sel = WB_MUX_ALU;
             end
             uop::de_m1: begin
@@ -905,7 +905,7 @@ module controller_output (
                 intf.enable_and_set_alu_opcode(ALU_ADD,
                                                 .mux_a(A_MUX_REG),
                                                 .mux_b(B_MUX_IMM));
-                intf.alu_16b_mode = 0;
+                intf.alu_16b_mode = 1;
                 intf.write_back_sel = WB_MUX_ALU;
             end
             uop::bc_m1: begin

@@ -265,7 +265,7 @@ module decode #(
         end else if (op_0 == 8'hED && op_1[7:6] == 2'b01 && op_1[3:0] == 4'b1011) begin // LD dd, (nn)
             output_op = LD_R_mnn;
             reg_a = reg_from_dd(op_1[5:4]);
-            imm_1 = {op_2, op_1};
+            imm_1 = {op_3, op_2};
             instruction_length = 4;
         end else if (op_0 == 8'hDD && op_1 == 8'h2A) begin // LD IX, (nn)
             output_op = LD_R_mnn;

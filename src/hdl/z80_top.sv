@@ -37,30 +37,68 @@ module z80_top #(
     logic[7:0] memory_mapped_display_byte;
 
     c_to_dp_intf intf();
-    logic slow_clk;
+    logic slow_clk, fast_clk;
     
     `ifdef USE_SLOW_CLOCK
     assign intf.clk = slow_clk;
     `else
-    assign intf.clk = clk;
+    assign intf.clk = fast_clk;
     `endif
     assign intf.reset =  buttons[0];
     assign led6_r = intf.clk;
     assign led6_g = intf.reset;
     
-    reg [31:0]div_count;
+    // clock dividers for the main z80 core
+    reg [2:0]fast_div_count;
     always_ff @(posedge clk) begin 
         if (intf.reset) begin
-            div_count <= 0;
+            fast_div_count <= 0;
+            fast_clk <= 0;
+        end else if (fast_div_count == 1) begin
+            fast_div_count <= 0;
+            fast_clk <= ~fast_clk;
+        end else begin
+            fast_div_count <= fast_div_count + 1;
+        end
+    end
+    reg [31:0]slow_div_count;
+    always_ff @(posedge clk) begin 
+        if (intf.reset) begin
+            slow_div_count <= 0;
             slow_clk <= 0;
-        end else if (div_count == 1) begin// 40000000 here is good for debugging
-            div_count <= 0;
+        end else if (slow_div_count == 40000000) begin// 40000000 here is good for debugging
+            slow_div_count <= 0;
             slow_clk <= ~slow_clk;
         end else begin
-            div_count <= div_count + 1;
+            slow_div_count <= slow_div_count + 1;
         end
     end
 
+    // clock divider for the seven segment display
+    logic ssd_clk;
+    reg [31:0]ssd_display_count;
+    always_ff @(posedge clk) begin
+        if (intf.reset) begin
+            ssd_display_count <= 0;
+            ssd_clk <= 0;
+        end else if (ssd_display_count == 400000) begin
+            ssd_clk <= ~ssd_clk;
+            ssd_display_count <= 0;
+        end else begin
+            ssd_display_count <= ssd_display_count + 1;
+        end   
+    end
+    
+    // Clock divider to drive the vga logic
+    logic pixel_clk;
+    always_ff @(posedge clk) begin
+        if (intf.reset) begin
+            pixel_clk <= 0;
+        end else  begin
+            pixel_clk <= ~pixel_clk;
+        end
+    end
+    
     reg [7:0] byte_to_display;
 
     // select byte to show on the display
@@ -92,20 +130,6 @@ module z80_top #(
     end
     assign LEDs = byte_to_display[3:0];
     
-    logic ssd_clk;
-    reg [31:0]ssd_display_count;
-    always_ff @(posedge clk) begin
-        if (intf.reset) begin
-            ssd_display_count <= 0;
-            ssd_clk <= 0;
-        end else if (ssd_display_count == 400000) begin
-            ssd_clk <= ~ssd_clk;
-            ssd_display_count <= 0;
-        end else begin
-            ssd_display_count <= ssd_display_count + 1;
-        end   
-    end
-
     // the byte -> seven segment display mapping
     // found this function on github https://github.com/SirSerow/Zybo-Z7_FPGA_Verilog_Training/blob/master/kitchen_timer.srcs/sources_1/new/top_board_adapter.v
     /* verilator lint_off UNUSEDSIGNAL */
@@ -142,23 +166,6 @@ module z80_top #(
         end
     end
     
-    // Clock divider to drive the vga
-    logic [2:0] pixel_div_count;
-    logic pixel_clk;
-    //assign pixel_clk = clk;
-
-    always_ff @(posedge clk) begin
-        if (intf.reset) begin
-            pixel_div_count <= 0;
-            pixel_clk <= 0;
-        end else if (pixel_div_count == 0) begin
-            pixel_div_count <= 0;
-            pixel_clk <= ~pixel_clk;
-        end else begin
-            pixel_div_count <= pixel_div_count + 1;
-        end
-    end
-
     controller #() controller (intf);
     controller_next_state next_state_logic(.ctrl_intf(intf));
     controller_output output_logic(.intf(intf));

@@ -19,6 +19,7 @@ module z80_top #(
     output logic [3:0] ja,
     output logic led6_r,
     output logic led6_g,
+    output logic led6_b,
     /* verilator lint_on UNUSEDSIGNAL */
 
     // clock
@@ -47,6 +48,7 @@ module z80_top #(
     assign intf.reset =  buttons[0];
     assign led6_r = intf.clk;
     assign led6_g = intf.reset;
+    assign led6_b = kb_mode;
     
     // clock dividers for the main z80 core
     reg [2:0]fast_div_count;
@@ -91,12 +93,17 @@ module z80_top #(
     
     // Clock divider to drive the vga logic
     logic pixel_clk;
+    reg [31:0]pixel_count;
     always_ff @(posedge clk) begin
         if (intf.reset) begin
             pixel_clk <= 0;
-        end else  begin
+            pixel_count <= 0;
+        end else if (pixel_count == 0) begin
             pixel_clk <= ~pixel_clk;
-        end
+            pixel_count <= 0;
+        end else begin
+            pixel_count <= pixel_count + 1;
+        end 
     end
     
     reg [7:0] byte_to_display;
@@ -104,7 +111,9 @@ module z80_top #(
     // select byte to show on the display
     always_comb begin
         byte_to_display = 8'h00;
-        if (switches == 4'b0000) begin
+        if (kb_mode) begin
+            byte_to_display = char_buffer;
+        end else if (switches == 4'b0000) begin
             byte_to_display = intf.current_state[7:0];
         end else if (switches == 4'b0001) begin
             byte_to_display = intf.mop_out[7:0];
@@ -113,13 +122,13 @@ module z80_top #(
         end else if (switches == 4'b0011) begin
             byte_to_display = intf.memory_in;
         end else if (switches == 4'b0100) begin // PC
-            if (buttons[2] == 0) begin
+            if (buttons[1] == 0) begin
                 byte_to_display = special_reg_set[4][7:0];
             end else begin
                 byte_to_display = special_reg_set[4][15:8];
             end
         end else if (switches == 4'b0101) begin // SP
-            if (buttons[2] == 0) begin
+            if (buttons[1] == 0) begin
                 byte_to_display = special_reg_set[3][7:0];
             end else begin
                 byte_to_display = special_reg_set[3][15:8];
@@ -166,6 +175,45 @@ module z80_top #(
         end
     end
     
+    // "keyboard" logic.
+    reg [7:0] char_buffer; // character visible to user
+    reg [7:0] present_char; // character to be sent to the core
+    reg kb_mode;
+    reg kb_read_char; // request from core to read a char
+    reg kb_read_ack; //response from core that a char was read
+    reg [1:0] button_live;
+    
+    always_ff @(posedge intf.clk) begin
+        if (intf.reset) begin
+            kb_mode <= 0;
+            button_live <= 2'b11;
+            char_buffer <= 0;
+            present_char <= 0;
+        end
+        if (~buttons[3]) begin
+            button_live[1] <= 1;
+        end
+        if (~buttons[2]) begin
+            button_live[0] <= 1;
+        end
+        if (kb_read_ack) begin
+            present_char <=0;
+        end
+        
+        if (buttons[2] && button_live[0]) begin
+            kb_mode <= ~kb_mode;
+            button_live[0] <= 0;
+            if (kb_mode) begin
+                present_char <= char_buffer;
+            end
+        end
+        
+        if (buttons[3] && button_live[1]) begin
+            button_live[1] <= 0;
+            char_buffer = (char_buffer[3:0] << 4) | switches;
+        end
+    end
+    
     controller #() controller (intf);
     controller_next_state next_state_logic(.ctrl_intf(intf));
     controller_output output_logic(.intf(intf));
@@ -180,11 +228,19 @@ module z80_top #(
         .char_ram_address(char_ram_address), 
         .char_ram_data(char_ram_data),
         .memory_mapped_display_byte(memory_mapped_display_byte)
+        `ifdef SOFTWARE_KEYBOARD
+        ,
+        .software_keyboard_char_input(present_char),
+        .software_keyboard_char_output(),
+        .software_keyboard_read_char(kb_read_char),
+        .software_keyboard_write_char(),
+        .software_keyboard_read_char_ack(kb_read_ack)
+        `endif
     );
 
     vga_out #() vga_out(
         .pixel_clk(pixel_clk),
-        .reset(buttons[0]),
+        .reset(intf.reset),
         .hsync(hsync),
         .vsync(vsync),
         .red(red),

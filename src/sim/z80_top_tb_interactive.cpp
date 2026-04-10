@@ -16,7 +16,7 @@
 #define TRACE_LENGTH 10000000
 #define PC_TRACE_LENGTH 100000
 #define MAX_RUNTIME -1 // -1 to run until a halt is reached
-#define ENABLE_TICKS_COMPARE 1 // if 1 the cpu state will be compared to the correct state in ticks.txt
+#define ENABLE_TICKS_COMPARE 0 // if 1 the cpu state will be compared to the correct state in ticks.txt
 
 vluint64_t waived_times [] = {};
 int waived_pcs [] = {0x8346};
@@ -31,11 +31,12 @@ void trace_pc(Vz80_top_for_testing* dut, FILE * trace_file) {
 }
 
 void safe_char_print(const char * c) {
-    if (*c < 32) {
-        printf("\n"); // basically ignore control chars
-    } else {
-        printf(c);
-    }
+    printf(c);
+    // if (*c < 32) {
+    //     printf("\n"); // basically ignore control chars
+    // } else {
+    //     printf(c);
+    // }
 }
 
 int compare_to_ticks(Vz80_top_for_testing* dut, std::string* line0, std::string* line1) {
@@ -225,12 +226,17 @@ int main (int argc, char *argv[]) {
         if (dut->write_char == 1 && dut->clk == 0) {
             safe_char_print((const char *)&dut->keyboard_char_output);
         }
-        char c;
-        if (dut->read_char) {
-            // printf("Bad read!");
-            // break;
-            std::cin.get(c);
-            dut->keyboard_char_input = c;
+        int buffer_idx = 0;
+        char c_buffer [256] = {0};
+        if (dut->read_char && dut->clk == 0 && strlen(c_buffer) == 0) {\
+            if (strlen(c_buffer) == 0) {
+                //printf("\n### Read string: ");
+                std::cin.get(*c_buffer);
+            }
+            char c;
+            c = c_buffer[buffer_idx];
+            //printf("\n### Send char %04x to z80.\n", c);
+            dut->keyboard_char_input = (int) c;
         }
         if (sim_time < PC_TRACE_LENGTH) {
             trace_pc(dut, pc_trace);

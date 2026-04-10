@@ -67,7 +67,8 @@ module memory_wrapper #(
     input logic [7:0] software_keyboard_char_input,
     output logic [7:0] software_keyboard_char_output,
     output logic software_keyboard_read_char,
-    output logic software_keyboard_write_char
+    output logic software_keyboard_write_char,
+    output logic software_keyboard_read_char_ack
     `endif
 );  
     reg [31:0] data_out_32;
@@ -203,8 +204,9 @@ module memory_wrapper #(
     `elsif SOFTWARE_KEYBOARD
     assign data_out_keyboard_IO = software_keyboard_char_input;
     assign software_keyboard_char_output = data_in;
-    assign software_keyboard_read_char = r_en_keyboard_IO;
-    assign software_keyboard_write_char = w_en_keyboard_IO;
+    assign software_keyboard_read_char = address == 16'hFFF4 ? r_en_keyboard_IO : 0;
+    assign software_keyboard_write_char = address == 16'hFFF3 ? w_en_keyboard_IO : 0;
+    assign software_keyboard_read_char_ack = address == 16'hFFF4 ? w_en_keyboard_IO : 0;
     `else
     assign data_out_keyboard_IO = 8'h00;
     `endif

@@ -87,7 +87,10 @@ module z80_top_for_testing #(
         .software_keyboard_char_input(keyboard_char_input),
         .software_keyboard_char_output(keyboard_char_output),
         .software_keyboard_read_char(read_char),
-        .software_keyboard_write_char(write_char)
+        .software_keyboard_write_char(write_char),
+        /* verilator lint_off PINCONNECTEMPTY */
+        .software_keyboard_read_char_ack()
+        /* verilator lint_on PINCONNECTEMPTY */
         `endif
     );
 

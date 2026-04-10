@@ -1,7 +1,8 @@
 .PHONY: clean run_top
 
 #PROGRAM_PATH := zilog-z80-emulation-software/internal_programs/prime_printer/prime_printer
-PROGRAM_PATH := zilog-z80-emulation-software/tests/z80test/src/z80doc
+#PROGRAM_PATH := zilog-z80-emulation-software/tests/z80test/src/z80doc
+PROGRAM_PATH := zilog-z80-emulation-software/external_programs/Advent/Almazar/almazar
 
 waveform.vcd: ./obj_dir/Vz80_top_for_testing
 	@./obj_dir/Vz80_top_for_testing

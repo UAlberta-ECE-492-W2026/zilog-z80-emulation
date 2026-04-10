@@ -47,7 +47,7 @@ module alu_wrapper #()
         if (enable && opcode != ALU_NOP) begin
             if ( (opcode == ALU_BIT) || (opcode == ALU_SETBIT) || (opcode == ALU_RESBIT)) begin // bit operation
                 out = {8'h00, bit_out_8};
-                bit_alu_en = ~alu_16b_mode;
+                bit_alu_en = 1;
                 set_flags = bit_set_flags;
                 reset_flags = bit_reset_flags;
                 raw_flags = bit_raw_flags;

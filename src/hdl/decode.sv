@@ -95,7 +95,7 @@ module decode #(
         case(rr)
             2'b00: reg_from_rr = BC;
             2'b01: reg_from_rr = DE;
-            2'b10: reg_from_rr = IX;
+            2'b10: reg_from_rr = IY;
             2'b11: reg_from_rr = SP;
             default: reg_from_rr = NONE;
         endcase
@@ -218,13 +218,13 @@ module decode #(
             imm_1 = {op_2, op_1};
             instruction_length = 3;
         end else if (op_0 == 8'hED && op_1 == 8'h57) begin // LD A, I
-            output_op = LD_R_R;
+            output_op = LD_A_R;
             reg_a = A;
             reg_b = I;
             update_flags = 6'b111110;
             instruction_length = 2;
         end else if (op_0 == 8'hED && op_1 == 8'h5F) begin // LD A, R
-            output_op = LD_R_R;
+            output_op = LD_A_R;
             reg_a = A;
             reg_b = R;
             update_flags = 6'b111110;
@@ -732,7 +732,7 @@ module decode #(
         end else if (op_0 == 8'h2F) begin // CPL
             output_op = CPL;
             update_flags = 6'b001010;
-        end else if (op_0 == 8'hED && op_1 == 8'h44) begin // NEG
+        end else if (op_0 == 8'hED && op_1[7:6] == 2'b01 && op_1[2:0] == 3'b100) begin // NEG
             output_op = NEG;
             update_flags = 6'b111111;
             instruction_length = 2;
@@ -1226,14 +1226,16 @@ module decode #(
             output_op = JP_R;
             reg_a = PC;
             reg_b = HL;
-        end else if (op_0 == 8'hE9) begin // JP (IX)
+        end else if (op_0 == 8'hDD && op_1 == 8'hE9) begin // JP (IX)
             output_op = JP_R;
             reg_a = PC;
             reg_b = IX;
-        end else if (op_0 == 8'hE9) begin // JP (IY)
+            instruction_length = 2;
+        end else if (op_0 == 8'hFD && op_1 == 8'hE9) begin // JP (IY)
             output_op = JP_R;
             reg_a = PC;
             reg_b = IY;
+            instruction_length = 2;
         end else if (op_0 == 8'h10) begin // DJNZ, e
             output_op = DJNZ_e;
             use_16b_alu = 1;

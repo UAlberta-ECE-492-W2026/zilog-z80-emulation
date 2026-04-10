@@ -115,8 +115,8 @@ module  alu_status #(
                 z_var  = (op_result[7:0] == 8'h00);
             end
             BCD_ROTATE_OP: begin
-                // updated A = upper byte of packed result
-                bcd_acc = 8'(op_result >> 8); 
+                // updated A = lower byte of packed result
+                bcd_acc = op_result[7:0]; 
                 // flags updated A only
                 pv_var = ~(^bcd_acc);
                 s_var  = bcd_acc[7];

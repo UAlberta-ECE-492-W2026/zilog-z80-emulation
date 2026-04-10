@@ -29,12 +29,13 @@ package uop;
 
                   /* load related */
                   ld_reg_a_reg_b, //B
+                  ld_reg_aL_reg_bL,
                   ld_reg_a_imm_0,
                   ld_reg_a_imm_1,
                   ld_reg_b_imm_1,
                 
-                  read_mrbuff_reg_b_imm_0_setup, //F
-                  read_mrbuff_reg_b_imm_0, //10
+                  read_mrbuff_reg_b_imm_0_setup, //10
+                  read_mrbuff_reg_b_imm_0,
                   read_mrbuff_reg_b_setup,
                   read_mrbuff_reg_b,
                   read_mrbuff_imm_1_setup,
@@ -49,10 +50,10 @@ package uop;
                   read16_reg_a_imm_1,
 
                   /* write control */
-                  write_reg_bH, //1D
+                  write_reg_bH, //1E
                   write_reg_bH_addr_p1,
-                  write_reg_bL,
-                  write_mrbuffL, //20
+                  write_reg_bL, //20
+                  write_mrbuffL,
                   write_mrbuffL_p1,
                   write_mrbuffL_m1,
                   write_imm_0,
@@ -63,22 +64,22 @@ package uop;
                   write_obuffH_addr_p1,
 
                   /* buffer control */
-                  buff_addr_reg_a, //29
+                  buff_addr_reg_a, //2A
                   buff_addr_reg_a_2,
                   buff_addr_reg_a_imm_0,
                   buff_addr_reg_b_imm_0,
                   buff_addr_imm_1,
 
                   /* operand buffer */
-                  ld_obuff_reg_a, //2E
+                  ld_obuff_reg_a, //2F
 
                   /* exchange */
-                  ex_de_hl, //2F
-                  ex_af_afp, //30
+                  ex_de_hl, //30
+                  ex_af_afp,
                   exx,
 
                   /* arithmetic */
-                  add_reg_a_reg_b, //32
+                  add_reg_a_reg_b, //33
                   add_reg_a_imm_1,
                   add_reg_a_mrbuff,
                   adc_reg_a_reg_b,
@@ -91,8 +92,8 @@ package uop;
                   sbc_reg_a_imm_1,
                   sbc_reg_a_mrbuff,
                   and_reg_a_reg_b,
-                  and_reg_a_imm_1,
-                  and_reg_a_mrbuff, //40
+                  and_reg_a_imm_1, //40
+                  and_reg_a_mrbuff,
                   or_reg_a_reg_b,
                   or_reg_a_imm_1,
                   or_reg_a_mrbuff, 
@@ -103,17 +104,17 @@ package uop;
                   cp_reg_a_imm_1,
                   cp_reg_a_mrbuff,
 
-                  dec_reg_b, // 4A
+                  dec_reg_b, // 4B
 
                   /* general purpose group */
-                  daa, //4B
+                  daa, //4C
                   cpl,
                   neg,
                   ccf,
-                  scf,
+                  scf, //50
 
                   /* rotate/shift */
-                  rlc_reg_a,//50
+                  rlc_reg_a,//51
                   rlc_mbuff_mrbuff,
                   rl_reg_a,
                   rl_mbuff_mrbuff,
@@ -128,10 +129,10 @@ package uop;
                   srl_reg_a,
                   srl_mbuff_mrbuff,
                   rld,
-                  rrd,
+                  rrd, // 60
 
                   /* bit instruction group */
-                  bit_reg_a, // 60
+                  bit_reg_a, // 61
                   bit_mrbuff,
                   set_reg_a,
                   set_mrbuff,
@@ -139,7 +140,7 @@ package uop;
                   res_mrbuff,
 
                   /* block copy/compare */
-                  hl_p1, //66
+                  hl_p1, //67
                   hl_m1,
                   de_p1,
                   de_m1,

@@ -35,7 +35,6 @@ module  alu #(
     wire               s_var;
     alu_status_op      status_opcode;
     reg                status_sign;
-	reg [alu_width-1:0]  status_b;
 	reg [7:0]		   acc_rotated;  // updated accumulator RLD/RRD
 	reg [7:0]		   mem_rotated;  // updated memory byte RLD/RRD
 
@@ -57,7 +56,6 @@ module  alu #(
         status_opcode = NUMERIC_OP;
 		tmp = 0; // default set to 0 to prevent generation of a latch
 		status_sign = 0;
-		status_b = b;
 		out_var = 0;  // stop latch interference
 		acc_rotated = 8'h00;
 		mem_rotated = 8'h00;
@@ -76,14 +74,12 @@ module  alu #(
             ALU_ADC: begin
                 tmp = a + b + carry_in;
                 out_var = tmp[alu_width-1:0];
-                status_b = b + carry_in;
                 carry_in_enabled = 1;
             end
             ALU_SBC: begin
                 tmp = a - b - carry_in;
                 out_var = tmp[alu_width-1:0];
                 status_sign = 1;
-                status_b = b + carry_in;
                 carry_in_enabled = 1;
             end
         	ALU_COMPARE: begin
@@ -194,6 +190,8 @@ module  alu #(
                     out_var = a + (flags_in[1] ? 'hFA : 'h06);
                 end else if (flags_in[0] || (a > 'h99)) begin
                     out_var = a + (flags_in[1] ? 'hA0 : 'h60);
+                end else begin
+                    out_var = a;
                 end
             end
             ALU_CPL: begin
@@ -225,7 +223,7 @@ module  alu #(
         .s(s_var),
         .z(z_var),
         .a(a),
-        .b(status_b),
+        .b(b),
         .op_result(out_var),
         .result_buffer(tmp),
         .opcode(status_opcode),

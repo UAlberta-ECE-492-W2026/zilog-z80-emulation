@@ -67,6 +67,7 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
             uop::commit_fetch: begin
                 case (ctrl_intf.mop_out)
                   LD_R_R: set_next_state(uop::ld_reg_a_reg_b);
+                  LD_A_R: set_next_state(uop::ld_reg_aL_reg_bL);
                   LD_R_nn: set_next_state(uop::ld_reg_a_imm_1);
                   LD_R_mRd: set_next_state(uop::read_mrbuff_reg_b_imm_0_setup);
                   LD_mRd_R, LD_mRd_n: set_next_state(uop::buff_addr_reg_a_imm_0);
@@ -176,6 +177,9 @@ module controller_next_state (c_to_dp_intf.controller_next_state ctrl_intf);
                   JP_R: set_next_state(uop::fetch);
                   default: set_next_state(uop::pc_next);
                 endcase;
+            end
+            uop::ld_reg_aL_reg_bL: begin
+              set_next_state(uop::pc_next);
             end
             uop::ld_reg_a_imm_0: begin
                 set_next_state(uop::pc_next);

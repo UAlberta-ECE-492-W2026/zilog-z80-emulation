@@ -14,7 +14,7 @@ waveform.vcd: ./obj_dir/Vz80_top_for_testing
 	@touch .stamp.verilate
 
 ticks.txt: 
-	z88dk-ticks -x $(PROGRAM_PATH).map -end 47 -v -mz80 -d -trace -counter 100000 $(PROGRAM_PATH).out > ticks.txt
+	z88dk-ticks -x $(PROGRAM_PATH).map -end 47 -v -mz80 -d -trace -counter 1000000 $(PROGRAM_PATH).out > ticks.txt
 
 clean:
 	rm -rf ./obj_dir/ ./out .stamp* ticks.txt

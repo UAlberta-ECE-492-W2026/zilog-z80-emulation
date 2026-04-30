@@ -217,89 +217,89 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'h21040000, 16'hff84, 16'hff84, 16'h9001, 16'h0010, 16'h005e, 64'h00000190371384ff)); // ld        hl,$0004
         testvectors.push_back(cons_test(32'hdd210100, 16'hff84, 16'hff84, 16'h0001, 16'h0010, 16'h0062, 64'h00000190371384ff)); // ld        ix,$0001
         testvectors.push_back(cons_test(32'hfd210200, 16'hff84, 16'hff84, 16'h0001, 16'h0010, 16'h0066, 64'h00000190371384ff)); // ld        iy,$0002
-        testvectors.push_back(cons_test(32'h34000000, 16'hff84, 16'hff84, 16'h0001, 16'h0010, 16'h0067, 64'h00000190381384ff)); // inc       (hl)
-        testvectors.push_back(cons_test(32'hdd340b00, 16'hff84, 16'hff84, 16'h0001, 16'h0010, 16'h006a, 64'h00000190391384ff)); // inc       (ix+$0b)
-        testvectors.push_back(cons_test(32'hfd340a00, 16'hff84, 16'hff84, 16'h0001, 16'h0010, 16'h006d, 64'h000001903a1384ff)); // inc       (iy+$0a)
-        testvectors.push_back(cons_test(32'h7e000000, 16'h3a80, 16'hff84, 16'h0001, 16'h0010, 16'h006e, 64'h000001903a1384ff)); // ld        a,(hl)
-        testvectors.push_back(cons_test(32'hdd7e0100, 16'h0180, 16'hff84, 16'h0001, 16'h0010, 16'h0071, 64'h000001903a1384ff)); // ld        a,(ix+$01)
-        testvectors.push_back(cons_test(32'hfd7e0200, 16'h3a80, 16'hff84, 16'h0001, 16'h0010, 16'h0074, 64'h000001903a1384ff)); // ld        a,(iy+$02)
-        testvectors.push_back(cons_test(32'h01020000, 16'h3a80, 16'h0002, 16'h0001, 16'h0010, 16'h0077, 64'h000001903a1384ff)); // ld        bc,$0002
-        testvectors.push_back(cons_test(32'h11030000, 16'h3a80, 16'h0002, 16'h0001, 16'h0010, 16'h007a, 64'h000001903a1384ff)); // ld        de,$0003
-        testvectors.push_back(cons_test(32'h0a000000, 16'h0180, 16'h0002, 16'h0001, 16'h0010, 16'h007b, 64'h000001903a1384ff)); // ld        a,(bc)
-        testvectors.push_back(cons_test(32'h1a000000, 16'h9080, 16'h0002, 16'h0001, 16'h0010, 16'h007c, 64'h000001903a1384ff)); // ld        a,(de)
-        testvectors.push_back(cons_test(32'h3e000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h007e, 64'h000001903a1384ff)); // ld        a,$00
-        testvectors.push_back(cons_test(32'h77000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h007f, 64'h00000190001380ff)); // ld        (hl),a
-        testvectors.push_back(cons_test(32'hdd770400, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0082, 64'h00000190000080ff)); // ld        (ix+$04),a
-        testvectors.push_back(cons_test(32'hfd770500, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0085, 64'h0000019000008000)); // ld        (iy+$05),a
-        testvectors.push_back(cons_test(32'h02000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0086, 64'h0000009000008000)); // ld        (bc),a
-        testvectors.push_back(cons_test(32'h12000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0087, 64'h0000000000008000)); // ld        (de),a
-        testvectors.push_back(cons_test(32'h36080000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0089, 64'h0000000008008000)); // ld        (hl),$08
-        testvectors.push_back(cons_test(32'hdd360409, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h008d, 64'h0000000008098000)); // ld        (ix+$04),$09
-        testvectors.push_back(cons_test(32'hfd360107, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0091, 64'h0000000708098000)); // ld        (iy+$01),$07
-        testvectors.push_back(cons_test(32'hca000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0094, 64'h0000000708098000)); // JP        z,0
-        testvectors.push_back(cons_test(32'hc2111000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h1011, 64'h0000000708098000)); // JP        nz,$1011
-        testvectors.push_back(cons_test(32'h18cc0000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0fdf, 64'h0000000708098000)); // JR        -50
-        testvectors.push_back(cons_test(32'h18740000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h1055, 64'h0000000708098000)); // JR        $76
-        testvectors.push_back(cons_test(32'h28030000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h1057, 64'h0000000708098000)); // JR        z,5
-        testvectors.push_back(cons_test(32'h20980000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0ff1, 64'h0000000708098000)); // JR        nz,-102
-        testvectors.push_back(cons_test(32'h21adde00, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'h0ff4, 64'h0000000708098000)); // ld        hl,$dead
-        testvectors.push_back(cons_test(32'he9000000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'hdead, 64'h0000000708098000)); // jp        (hl)
-        testvectors.push_back(cons_test(32'h06ff0000, 16'h0080, 16'hff02, 16'h0001, 16'h0010, 16'hdeaf, 64'h0000000708098000)); // ld        b,$ff
-        testvectors.push_back(cons_test(32'h10fd0000, 16'h0080, 16'hfe02, 16'h0001, 16'h0010, 16'hdeae, 64'h0000000708098000)); // djnz      -1
-        testvectors.push_back(cons_test(32'h06010000, 16'h0080, 16'h0102, 16'h0001, 16'h0010, 16'hdeb0, 64'h0000000708098000)); // ld        b,1
-        testvectors.push_back(cons_test(32'h10fd0000, 16'h0080, 16'h0002, 16'h0001, 16'h0010, 16'hdeb2, 64'h0000000708098000)); // djnz      -1
-        testvectors.push_back(cons_test(32'h3e090000, 16'h0980, 16'h0002, 16'h0001, 16'h0010, 16'hdeb4, 64'h0000000708098000)); // ld        a,$09
-        testvectors.push_back(cons_test(32'h1e050000, 16'h0980, 16'h0002, 16'h0001, 16'h0010, 16'hdeb6, 64'h0000000708098000)); // ld        e,$05
-        testvectors.push_back(cons_test(32'h9b000000, 16'h0402, 16'h0002, 16'h0001, 16'h0010, 16'hdeb7, 64'h0000000708098000)); // sbc       e
-        testvectors.push_back(cons_test(32'h9b000000, 16'hff93, 16'h0002, 16'h0001, 16'h0010, 16'hdeb8, 64'h0000000708098000)); // sbc       e
-        testvectors.push_back(cons_test(32'h3e070000, 16'h0793, 16'h0002, 16'h0001, 16'h0010, 16'hdeba, 64'h0000000708098000)); // ld        a,$07
-        testvectors.push_back(cons_test(32'h9b000000, 16'h0102, 16'h0002, 16'h0001, 16'h0010, 16'hdebb, 64'h0000000708098000)); // sbc       e
-        testvectors.push_back(cons_test(32'h3e020000, 16'h0202, 16'h0002, 16'h0001, 16'h0010, 16'hdebd, 64'h0000000708098000)); // ld        a,$02
-        testvectors.push_back(cons_test(32'hbb000000, 16'h0293, 16'h0002, 16'h0001, 16'h0010, 16'hdebe, 64'h0000000708098000)); // cp        e
-        testvectors.push_back(cons_test(32'h3eff0000, 16'hff93, 16'h0002, 16'h0001, 16'h0010, 16'hdec0, 64'h0000000708098000)); // ld        a,$ff
-        testvectors.push_back(cons_test(32'hbb000000, 16'hff82, 16'h0002, 16'h0001, 16'h0010, 16'hdec1, 64'h0000000708098000)); // cp        e
-        testvectors.push_back(cons_test(32'h37000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec2, 64'h0000000708098000)); // scf
-        testvectors.push_back(cons_test(32'h3f000000, 16'hff90, 16'h0002, 16'h0001, 16'h0010, 16'hdec3, 64'h0000000708098000)); // ccf
-        testvectors.push_back(cons_test(32'h3f000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec4, 64'h0000000708098000)); // ccf
+        testvectors.push_back(cons_test(32'h34000000, 16'hff00, 16'hff84, 16'h0001, 16'h0010, 16'h0067, 64'h00000190381384ff)); // inc       (hl)
+        testvectors.push_back(cons_test(32'hdd340b00, 16'hff00, 16'hff84, 16'h0001, 16'h0010, 16'h006a, 64'h00000190391384ff)); // inc       (ix+$0b)
+        testvectors.push_back(cons_test(32'hfd340a00, 16'hff00, 16'hff84, 16'h0001, 16'h0010, 16'h006d, 64'h000001903a1384ff)); // inc       (iy+$0a)
+        testvectors.push_back(cons_test(32'h7e000000, 16'h3a00, 16'hff84, 16'h0001, 16'h0010, 16'h006e, 64'h000001903a1384ff)); // ld        a,(hl)
+        testvectors.push_back(cons_test(32'hdd7e0100, 16'h0100, 16'hff84, 16'h0001, 16'h0010, 16'h0071, 64'h000001903a1384ff)); // ld        a,(ix+$01)
+        testvectors.push_back(cons_test(32'hfd7e0200, 16'h3a00, 16'hff84, 16'h0001, 16'h0010, 16'h0074, 64'h000001903a1384ff)); // ld        a,(iy+$02)
+        testvectors.push_back(cons_test(32'h01020000, 16'h3a00, 16'h0002, 16'h0001, 16'h0010, 16'h0077, 64'h000001903a1384ff)); // ld        bc,$0002
+        testvectors.push_back(cons_test(32'h11030000, 16'h3a00, 16'h0002, 16'h0001, 16'h0010, 16'h007a, 64'h000001903a1384ff)); // ld        de,$0003
+        testvectors.push_back(cons_test(32'h0a000000, 16'h0100, 16'h0002, 16'h0001, 16'h0010, 16'h007b, 64'h000001903a1384ff)); // ld        a,(bc)
+        testvectors.push_back(cons_test(32'h1a000000, 16'h9000, 16'h0002, 16'h0001, 16'h0010, 16'h007c, 64'h000001903a1384ff)); // ld        a,(de)
+        testvectors.push_back(cons_test(32'h3e000000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h007e, 64'h000001903a1384ff)); // ld        a,$00
+        testvectors.push_back(cons_test(32'h77000000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h007f, 64'h00000190001384ff)); // ld        (hl),a
+        testvectors.push_back(cons_test(32'hdd770400, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0082, 64'h00000190000084ff)); // ld        (ix+$04),a
+        testvectors.push_back(cons_test(32'hfd770500, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0085, 64'h0000019000008400)); // ld        (iy+$05),a
+        testvectors.push_back(cons_test(32'h02000000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0086, 64'h0000009000008400)); // ld        (bc),a
+        testvectors.push_back(cons_test(32'h12000000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0087, 64'h0000000000008400)); // ld        (de),a
+        testvectors.push_back(cons_test(32'h36080000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0089, 64'h0000000008008400)); // ld        (hl),$08
+        testvectors.push_back(cons_test(32'hdd360409, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h008d, 64'h0000000008098400)); // ld        (ix+$04),$09
+        testvectors.push_back(cons_test(32'hfd360107, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0091, 64'h0000000708098400)); // ld        (iy+$01),$07
+        testvectors.push_back(cons_test(32'hca000000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0094, 64'h0000000708098400)); // JP        z,0
+        testvectors.push_back(cons_test(32'hc2111000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h1011, 64'h0000000708098400)); // JP        nz,$1011
+        testvectors.push_back(cons_test(32'h18cc0000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0fdf, 64'h0000000708098400)); // JR        -50
+        testvectors.push_back(cons_test(32'h18740000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h1055, 64'h0000000708098400)); // JR        $76
+        testvectors.push_back(cons_test(32'h28030000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h1057, 64'h0000000708098400)); // JR        z,5
+        testvectors.push_back(cons_test(32'h20980000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0ff1, 64'h0000000708098400)); // JR        nz,-102
+        testvectors.push_back(cons_test(32'h21adde00, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'h0ff4, 64'h0000000708098400)); // ld        hl,$dead
+        testvectors.push_back(cons_test(32'he9000000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'hdead, 64'h0000000708098400)); // jp        (hl)
+        testvectors.push_back(cons_test(32'h06ff0000, 16'h0000, 16'hff02, 16'h0001, 16'h0010, 16'hdeaf, 64'h0000000708098400)); // ld        b,$ff
+        testvectors.push_back(cons_test(32'h10fd0000, 16'h0000, 16'hfe02, 16'h0001, 16'h0010, 16'hdeae, 64'h0000000708098400)); // djnz      -1
+        testvectors.push_back(cons_test(32'h06010000, 16'h0000, 16'h0102, 16'h0001, 16'h0010, 16'hdeb0, 64'h0000000708098400)); // ld        b,1
+        testvectors.push_back(cons_test(32'h10fd0000, 16'h0000, 16'h0002, 16'h0001, 16'h0010, 16'hdeb2, 64'h0000000708098400)); // djnz      -1
+        testvectors.push_back(cons_test(32'h3e090000, 16'h0900, 16'h0002, 16'h0001, 16'h0010, 16'hdeb4, 64'h0000000708098400)); // ld        a,$09
+        testvectors.push_back(cons_test(32'h1e050000, 16'h0900, 16'h0002, 16'h0001, 16'h0010, 16'hdeb6, 64'h0000000708098400)); // ld        e,$05
+        testvectors.push_back(cons_test(32'h9b000000, 16'h0402, 16'h0002, 16'h0001, 16'h0010, 16'hdeb7, 64'h0000000708098400)); // sbc       e
+        testvectors.push_back(cons_test(32'h9b000000, 16'hff93, 16'h0002, 16'h0001, 16'h0010, 16'hdeb8, 64'h0000000708098400)); // sbc       e
+        testvectors.push_back(cons_test(32'h3e070000, 16'h0793, 16'h0002, 16'h0001, 16'h0010, 16'hdeba, 64'h0000000708098400)); // ld        a,$07
+        testvectors.push_back(cons_test(32'h9b000000, 16'h0102, 16'h0002, 16'h0001, 16'h0010, 16'hdebb, 64'h0000000708098400)); // sbc       e
+        testvectors.push_back(cons_test(32'h3e020000, 16'h0202, 16'h0002, 16'h0001, 16'h0010, 16'hdebd, 64'h0000000708098400)); // ld        a,$02
+        testvectors.push_back(cons_test(32'hbb000000, 16'h0293, 16'h0002, 16'h0001, 16'h0010, 16'hdebe, 64'h0000000708098400)); // cp        e
+        testvectors.push_back(cons_test(32'h3eff0000, 16'hff93, 16'h0002, 16'h0001, 16'h0010, 16'hdec0, 64'h0000000708098400)); // ld        a,$ff
+        testvectors.push_back(cons_test(32'hbb000000, 16'hff82, 16'h0002, 16'h0001, 16'h0010, 16'hdec1, 64'h0000000708098400)); // cp        e
+        testvectors.push_back(cons_test(32'h37000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec2, 64'h0000000708098400)); // scf
+        testvectors.push_back(cons_test(32'h3f000000, 16'hff90, 16'h0002, 16'h0001, 16'h0010, 16'hdec3, 64'h0000000708098400)); // ccf
+        testvectors.push_back(cons_test(32'h3f000000, 16'hff81, 16'h0002, 16'h0001, 16'h0010, 16'hdec4, 64'h0000000708098400)); // ccf
         testvectors.push_back(cons_reset()); /* the call instruction group */
-        testvectors.push_back(cons_test(32'hc3efbe00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'hbeef, 64'h0000000000000000)); // JP        $4d
-        testvectors.push_back(cons_test(32'h31100000, 16'h0000, 16'h0000, 16'h0000, 16'h0010, 16'hbef2, 64'h0000000000000000)); // ld        sp,$0010
-        testvectors.push_back(cons_test(32'hcd371300, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h1337, 64'h000000000000f5be)); // call      1337
-        testvectors.push_back(cons_test(32'hdc777700, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h133a, 64'h000000000000f5be)); // call      c,$7777
-        testvectors.push_back(cons_test(32'hd4888800, 16'h0000, 16'h0000, 16'h0000, 16'h000c, 16'h8888, 64'h000000003d13f5be)); // call      c,$7777
-        testvectors.push_back(cons_test(32'hc9000000, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h133d, 64'h000000003d13f5be)); // ret
-        testvectors.push_back(cons_test(32'he8000000, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 16'h133e, 64'h000000003d13f5be)); // ret       pe
-        testvectors.push_back(cons_test(32'he0000000, 16'h0000, 16'h0000, 16'h0000, 16'h0010, 16'hbef5, 64'h000000003d13f5be)); // ret       po
+        testvectors.push_back(cons_test(32'hc3efbe00, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'hbeef, 64'h0000000000000000)); // JP        $4d
+        testvectors.push_back(cons_test(32'h31100000, 16'h0040, 16'h0000, 16'h0000, 16'h0010, 16'hbef2, 64'h0000000000000000)); // ld        sp,$0010
+        testvectors.push_back(cons_test(32'hcd371300, 16'h0040, 16'h0000, 16'h0000, 16'h000e, 16'h1337, 64'h000000000000f5be)); // call      1337
+        testvectors.push_back(cons_test(32'hdc777700, 16'h0040, 16'h0000, 16'h0000, 16'h000e, 16'h133a, 64'h000000000000f5be)); // call      c,$7777
+        testvectors.push_back(cons_test(32'hd4888800, 16'h0040, 16'h0000, 16'h0000, 16'h000c, 16'h8888, 64'h000000003d13f5be)); // call      c,$7777
+        testvectors.push_back(cons_test(32'hc9000000, 16'h0040, 16'h0000, 16'h0000, 16'h000e, 16'h133d, 64'h000000003d13f5be)); // ret
+        testvectors.push_back(cons_test(32'he8000000, 16'h0040, 16'h0000, 16'h0000, 16'h000e, 16'h133e, 64'h000000003d13f5be)); // ret       pe
+        testvectors.push_back(cons_test(32'he0000000, 16'h0040, 16'h0000, 16'h0000, 16'h0010, 16'hbef5, 64'h000000003d13f5be)); // ret       po
         testvectors.push_back(cons_reset()); /* testing the halt instructions */
-        testvectors.push_back(cons_test(32'hc34d0000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // JP        $4d
-        testvectors.push_back(cons_test(32'h76000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT
-        testvectors.push_back(cons_test(32'h76000000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT
+        testvectors.push_back(cons_test(32'hc34d0000, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // JP        $4d
+        testvectors.push_back(cons_test(32'h76000000, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT
+        testvectors.push_back(cons_test(32'h76000000, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h004d, 64'h0000000000000000)); // HALT
         testvectors.push_back(cons_reset());
-        testvectors.push_back(cons_test(32'h3e670000, 16'h6700, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // ld        a,$67
-        testvectors.push_back(cons_test(32'h32010000, 16'h6700, 16'h0000, 16'h0000, 16'h0000, 16'h0006, 64'h0067000000000000)); // ld        ($0001),a
-        testvectors.push_back(cons_test(32'h01341200, 16'h6700, 16'h1234, 16'h0000, 16'h0000, 16'h0009, 64'h0067000000000000)); // ld        bc,$1234
-        testvectors.push_back(cons_test(32'hed430200, 16'h6700, 16'h1234, 16'h0000, 16'h0000, 16'h000d, 64'h0067341200000000)); // ld        ($0002),bc
-        testvectors.push_back(cons_test(32'h08000000, 16'h0000, 16'h1234, 16'h0000, 16'h0000, 16'h000e, 64'h0067341200000000)); // ex        af,af'
-        testvectors.push_back(cons_test(32'h3e210000, 16'h2100, 16'h1234, 16'h0000, 16'h0000, 16'h0010, 64'h0067341200000000)); // ld        a,$21
-        testvectors.push_back(cons_test(32'h08000000, 16'h6700, 16'h1234, 16'h0000, 16'h0000, 16'h0011, 64'h0067341200000000)); // ex        af,af'
-        testvectors.push_back(cons_test(32'hd9000000, 16'h2100, 16'h0000, 16'h0000, 16'h0000, 16'h0012, 64'h0067341200000000)); // exx
-        testvectors.push_back(cons_test(32'h3a020000, 16'h3400, 16'h0000, 16'h0000, 16'h0000, 16'h0015, 64'h0067341200000000)); // ld        a,($0002)
-        testvectors.push_back(cons_test(32'h21896700, 16'h3400, 16'h0000, 16'h0000, 16'h0000, 16'h0018, 64'h0067341200000000)); // ld        hl,$6789
-        testvectors.push_back(cons_test(32'hdd213254, 16'h3400, 16'h0000, 16'h5432, 16'h0000, 16'h001c, 64'h0067341200000000)); // ld        ix,$5432
-        testvectors.push_back(cons_test(32'hfd214523, 16'h3400, 16'h0000, 16'h5432, 16'h0000, 16'h0020, 64'h0067341200000000)); // ld        iy,$2345
-        testvectors.push_back(cons_test(32'h31040000, 16'h3400, 16'h0000, 16'h5432, 16'h0004, 16'h0023, 64'h0067341200000000)); // ld        sp,$0004
-        testvectors.push_back(cons_test(32'he3000000, 16'h3400, 16'h0000, 16'h5432, 16'h0004, 16'h0024, 64'h0067341289670000)); // ex        (sp),hl
-        testvectors.push_back(cons_test(32'hdde30000, 16'h3400, 16'h0000, 16'h6789, 16'h0004, 16'h0026, 64'h0067341232540000)); // ex        (sp),ix
-        testvectors.push_back(cons_test(32'hfde30000, 16'h3400, 16'h0000, 16'h6789, 16'h0004, 16'h0028, 64'h0067341245230000)); // ex        (sp),iy
+        testvectors.push_back(cons_test(32'h3e670000, 16'h6740, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // ld        a,$67
+        testvectors.push_back(cons_test(32'h32010000, 16'h6740, 16'h0000, 16'h0000, 16'h0000, 16'h0006, 64'h0067000000000000)); // ld        ($0001),a
+        testvectors.push_back(cons_test(32'h01341200, 16'h6740, 16'h1234, 16'h0000, 16'h0000, 16'h0009, 64'h0067000000000000)); // ld        bc,$1234
+        testvectors.push_back(cons_test(32'hed430200, 16'h6740, 16'h1234, 16'h0000, 16'h0000, 16'h000d, 64'h0067341200000000)); // ld        ($0002),bc
+        testvectors.push_back(cons_test(32'h08000000, 16'h0040, 16'h1234, 16'h0000, 16'h0000, 16'h000e, 64'h0067341200000000)); // ex        af,af'
+        testvectors.push_back(cons_test(32'h3e210000, 16'h2140, 16'h1234, 16'h0000, 16'h0000, 16'h0010, 64'h0067341200000000)); // ld        a,$21
+        testvectors.push_back(cons_test(32'h08000000, 16'h6740, 16'h1234, 16'h0000, 16'h0000, 16'h0011, 64'h0067341200000000)); // ex        af,af'
+        testvectors.push_back(cons_test(32'hd9000000, 16'h6740, 16'h0000, 16'h0000, 16'h0000, 16'h0012, 64'h0067341200000000)); // exx
+        testvectors.push_back(cons_test(32'h3a020000, 16'h3440, 16'h0000, 16'h0000, 16'h0000, 16'h0015, 64'h0067341200000000)); // ld        a,($0002)
+        testvectors.push_back(cons_test(32'h21896700, 16'h3440, 16'h0000, 16'h0000, 16'h0000, 16'h0018, 64'h0067341200000000)); // ld        hl,$6789
+        testvectors.push_back(cons_test(32'hdd213254, 16'h3440, 16'h0000, 16'h5432, 16'h0000, 16'h001c, 64'h0067341200000000)); // ld        ix,$5432
+        testvectors.push_back(cons_test(32'hfd214523, 16'h3440, 16'h0000, 16'h5432, 16'h0000, 16'h0020, 64'h0067341200000000)); // ld        iy,$2345
+        testvectors.push_back(cons_test(32'h31040000, 16'h3440, 16'h0000, 16'h5432, 16'h0004, 16'h0023, 64'h0067341200000000)); // ld        sp,$0004
+        testvectors.push_back(cons_test(32'he3000000, 16'h3440, 16'h0000, 16'h5432, 16'h0004, 16'h0024, 64'h0067341289670000)); // ex        (sp),hl
+        testvectors.push_back(cons_test(32'hdde30000, 16'h3440, 16'h0000, 16'h6789, 16'h0004, 16'h0026, 64'h0067341232540000)); // ex        (sp),ix
+        testvectors.push_back(cons_test(32'hfde30000, 16'h3440, 16'h0000, 16'h6789, 16'h0004, 16'h0028, 64'h0067341245230000)); // ex        (sp),iy
         testvectors.push_back(cons_reset());
-        testvectors.push_back(cons_test(32'h3e080000, 16'h0800, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // ld        a,$08
-        testvectors.push_back(cons_test(32'h1e020000, 16'h0800, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // ld        e,$02
-        testvectors.push_back(cons_test(32'h21070000, 16'h0800, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h0000000000000000)); // ld        hl,$0007
-        testvectors.push_back(cons_test(32'hdd210600, 16'h0800, 16'h0000, 16'h0006, 16'h0000, 16'h000c, 64'h0000000000000000)); // ld        ix,$0006
-        testvectors.push_back(cons_test(32'hfd210500, 16'h0800, 16'h0000, 16'h0006, 16'h0000, 16'h0010, 64'h0000000000000000)); // ld        iy,$0005
-        testvectors.push_back(cons_test(32'h36100000, 16'h0800, 16'h0000, 16'h0006, 16'h0000, 16'h0012, 64'h0000000000000010)); // ld        (hl),$10
-        testvectors.push_back(cons_test(32'hdd360011, 16'h0800, 16'h0000, 16'h0006, 16'h0000, 16'h0016, 64'h0000000000001110)); // ld        (ix+$00),$11
-        testvectors.push_back(cons_test(32'hfd360033, 16'h0800, 16'h0000, 16'h0006, 16'h0000, 16'h001a, 64'h0000000000331110)); // ld        (iy+$00),$33
+        testvectors.push_back(cons_test(32'h3e080000, 16'h0840, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // ld        a,$08
+        testvectors.push_back(cons_test(32'h1e020000, 16'h0840, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // ld        e,$02
+        testvectors.push_back(cons_test(32'h21070000, 16'h0840, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h0000000000000000)); // ld        hl,$0007
+        testvectors.push_back(cons_test(32'hdd210600, 16'h0840, 16'h0000, 16'h0006, 16'h0000, 16'h000c, 64'h0000000000000000)); // ld        ix,$0006
+        testvectors.push_back(cons_test(32'hfd210500, 16'h0840, 16'h0000, 16'h0006, 16'h0000, 16'h0010, 64'h0000000000000000)); // ld        iy,$0005
+        testvectors.push_back(cons_test(32'h36100000, 16'h0840, 16'h0000, 16'h0006, 16'h0000, 16'h0012, 64'h0000000000000010)); // ld        (hl),$10
+        testvectors.push_back(cons_test(32'hdd360011, 16'h0840, 16'h0000, 16'h0006, 16'h0000, 16'h0016, 64'h0000000000001110)); // ld        (ix+$00),$11
+        testvectors.push_back(cons_test(32'hfd360033, 16'h0840, 16'h0000, 16'h0006, 16'h0000, 16'h001a, 64'h0000000000331110)); // ld        (iy+$00),$33
         testvectors.push_back(cons_test(32'h83000000, 16'h0a00, 16'h0000, 16'h0006, 16'h0000, 16'h001b, 64'h0000000000331110)); // add       e
         testvectors.push_back(cons_test(32'hc6010000, 16'h0b00, 16'h0000, 16'h0006, 16'h0000, 16'h001d, 64'h0000000000331110)); // add       $01
         testvectors.push_back(cons_test(32'h86000000, 16'h1b00, 16'h0000, 16'h0006, 16'h0000, 16'h001e, 64'h0000000000331110)); // add       (hl)
@@ -322,27 +322,27 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'h9e000000, 16'h2b02, 16'h0000, 16'h0006, 16'h0000, 16'h003e, 64'h0000000000331110)); // sbc       (hl)
         testvectors.push_back(cons_test(32'hdd9e0100, 16'h1b02, 16'h0000, 16'h0006, 16'h0000, 16'h0041, 64'h0000000000331110)); // sbc       (ix+$01)
         testvectors.push_back(cons_test(32'hfd9e0200, 16'h0b02, 16'h0000, 16'h0006, 16'h0000, 16'h0044, 64'h0000000000331110)); // sbc       (iy+$02)
-        testvectors.push_back(cons_test(32'h3f000000, 16'h0b03, 16'h0000, 16'h0006, 16'h0000, 16'h0045, 64'h0000000000331110)); // ccf
+        testvectors.push_back(cons_test(32'h3f000000, 16'h0b01, 16'h0000, 16'h0006, 16'h0000, 16'h0045, 64'h0000000000331110)); // ccf
         testvectors.push_back(cons_test(32'h9b000000, 16'h0802, 16'h0000, 16'h0006, 16'h0000, 16'h0046, 64'h0000000000331110)); // sbc       e
         testvectors.push_back(cons_test(32'h3c000000, 16'h0900, 16'h0000, 16'h0006, 16'h0000, 16'h0047, 64'h0000000000331110)); // inc       a
         testvectors.push_back(cons_test(32'h3d000000, 16'h0802, 16'h0000, 16'h0006, 16'h0000, 16'h0048, 64'h0000000000331110)); // dec       a
-        testvectors.push_back(cons_test(32'h34000000, 16'h0802, 16'h0000, 16'h0006, 16'h0000, 16'h0049, 64'h0000000000331111)); // inc       (hl)
-        testvectors.push_back(cons_test(32'hdd340100, 16'h0802, 16'h0000, 16'h0006, 16'h0000, 16'h004c, 64'h0000000000331112)); // inc       (ix+$01)
-        testvectors.push_back(cons_test(32'hfd340200, 16'h0802, 16'h0000, 16'h0006, 16'h0000, 16'h004f, 64'h0000000000331113)); // inc       (iy+$02)
+        testvectors.push_back(cons_test(32'h34000000, 16'h0800, 16'h0000, 16'h0006, 16'h0000, 16'h0049, 64'h0000000000331111)); // inc       (hl)
+        testvectors.push_back(cons_test(32'hdd340100, 16'h0800, 16'h0000, 16'h0006, 16'h0000, 16'h004c, 64'h0000000000331112)); // inc       (ix+$01)
+        testvectors.push_back(cons_test(32'hfd340200, 16'h0800, 16'h0000, 16'h0006, 16'h0000, 16'h004f, 64'h0000000000331113)); // inc       (iy+$02)
         testvectors.push_back(cons_test(32'h35000000, 16'h0802, 16'h0000, 16'h0006, 16'h0000, 16'h0050, 64'h0000000000331112)); // dec       (hl)
         testvectors.push_back(cons_test(32'hdd350100, 16'h0802, 16'h0000, 16'h0006, 16'h0000, 16'h0053, 64'h0000000000331111)); // dec       (ix+$01)
         testvectors.push_back(cons_test(32'hfd350200, 16'h0802, 16'h0000, 16'h0006, 16'h0000, 16'h0056, 64'h0000000000331110)); // dec       (iy+$02)
-        testvectors.push_back(cons_test(32'ha3000000, 16'h0050, 16'h0000, 16'h0006, 16'h0000, 16'h0057, 64'h0000000000331110)); // and       e
-        testvectors.push_back(cons_test(32'he6010000, 16'h0050, 16'h0000, 16'h0006, 16'h0000, 16'h0059, 64'h0000000000331110)); // and       $01
-        testvectors.push_back(cons_test(32'h3eff0000, 16'hff50, 16'h0000, 16'h0006, 16'h0000, 16'h005b, 64'h0000000000331110)); // ld        a,$ff
-        testvectors.push_back(cons_test(32'hfda60000, 16'h3310, 16'h0000, 16'h0006, 16'h0000, 16'h005e, 64'h0000000000331110)); // and       (iy+$00)
-        testvectors.push_back(cons_test(32'hdda60000, 16'h1110, 16'h0000, 16'h0006, 16'h0000, 16'h0061, 64'h0000000000331110)); // and       (ix+$00)
+        testvectors.push_back(cons_test(32'ha3000000, 16'h0054, 16'h0000, 16'h0006, 16'h0000, 16'h0057, 64'h0000000000331110)); // and       e
+        testvectors.push_back(cons_test(32'he6010000, 16'h0054, 16'h0000, 16'h0006, 16'h0000, 16'h0059, 64'h0000000000331110)); // and       $01
+        testvectors.push_back(cons_test(32'h3eff0000, 16'hff54, 16'h0000, 16'h0006, 16'h0000, 16'h005b, 64'h0000000000331110)); // ld        a,$ff
+        testvectors.push_back(cons_test(32'hfda60000, 16'h3314, 16'h0000, 16'h0006, 16'h0000, 16'h005e, 64'h0000000000331110)); // and       (iy+$00)
+        testvectors.push_back(cons_test(32'hdda60000, 16'h1114, 16'h0000, 16'h0006, 16'h0000, 16'h0061, 64'h0000000000331110)); // and       (ix+$00)
         testvectors.push_back(cons_test(32'ha6000000, 16'h1010, 16'h0000, 16'h0006, 16'h0000, 16'h0062, 64'h0000000000331110)); // and       (hl)
-        testvectors.push_back(cons_test(32'hb3000000, 16'h1200, 16'h0000, 16'h0006, 16'h0000, 16'h0063, 64'h0000000000331110)); // or        e
+        testvectors.push_back(cons_test(32'hb3000000, 16'h1204, 16'h0000, 16'h0006, 16'h0000, 16'h0063, 64'h0000000000331110)); // or        e
         testvectors.push_back(cons_test(32'hf6010000, 16'h1300, 16'h0000, 16'h0006, 16'h0000, 16'h0065, 64'h0000000000331110)); // or        $01
         testvectors.push_back(cons_test(32'hb6000000, 16'h1300, 16'h0000, 16'h0006, 16'h0000, 16'h0066, 64'h0000000000331110)); // or        (hl)
-        testvectors.push_back(cons_test(32'hfdb60000, 16'h3300, 16'h0000, 16'h0006, 16'h0000, 16'h0069, 64'h0000000000331110)); // or        (iy+$00)
-        testvectors.push_back(cons_test(32'hddb60000, 16'h3300, 16'h0000, 16'h0006, 16'h0000, 16'h006c, 64'h0000000000331110)); // or        (ix+$00)
+        testvectors.push_back(cons_test(32'hfdb60000, 16'h3304, 16'h0000, 16'h0006, 16'h0000, 16'h0069, 64'h0000000000331110)); // or        (iy+$00)
+        testvectors.push_back(cons_test(32'hddb60000, 16'h3304, 16'h0000, 16'h0006, 16'h0000, 16'h006c, 64'h0000000000331110)); // or        (ix+$00)
         testvectors.push_back(cons_test(32'hab000000, 16'h3100, 16'h0000, 16'h0006, 16'h0000, 16'h006d, 64'h0000000000331110)); // xor       e
         testvectors.push_back(cons_test(32'hee010000, 16'h3004, 16'h0000, 16'h0006, 16'h0000, 16'h006f, 64'h0000000000331110)); // xor       $01
         testvectors.push_back(cons_test(32'hae000000, 16'h2000, 16'h0000, 16'h0006, 16'h0000, 16'h0070, 64'h0000000000331110)); // xor       (hl)
@@ -355,21 +355,21 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hfdbe0000, 16'h1093, 16'h0000, 16'h0006, 16'h0000, 16'h007f, 64'h0000000000331110)); // cp        (iy+$00)
         testvectors.push_back(cons_test(32'hddbe0000, 16'h1093, 16'h0000, 16'h0006, 16'h0000, 16'h0082, 64'h0000000000331110)); // cp        (ix+$00)
         testvectors.push_back(cons_reset());
-        testvectors.push_back(cons_test(32'h3e0f0000, 16'h0f00, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // ld        a,$0f
-        testvectors.push_back(cons_test(32'h2f080000, 16'hf012, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // cpl
-        testvectors.push_back(cons_test(32'h3e020000, 16'h0212, 16'h0000, 16'h0000, 16'h0000, 16'h0006, 64'h0000000000000000)); // ld        a,$02
+        testvectors.push_back(cons_test(32'h3e0f0000, 16'h0f40, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // ld        a,$0f
+        testvectors.push_back(cons_test(32'h2f080000, 16'hf052, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // cpl
+        testvectors.push_back(cons_test(32'h3e020000, 16'h0252, 16'h0000, 16'h0000, 16'h0000, 16'h0006, 64'h0000000000000000)); // ld        a,$02
         testvectors.push_back(cons_test(32'hed440000, 16'hfe93, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h0000000000000000)); // neg
         // just to make sure the states sequense correctly and the instruction is decoded. no idea if the result is correct
         testvectors.push_back(cons_test(32'h27000000, 16'h9883, 16'h0000, 16'h0000, 16'h0000, 16'h0009, 64'h0000000000000000)); // daa 
         testvectors.push_back(cons_reset());
-        testvectors.push_back(cons_test(32'h21021200, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld        hl,$1202
-        testvectors.push_back(cons_test(32'h01010100, 16'h0000, 16'h0101, 16'h0000, 16'h0000, 16'h0007, 64'h0000000000000000)); // ld        bc,$0101
-        testvectors.push_back(cons_test(32'h09000000, 16'h0000, 16'h0101, 16'h0000, 16'h0000, 16'h0008, 64'h0000000000000000)); // add       hl,bc
-        testvectors.push_back(cons_test(32'h22000000, 16'h0000, 16'h0101, 16'h0000, 16'h0000, 16'h000b, 64'h0313000000000000)); // ld        ($0000),hl
-        testvectors.push_back(cons_test(32'hfd090000, 16'h0000, 16'h0101, 16'h0000, 16'h0000, 16'h000d, 64'h0313000000000000)); // add       iy,bc
-        testvectors.push_back(cons_test(32'hfd230000, 16'h0000, 16'h0101, 16'h0000, 16'h0000, 16'h000f, 64'h0313000000000000)); // inc       iy
-        testvectors.push_back(cons_test(32'hfd220000, 16'h0000, 16'h0101, 16'h0000, 16'h0000, 16'h0013, 64'h0201000000000000)); // ld        ($0000),iy
-        testvectors.push_back(cons_test(32'hdd090000, 16'h0000, 16'h0101, 16'h0101, 16'h0000, 16'h0015, 64'h0201000000000000)); // add       ix,bc
+        testvectors.push_back(cons_test(32'h21021200, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld        hl,$1202
+        testvectors.push_back(cons_test(32'h01010100, 16'h0040, 16'h0101, 16'h0000, 16'h0000, 16'h0007, 64'h0000000000000000)); // ld        bc,$0101
+        testvectors.push_back(cons_test(32'h09000000, 16'h0040, 16'h0101, 16'h0000, 16'h0000, 16'h0008, 64'h0000000000000000)); // add       hl,bc
+        testvectors.push_back(cons_test(32'h22000000, 16'h0040, 16'h0101, 16'h0000, 16'h0000, 16'h000b, 64'h0313000000000000)); // ld        ($0000),hl
+        testvectors.push_back(cons_test(32'hfd090000, 16'h0040, 16'h0101, 16'h0000, 16'h0000, 16'h000d, 64'h0313000000000000)); // add       iy,bc
+        testvectors.push_back(cons_test(32'hfd230000, 16'h0040, 16'h0101, 16'h0000, 16'h0000, 16'h000f, 64'h0313000000000000)); // inc       iy
+        testvectors.push_back(cons_test(32'hfd220000, 16'h0040, 16'h0101, 16'h0000, 16'h0000, 16'h0013, 64'h0201000000000000)); // ld        ($0000),iy
+        testvectors.push_back(cons_test(32'hdd090000, 16'h0040, 16'h0101, 16'h0101, 16'h0000, 16'h0015, 64'h0201000000000000)); // add       ix,bc
         testvectors.push_back(cons_test(32'hed4a0000, 16'h0000, 16'h0101, 16'h0101, 16'h0000, 16'h0017, 64'h0201000000000000)); // adc       hl,bc
         testvectors.push_back(cons_test(32'h22000000, 16'h0000, 16'h0101, 16'h0101, 16'h0000, 16'h001a, 64'h0414000000000000)); // ld        ($0000),hl
         testvectors.push_back(cons_test(32'h3f000000, 16'h0001, 16'h0101, 16'h0101, 16'h0000, 16'h001b, 64'h0414000000000000)); // ccf
@@ -384,12 +384,12 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hfd2b0000, 16'h0002, 16'h0102, 16'h0101, 16'h0000, 16'h002d, 64'h0515000000000000)); // dec       iy
         testvectors.push_back(cons_test(32'hfd220000, 16'h0002, 16'h0102, 16'h0101, 16'h0000, 16'h0031, 64'h0101000000000000)); // ld        ($0000),iy
         testvectors.push_back(cons_reset());
-        testvectors.push_back(cons_test(32'h3e800000, 16'h8000, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // ld        a,$80
-        testvectors.push_back(cons_test(32'h07000000, 16'h0101, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // rlca
-        testvectors.push_back(cons_test(32'h17000000, 16'h0300, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // rla
-        testvectors.push_back(cons_test(32'h0f000000, 16'h8101, 16'h0000, 16'h0000, 16'h0000, 16'h0006, 64'h0000000000000000)); // rrca
-        testvectors.push_back(cons_test(32'h1f000000, 16'hc001, 16'h0000, 16'h0000, 16'h0000, 16'h0007, 64'h0000000000000000)); // rra
-        testvectors.push_back(cons_test(32'h06800000, 16'hc001, 16'h8000, 16'h0000, 16'h0000, 16'h0009, 64'h0000000000000000)); // ld        b,$80
+        testvectors.push_back(cons_test(32'h3e800000, 16'h8040, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // ld        a,$80
+        testvectors.push_back(cons_test(32'h07000000, 16'h0141, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // rlca
+        testvectors.push_back(cons_test(32'h17000000, 16'h0340, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // rla
+        testvectors.push_back(cons_test(32'h0f000000, 16'h8141, 16'h0000, 16'h0000, 16'h0000, 16'h0006, 64'h0000000000000000)); // rrca
+        testvectors.push_back(cons_test(32'h1f000000, 16'hc041, 16'h0000, 16'h0000, 16'h0000, 16'h0007, 64'h0000000000000000)); // rra
+        testvectors.push_back(cons_test(32'h06800000, 16'hc041, 16'h8000, 16'h0000, 16'h0000, 16'h0009, 64'h0000000000000000)); // ld        b,$80
         testvectors.push_back(cons_test(32'hcb000000, 16'hc001, 16'h0100, 16'h0000, 16'h0000, 16'h000b, 64'h0000000000000000)); // rlc       b
         testvectors.push_back(cons_test(32'hcb100000, 16'hc004, 16'h0300, 16'h0000, 16'h0000, 16'h000d, 64'h0000000000000000)); // rl        b
         testvectors.push_back(cons_test(32'hcb080000, 16'hc085, 16'h8100, 16'h0000, 16'h0000, 16'h000f, 64'h0000000000000000)); // rrc       b
@@ -435,59 +435,59 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'h21040000, 16'hc000, 16'h4000, 16'h0006, 16'h0000, 16'h0081, 64'h0000000000000001)); // ld        hl,$0004
         testvectors.push_back(cons_test(32'h36120000, 16'hc000, 16'h4000, 16'h0006, 16'h0000, 16'h0083, 64'h0000000012000001)); // ld        (hl),$12
         testvectors.push_back(cons_test(32'h3e340000, 16'h3400, 16'h4000, 16'h0006, 16'h0000, 16'h0085, 64'h0000000012000001)); // ld        a,$34
-        testvectors.push_back(cons_test(32'hed6f0000, 16'h3104, 16'h4000, 16'h0006, 16'h0000, 16'h0087, 64'h0000000024000001)); // rld
-        testvectors.push_back(cons_test(32'hed670000, 16'h3404, 16'h4000, 16'h0006, 16'h0000, 16'h0089, 64'h0000000012000001)); // rrd
+        testvectors.push_back(cons_test(32'hed6f0000, 16'h3100, 16'h4000, 16'h0006, 16'h0000, 16'h0087, 64'h0000000024000001)); // rld
+        testvectors.push_back(cons_test(32'hed670000, 16'h3400, 16'h4000, 16'h0006, 16'h0000, 16'h0089, 64'h0000000012000001)); // rrd
         testvectors.push_back(cons_reset()); /* the test for the bit instruction group */
         //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
-        testvectors.push_back(cons_test(32'hcb590000, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // bit       3,c
-        testvectors.push_back(cons_test(32'h0e080000, 16'h0050, 16'h0008, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // ld        c,08
+        testvectors.push_back(cons_test(32'hcb590000, 16'h0054, 16'h0000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // bit       3,c
+        testvectors.push_back(cons_test(32'h0e080000, 16'h0054, 16'h0008, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // ld        c,08
         testvectors.push_back(cons_test(32'hcb590000, 16'h0010, 16'h0008, 16'h0000, 16'h0000, 16'h0007, 64'h0000000000000000)); // bit       3,c
         testvectors.push_back(cons_reset());
-        testvectors.push_back(cons_test(32'hddcb0266, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // bit       4,(ix + 2)
-        testvectors.push_back(cons_test(32'hdd360210, 16'h0050, 16'h0000, 16'h0000, 16'h0000, 16'h0009, 64'h0000100000000000)); // ld        (ix + 2),10
-        testvectors.push_back(cons_test(32'h3f000000, 16'h0041, 16'h0000, 16'h0000, 16'h0000, 16'h000a, 64'h0000100000000000)); // ccf
+        testvectors.push_back(cons_test(32'hddcb0266, 16'h0054, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0000000000000000)); // bit       4,(ix + 2)
+        testvectors.push_back(cons_test(32'hdd360210, 16'h0054, 16'h0000, 16'h0000, 16'h0000, 16'h0009, 64'h0000100000000000)); // ld        (ix + 2),10
+        testvectors.push_back(cons_test(32'h3f000000, 16'h0045, 16'h0000, 16'h0000, 16'h0000, 16'h000a, 64'h0000100000000000)); // ccf
         testvectors.push_back(cons_test(32'hddcb0266, 16'h0011, 16'h0000, 16'h0000, 16'h0000, 16'h000e, 64'h0000100000000000)); // bit       4,(ix + 2)
         testvectors.push_back(cons_reset());
-        testvectors.push_back(cons_test(32'hcbf00000, 16'h0000, 16'h4000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // set       6,h
-        testvectors.push_back(cons_test(32'hdd210400, 16'h0000, 16'h4000, 16'h0004, 16'h0000, 16'h0007, 64'h0000000000000000)); // ld        ix,$0004
-        testvectors.push_back(cons_test(32'hddcb02ee, 16'h0000, 16'h4000, 16'h0004, 16'h0000, 16'h000b, 64'h0000000000002000)); // set       5,(ix + 2)
-        testvectors.push_back(cons_test(32'hdd210200, 16'h0000, 16'h4000, 16'h0002, 16'h0000, 16'h000f, 64'h0000000000002000)); // ld        ix,$0002
-        testvectors.push_back(cons_test(32'hdd3602ff, 16'h0000, 16'h4000, 16'h0002, 16'h0000, 16'h0013, 64'h00000000ff002000)); // ld        (ix+$02),$ff
-        testvectors.push_back(cons_test(32'hddcb0296, 16'h0000, 16'h4000, 16'h0002, 16'h0000, 16'h0017, 64'h00000000fb002000)); // res       2,(ix + 2)
-        testvectors.push_back(cons_test(32'h0eff0000, 16'h0000, 16'h40ff, 16'h0002, 16'h0000, 16'h0019, 64'h00000000fb002000)); // ld        c,ff
-        testvectors.push_back(cons_test(32'hcb890000, 16'h0000, 16'h40fd, 16'h0002, 16'h0000, 16'h001b, 64'h00000000fb002000)); // res       1,c
+        testvectors.push_back(cons_test(32'hcbf00000, 16'h0040, 16'h4000, 16'h0000, 16'h0000, 16'h0003, 64'h0000000000000000)); // set       6,h
+        testvectors.push_back(cons_test(32'hdd210400, 16'h0040, 16'h4000, 16'h0004, 16'h0000, 16'h0007, 64'h0000000000000000)); // ld        ix,$0004
+        testvectors.push_back(cons_test(32'hddcb02ee, 16'h0040, 16'h4000, 16'h0004, 16'h0000, 16'h000b, 64'h0000000000002000)); // set       5,(ix + 2)
+        testvectors.push_back(cons_test(32'hdd210200, 16'h0040, 16'h4000, 16'h0002, 16'h0000, 16'h000f, 64'h0000000000002000)); // ld        ix,$0002
+        testvectors.push_back(cons_test(32'hdd3602ff, 16'h0040, 16'h4000, 16'h0002, 16'h0000, 16'h0013, 64'h00000000ff002000)); // ld        (ix+$02),$ff
+        testvectors.push_back(cons_test(32'hddcb0296, 16'h0040, 16'h4000, 16'h0002, 16'h0000, 16'h0017, 64'h00000000fb002000)); // res       2,(ix + 2)
+        testvectors.push_back(cons_test(32'h0eff0000, 16'h0040, 16'h40ff, 16'h0002, 16'h0000, 16'h0019, 64'h00000000fb002000)); // ld        c,ff
+        testvectors.push_back(cons_test(32'hcb890000, 16'h0040, 16'h40fd, 16'h0002, 16'h0000, 16'h001b, 64'h00000000fb002000)); // res       1,c
         testvectors.push_back(cons_reset());
-        testvectors.push_back(cons_test(32'hdd36000a, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0a00000000000000)); // ld        (ix+$00),$0a
-        testvectors.push_back(cons_test(32'hdd36010b, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0009, 64'h0a0b000000000000)); // ld        (ix+$01),$0b
-        testvectors.push_back(cons_test(32'hdd36020c, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h000d, 64'h0a0b0c0000000000)); // ld        (ix+$02),$0c
-        testvectors.push_back(cons_test(32'hdd36030d, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0011, 64'h0a0b0c0d00000000)); // ld        (ix+$03),$0d
-        testvectors.push_back(cons_test(32'h11070000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0014, 64'h0a0b0c0d00000000)); // ld        de,$0007
-        testvectors.push_back(cons_test(32'h21030000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0017, 64'h0a0b0c0d00000000)); // ld        hl,$0003
-        testvectors.push_back(cons_test(32'heda80000, 16'h0004, 16'hffff, 16'h0000, 16'h0000, 16'h0019, 64'h0a0b0c0d0000000d)); // ldd
-        testvectors.push_back(cons_test(32'heda00000, 16'h0004, 16'hfffe, 16'h0000, 16'h0000, 16'h001b, 64'h0a0b0c0d00000c0d)); // ldi
-        testvectors.push_back(cons_test(32'hdd360700, 16'h0004, 16'hfffe, 16'h0000, 16'h0000, 16'h001f, 64'h0a0b0c0d00000c00)); // ld        (ix+$07),$00
-        testvectors.push_back(cons_test(32'hdd360600, 16'h0004, 16'hfffe, 16'h0000, 16'h0000, 16'h0023, 64'h0a0b0c0d00000000)); // ld        (ix+$06),$00
-        testvectors.push_back(cons_test(32'h01040000, 16'h0004, 16'h0004, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d00000000)); // ld        bc,$0004
-        testvectors.push_back(cons_test(32'hedb80000, 16'h0004, 16'h0003, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d0000000d)); // lddr
-        testvectors.push_back(cons_test(32'hedb80000, 16'h0004, 16'h0002, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d00000c0d)); // lddr //this is an issue with our tb, in real code lddr should act ok
-        testvectors.push_back(cons_test(32'hedb80000, 16'h0004, 16'h0001, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d000b0c0d)); // lddr
-        testvectors.push_back(cons_test(32'hedb80000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0028, 64'h0a0b0c0d0a0b0c0d)); // lddr
-        testvectors.push_back(cons_test(32'hdd360700, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h002c, 64'h0a0b0c0d0a0b0c00)); // ld        (ix+$07),$00
-        testvectors.push_back(cons_test(32'hdd360600, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0030, 64'h0a0b0c0d0a0b0000)); // ld        (ix+$06),$00
-        testvectors.push_back(cons_test(32'hdd360500, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0034, 64'h0a0b0c0d0a000000)); // ld        (ix+$05),$00
-        testvectors.push_back(cons_test(32'hdd360400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0038, 64'h0a0b0c0d00000000)); // ld        (ix+$04),$00
-        testvectors.push_back(cons_test(32'h01040000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h003b, 64'h0a0b0c0d00000000)); // ld        bc,$0004
-        testvectors.push_back(cons_test(32'h11040000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h003e, 64'h0a0b0c0d00000000)); // ld        de,$0004
-        testvectors.push_back(cons_test(32'h21000000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d00000000)); // ld        hl,$0000
-        testvectors.push_back(cons_test(32'hedb00000, 16'h0004, 16'h0003, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a000000)); // ldir
-        testvectors.push_back(cons_test(32'hedb00000, 16'h0004, 16'h0002, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a0b0000)); // ldir
-        testvectors.push_back(cons_test(32'hedb00000, 16'h0004, 16'h0001, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a0b0c00)); // ldir
-        testvectors.push_back(cons_test(32'hedb00000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0043, 64'h0a0b0c0d0a0b0c0d)); // ldir
+        testvectors.push_back(cons_test(32'hdd36000a, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0005, 64'h0a00000000000000)); // ld        (ix+$00),$0a
+        testvectors.push_back(cons_test(32'hdd36010b, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0009, 64'h0a0b000000000000)); // ld        (ix+$01),$0b
+        testvectors.push_back(cons_test(32'hdd36020c, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h000d, 64'h0a0b0c0000000000)); // ld        (ix+$02),$0c
+        testvectors.push_back(cons_test(32'hdd36030d, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0011, 64'h0a0b0c0d00000000)); // ld        (ix+$03),$0d
+        testvectors.push_back(cons_test(32'h11070000, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0014, 64'h0a0b0c0d00000000)); // ld        de,$0007
+        testvectors.push_back(cons_test(32'h21030000, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0017, 64'h0a0b0c0d00000000)); // ld        hl,$0003
+        testvectors.push_back(cons_test(32'heda80000, 16'h0044, 16'hffff, 16'h0000, 16'h0000, 16'h0019, 64'h0a0b0c0d0000000d)); // ldd
+        testvectors.push_back(cons_test(32'heda00000, 16'h0044, 16'hfffe, 16'h0000, 16'h0000, 16'h001b, 64'h0a0b0c0d00000c0d)); // ldi
+        testvectors.push_back(cons_test(32'hdd360700, 16'h0044, 16'hfffe, 16'h0000, 16'h0000, 16'h001f, 64'h0a0b0c0d00000c00)); // ld        (ix+$07),$00
+        testvectors.push_back(cons_test(32'hdd360600, 16'h0044, 16'hfffe, 16'h0000, 16'h0000, 16'h0023, 64'h0a0b0c0d00000000)); // ld        (ix+$06),$00
+        testvectors.push_back(cons_test(32'h01040000, 16'h0044, 16'h0004, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d00000000)); // ld        bc,$0004
+        testvectors.push_back(cons_test(32'hedb80000, 16'h0044, 16'h0003, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d0000000d)); // lddr
+        testvectors.push_back(cons_test(32'hedb80000, 16'h0044, 16'h0002, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d00000c0d)); // lddr //this is an issue with our tb, in real code lddr should act ok
+        testvectors.push_back(cons_test(32'hedb80000, 16'h0044, 16'h0001, 16'h0000, 16'h0000, 16'h0026, 64'h0a0b0c0d000b0c0d)); // lddr
+        testvectors.push_back(cons_test(32'hedb80000, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0028, 64'h0a0b0c0d0a0b0c0d)); // lddr
+        testvectors.push_back(cons_test(32'hdd360700, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h002c, 64'h0a0b0c0d0a0b0c00)); // ld        (ix+$07),$00
+        testvectors.push_back(cons_test(32'hdd360600, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0030, 64'h0a0b0c0d0a0b0000)); // ld        (ix+$06),$00
+        testvectors.push_back(cons_test(32'hdd360500, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0034, 64'h0a0b0c0d0a000000)); // ld        (ix+$05),$00
+        testvectors.push_back(cons_test(32'hdd360400, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0038, 64'h0a0b0c0d00000000)); // ld        (ix+$04),$00
+        testvectors.push_back(cons_test(32'h01040000, 16'h0040, 16'h0004, 16'h0000, 16'h0000, 16'h003b, 64'h0a0b0c0d00000000)); // ld        bc,$0004
+        testvectors.push_back(cons_test(32'h11040000, 16'h0040, 16'h0004, 16'h0000, 16'h0000, 16'h003e, 64'h0a0b0c0d00000000)); // ld        de,$0004
+        testvectors.push_back(cons_test(32'h21000000, 16'h0040, 16'h0004, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d00000000)); // ld        hl,$0000
+        testvectors.push_back(cons_test(32'hedb00000, 16'h0044, 16'h0003, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a000000)); // ldir
+        testvectors.push_back(cons_test(32'hedb00000, 16'h0044, 16'h0002, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a0b0000)); // ldir
+        testvectors.push_back(cons_test(32'hedb00000, 16'h0044, 16'h0001, 16'h0000, 16'h0000, 16'h0041, 64'h0a0b0c0d0a0b0c00)); // ldir
+        testvectors.push_back(cons_test(32'hedb00000, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0043, 64'h0a0b0c0d0a0b0c0d)); // ldir
         testvectors.push_back(cons_reset()); /* the test for cpi */
         //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
-        testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
-        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
-        testvectors.push_back(cons_test(32'h01010000, 16'h0000, 16'h0001, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, 1
+        testvectors.push_back(cons_test(32'h11adde00, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
+        testvectors.push_back(cons_test(32'hed530400, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01010000, 16'h0040, 16'h0001, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, 1
         testvectors.push_back(cons_test(32'heda10000, 16'h0042, 16'h0000, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpi
         testvectors.push_back(cons_test(32'heda10000, 16'h0046, 16'hffff, 16'h0000, 16'h0000, 16'h000f, 64'h00000000adde0000)); // cpi
         testvectors.push_back(cons_test(32'heda10000, 16'h0046, 16'hfffe, 16'h0000, 16'h0000, 16'h0011, 64'h00000000adde0000)); // cpi
@@ -495,10 +495,10 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'heda10000, 16'h0016, 16'hfffc, 16'h0000, 16'h0000, 16'h0015, 64'h00000000adde0000)); // cpi
         testvectors.push_back(cons_reset()); /* the test for cpd */
         //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
-        testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
-        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
-        testvectors.push_back(cons_test(32'h01010000, 16'h0000, 16'h0001, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, 1
-        testvectors.push_back(cons_test(32'h21070000, 16'h0000, 16'h0001, 16'h0000, 16'h0000, 16'h000e, 64'h00000000adde0000)); // ld hl, 7
+        testvectors.push_back(cons_test(32'h11adde00, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
+        testvectors.push_back(cons_test(32'hed530400, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01010000, 16'h0040, 16'h0001, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, 1
+        testvectors.push_back(cons_test(32'h21070000, 16'h0040, 16'h0001, 16'h0000, 16'h0000, 16'h000e, 64'h00000000adde0000)); // ld hl, 7
         testvectors.push_back(cons_test(32'heda90000, 16'h0042, 16'h0000, 16'h0000, 16'h0000, 16'h0010, 64'h00000000adde0000)); // cpd
         testvectors.push_back(cons_test(32'heda90000, 16'h0046, 16'hffff, 16'h0000, 16'h0000, 16'h0012, 64'h00000000adde0000)); // cpd
         testvectors.push_back(cons_test(32'heda90000, 16'h0016, 16'hfffe, 16'h0000, 16'h0000, 16'h0014, 64'h00000000adde0000)); // cpd
@@ -506,20 +506,20 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'heda90000, 16'h0012, 16'h0000, 16'h0000, 16'h0000, 16'h0019, 64'h00000000adde0000)); // cpd
         testvectors.push_back(cons_reset()); /* the test for cpir bc runout */
         //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
-        testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
-        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
-        testvectors.push_back(cons_test(32'h01040000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, 1
-        testvectors.push_back(cons_test(32'h3ede0000, 16'hde00, 16'h0004, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // ld a, de
+        testvectors.push_back(cons_test(32'h11adde00, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
+        testvectors.push_back(cons_test(32'hed530400, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01040000, 16'h0040, 16'h0004, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, 1
+        testvectors.push_back(cons_test(32'h3ede0000, 16'hde40, 16'h0004, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // ld a, de
         testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h0003, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
         testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h0002, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
         testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h0001, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
         testvectors.push_back(cons_test(32'hedb10000, 16'hde82, 16'h0000, 16'h0000, 16'h0000, 16'h000f, 64'h00000000adde0000)); // cpir
         testvectors.push_back(cons_reset()); /* the test for cpir A match */
         //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
-        testvectors.push_back(cons_test(32'h11adde00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
-        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
-        testvectors.push_back(cons_test(32'h01ff0000, 16'h0000, 16'h00ff, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, ff
-        testvectors.push_back(cons_test(32'h3ede0000, 16'hde00, 16'h00ff, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // ld a, de
+        testvectors.push_back(cons_test(32'h11adde00, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, dead
+        testvectors.push_back(cons_test(32'hed530400, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h00000000adde0000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01ff0000, 16'h0040, 16'h00ff, 16'h0000, 16'h0000, 16'h000b, 64'h00000000adde0000)); // ld bc, ff
+        testvectors.push_back(cons_test(32'h3ede0000, 16'hde40, 16'h00ff, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // ld a, de
         testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h00fe, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
         testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h00fd, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
         testvectors.push_back(cons_test(32'hedb10000, 16'hde86, 16'h00fc, 16'h0000, 16'h0000, 16'h000d, 64'h00000000adde0000)); // cpir
@@ -528,24 +528,24 @@ module z80_top_tb #() ();
         testvectors.push_back(cons_test(32'hedb10000, 16'hde46, 16'h00f9, 16'h0000, 16'h0000, 16'h000f, 64'h00000000adde0000)); // cpir
         testvectors.push_back(cons_reset()); /* the test for cpdr countdown runout */
         //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
-        testvectors.push_back(cons_test(32'h1101c000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, cool
-        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h0000000001c00000)); // ld ($0004), de
-        testvectors.push_back(cons_test(32'h01040000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h000b, 64'h0000000001c00000)); // ld bc, 4
-        testvectors.push_back(cons_test(32'h21200000, 16'h0000, 16'h0004, 16'h0000, 16'h0000, 16'h000e, 64'h0000000001c00000)); // ld hl, 20
-        testvectors.push_back(cons_test(32'h3e010000, 16'h0100, 16'h0004, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // ld a, de
+        testvectors.push_back(cons_test(32'h1101c000, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, cool
+        testvectors.push_back(cons_test(32'hed530400, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h0000000001c00000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h01040000, 16'h0040, 16'h0004, 16'h0000, 16'h0000, 16'h000b, 64'h0000000001c00000)); // ld bc, 4
+        testvectors.push_back(cons_test(32'h21200000, 16'h0040, 16'h0004, 16'h0000, 16'h0000, 16'h000e, 64'h0000000001c00000)); // ld hl, 20
+        testvectors.push_back(cons_test(32'h3e010000, 16'h0140, 16'h0004, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // ld a, de
         testvectors.push_back(cons_test(32'hedb90000, 16'h0106, 16'h0003, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // cpdr
         testvectors.push_back(cons_test(32'hedb90000, 16'h0106, 16'h0002, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // cpdr
         testvectors.push_back(cons_test(32'hedb90000, 16'h0106, 16'h0001, 16'h0000, 16'h0000, 16'h0010, 64'h0000000001c00000)); // cpdr
         testvectors.push_back(cons_test(32'hedb90000, 16'h0102, 16'h0000, 16'h0000, 16'h0000, 16'h0012, 64'h0000000001c00000)); // cpdr
         testvectors.push_back(cons_reset()); /* the test for cpdr hit */
         //                              instruction   AF        BC        IX        SP        PC        first 8b of memory
-        testvectors.push_back(cons_test(32'h1101c000, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, cool
-        testvectors.push_back(cons_test(32'hed530400, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h0000000001c00000)); // ld ($0004), de
-        testvectors.push_back(cons_test(32'h11ffff00, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h000b, 64'h0000000001c00000)); // ld de, ffff
-        testvectors.push_back(cons_test(32'hed530600, 16'h0000, 16'h0000, 16'h0000, 16'h0000, 16'h000f, 64'h0000000001c0ffff)); // ld ($0006), de
-        testvectors.push_back(cons_test(32'h01ff0000, 16'h0000, 16'h00ff, 16'h0000, 16'h0000, 16'h0012, 64'h0000000001c0ffff)); // ld bc, ff
-        testvectors.push_back(cons_test(32'h21070000, 16'h0000, 16'h00ff, 16'h0000, 16'h0000, 16'h0015, 64'h0000000001c0ffff)); // ld hl, 7
-        testvectors.push_back(cons_test(32'h3e010000, 16'h0100, 16'h00ff, 16'h0000, 16'h0000, 16'h0017, 64'h0000000001c0ffff)); // ld a, de
+        testvectors.push_back(cons_test(32'h1101c000, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0004, 64'h0000000000000000)); // ld de, cool
+        testvectors.push_back(cons_test(32'hed530400, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h0008, 64'h0000000001c00000)); // ld ($0004), de
+        testvectors.push_back(cons_test(32'h11ffff00, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h000b, 64'h0000000001c00000)); // ld de, ffff
+        testvectors.push_back(cons_test(32'hed530600, 16'h0040, 16'h0000, 16'h0000, 16'h0000, 16'h000f, 64'h0000000001c0ffff)); // ld ($0006), de
+        testvectors.push_back(cons_test(32'h01ff0000, 16'h0040, 16'h00ff, 16'h0000, 16'h0000, 16'h0012, 64'h0000000001c0ffff)); // ld bc, ff
+        testvectors.push_back(cons_test(32'h21070000, 16'h0040, 16'h00ff, 16'h0000, 16'h0000, 16'h0015, 64'h0000000001c0ffff)); // ld hl, 7
+        testvectors.push_back(cons_test(32'h3e010000, 16'h0140, 16'h00ff, 16'h0000, 16'h0000, 16'h0017, 64'h0000000001c0ffff)); // ld a, de
         testvectors.push_back(cons_test(32'hedb90000, 16'h0116, 16'h00fe, 16'h0000, 16'h0000, 16'h0017, 64'h0000000001c0ffff)); // cpir
         testvectors.push_back(cons_test(32'hedb90000, 16'h0116, 16'h00fd, 16'h0000, 16'h0000, 16'h0017, 64'h0000000001c0ffff)); // cpir
         testvectors.push_back(cons_test(32'hedb90000, 16'h0106, 16'h00fc, 16'h0000, 16'h0000, 16'h0017, 64'h0000000001c0ffff)); // cpir

@@ -1,5 +1,5 @@
 ##
-# 8 Bit ALU
+# 8/16 Bit ALU
 #
 # @file
 # @version 0.2

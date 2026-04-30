@@ -1,4 +1,4 @@
-.PHONY: clean waves run_top
+.PHONY: clean waves run_sim
 
 
 obj_dir/Vz80_top_tb: ./src/sim/z80_top_tb.sv ./src/hdl/controller_next_state.sv ./src/hdl/controller_output.sv ./src/hdl/decode.sv
@@ -7,10 +7,10 @@ obj_dir/Vz80_top_tb: ./src/sim/z80_top_tb.sv ./src/hdl/controller_next_state.sv 
 out/sim:
 	mkdir -p ./out/sim
 
-run_top: obj_dir/Vz80_top_tb out/sim
+run_sim: obj_dir/Vz80_top_tb out/sim
 	./$<
 
-waves: run_top
+waves: run_sim
 	gtkwave out/sim/z80_top_tb.vcd
 
 clean:

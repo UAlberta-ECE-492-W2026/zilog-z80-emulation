@@ -38,9 +38,10 @@ A VGA to PMOD adapter is plugged into PMOD ports JC and JD. A PMOD seven segment
 
 ## Simulation Make Targets
 
-- `run_alu_8_tb` will execute the main function 8-bit ALU test bench
-- `run_alu_16_tb` will execute the main function 16-bit ALU test bench
-- `run_alu_8_status_tb` will execute the status signal test bench for the 8-bit ALU
+- `make run_alu_8_tb` will execute the main function 8-bit ALU test bench
+- `make run_alu_16_tb` will execute the main function 16-bit ALU test bench
+- `make run_alu_8_status_tb` will execute the status signal test bench for the 8-bit ALU
+- `make -f Makefile_<testbench name> run_sim` will run the corresponding testbench. Many of these are broken due to later changes to the interfaces of the tested module. All of the z80_top makefiles should run ok.
 
 ## Dependencies
 

@@ -1,4 +1,6 @@
 `timescale 1ns/1ps
+
+// obsolete
 `include "alu_op.sv"
 
 /* verilator lint_off UNUSEDSignal */

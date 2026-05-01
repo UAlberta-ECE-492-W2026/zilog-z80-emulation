@@ -1,5 +1,6 @@
 `timescale 1ns/1ps
 
+// obsolete and does not have a makefile
 module memory_decoder_tb();
 
 logic [15:0] address;

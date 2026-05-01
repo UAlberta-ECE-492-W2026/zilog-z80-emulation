@@ -1,4 +1,6 @@
 `timescale 1ns/1ps
+
+// obsolete
 `include "mop.sv"
 
 /* verilator lint_on UNUSEDSignal */

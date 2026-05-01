@@ -10,7 +10,6 @@ module z80_top #(
     output logic [3:0] green,      //! green channel (4-bit)
     output logic [3:0] blue,        //! blue channel (4-bit)
 
-    // debug inputs and outputs. TODO: attach these to something
     /* verilator lint_off UNUSEDSIGNAL */
     input logic[3:0] buttons,
     input logic[3:0] switches,
@@ -48,7 +47,11 @@ module z80_top #(
     assign intf.reset =  buttons[0];
     assign led6_r = intf.clk;
     assign led6_g = intf.reset;
+    `ifdef SOFTWARE_KEYBOARD
     assign led6_b = kb_mode;
+    `else
+    assign led6_b = 0;
+    `endif
     
     // clock dividers for the main z80 core
     reg [2:0]fast_div_count;
@@ -109,10 +112,21 @@ module z80_top #(
     reg [7:0] byte_to_display;
 
     // select byte to show on the display
+
+    reg show_kb_byte;
+
+    `ifdef SOFTWARE_KEYBOARD
+    assign show_kb_byte = kb_mode;
+    `else
+    assign show_kb_byte = 0;
+    `endif
+
     always_comb begin
         byte_to_display = 8'h00;
-        if (kb_mode) begin
+        if (show_kb_byte) begin
+            `ifdef SOFTWARE_KEYBOARD
             byte_to_display = char_buffer;
+            `endif
         end else if (switches == 4'b0000) begin
             byte_to_display = intf.current_state[7:0];
         end else if (switches == 4'b0001) begin
@@ -176,6 +190,7 @@ module z80_top #(
     end
     
     // "keyboard" logic.
+    `ifdef SOFTWARE_KEYBOARD
     reg [7:0] char_buffer; // character visible to user
     reg [7:0] present_char; // character to be sent to the core
     reg kb_mode;
@@ -210,9 +225,10 @@ module z80_top #(
         
         if (buttons[3] && button_live[1]) begin
             button_live[1] <= 0;
-            char_buffer = (char_buffer[3:0] << 4) | switches;
+            char_buffer <= (char_buffer[3:0] << 4) | {4'h00, switches};
         end
     end
+    `endif
     
     controller #() controller (intf);
     controller_next_state next_state_logic(.ctrl_intf(intf));

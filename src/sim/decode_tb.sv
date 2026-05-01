@@ -20,8 +20,8 @@ task display_input_output_expected_decode(
         reg expected_use_16b_alu, 
         reg[5:0] expected_update_flags
     );
-    $write("32'b%b | %s | %s | %s | 8'h%h | 16'h%h | 1'b%b | 6'b%b\n", input_op, output_op.name, reg_a.name, reg_b.name, imm_0, imm_1, use_16b_alu, update_flags);
-    $write(" expected:                           | %s | %s | %s | 8'h%h | 16'h%h | 1'b%b | 6'b%b", expected_output_op.name, expected_reg_a.name, expected_reg_b.name, expected_imm_0, expected_imm_1, expected_use_16b_alu, expected_update_flags);
+    $write("32'b%b | %9s |  %4s |  %4s | 8'h%h | 16'h%h |        1'b%b | 6'b%b\n", input_op, output_op.name, reg_a.name, reg_b.name, imm_0, imm_1, use_16b_alu, update_flags);
+    $write(" expected:                           | %9s |  %4s |  %4s | 8'h%h | 16'h%h |        1'b%b | 6'b%b", expected_output_op.name, expected_reg_a.name, expected_reg_b.name, expected_imm_0, expected_imm_1, expected_use_16b_alu, expected_update_flags);
 
 endtask // display_input_output_expected
 
@@ -81,15 +81,15 @@ module decode_tb();
     initial begin: test_definition
       	// input_op, expected_output_op, expected_a, expected_b, expected_imm_0, expected_imm_1, expected_use_16b_alu, expected_update_flags
       	testvectors.push_back('{32'b01001011000000000000000000000000, LD_R_R, C, E, 0, 0, 0, 0});
-        testvectors.push_back('{32'h18800000, JR_e, PC, NONE, 0, -126, 0, 0});
-        testvectors.push_back('{32'h18ff0000, JR_e, PC, NONE, 0, 1, 0, 0});
-        testvectors.push_back('{32'h187f0000, JR_e, PC, NONE, 0, 129, 0, 0});
+        testvectors.push_back('{32'h18800000, JR_e, PC, NONE, 0, -126, 1, 0});
+        testvectors.push_back('{32'h18ff0000, JR_e, PC, NONE, 0, 1, 1, 0});
+        testvectors.push_back('{32'h187f0000, JR_e, PC, NONE, 0, 129, 1, 0});
         ->test_vector_setup;
     end
 
 
     initial begin
-      	$display(" input op                            |  mop |  reg_a | reg_b |  imm_0 | imm_1 | use_16b_alu | expected_update_flags ");
+      	$display(" input op                            |  mop      | reg_a | reg_b | imm_0 | imm_1    | use_16b_alu | expected_update_flags ");
         wait(setup_done.triggered);
       	foreach (testvectors[i]) begin
          	#10;

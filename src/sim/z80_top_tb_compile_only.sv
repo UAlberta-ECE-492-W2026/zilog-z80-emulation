@@ -1,9 +1,7 @@
 `timescale 1ns/1ps
 
-//tb for use in vivado. 
-// instead of presenting instructions one at a time to the core it will run as closely to the implemented design as possible
-module z80_top_tb_program #() ();
-    // display driving outputs
+// linting doesn't catch everything, so this was made to just try verilating the whole design so we can see what's broken.
+module z80_top_tb_compile_only #() ();
     /* verilator lint_off UNUSEDSIGNAL */
     logic hsync;            //! horizontal sync (active LOW)
     logic vsync;            //! vertical sync (active LOW)
@@ -17,27 +15,9 @@ module z80_top_tb_program #() ();
     logic [3:0] je;
     logic [3:0] ja;
     logic led6_r, led6_g, led6_b;
-    // clock
     logic clk;
+    assign clk = 0;
     /* verilator lint_on UNUSEDSIGNAL */
-    
-    task reset_tb;
-        begin
-            buttons[0] = 1;
-            repeat(2) @(posedge clk);
-            buttons[0] = 0;
-            @(posedge clk);
-        end
-    endtask
-    
-    initial begin
-        clk = 0;
-        forever #5 clk = ~clk;
-    end
-    
-    initial begin
-        reset_tb();
-    end
 
     z80_top #() z80_top (
         .hsync(hsync),

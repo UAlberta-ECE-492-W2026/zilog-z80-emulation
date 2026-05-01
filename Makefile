@@ -29,7 +29,12 @@ out/sim:
 run_alu_%: obj_dir/Valu_% out/sim
 	./$<
 
+# this makefile is called if you do a 'make clean' so it is a superset of all other make clean targets here.
+# this is terrible makefile design, but it does work i guess
 clean:
 	rm -rf ./obj_dir/ ./out
+	rm -f pc_trace.log
+	rm -f ticks.txt
+	rm -f .stamp*
 
 # end

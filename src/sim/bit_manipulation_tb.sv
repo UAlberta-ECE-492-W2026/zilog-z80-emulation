@@ -1,4 +1,6 @@
 `timescale 1ns/1ps
+
+// obsolete
 `include "reg_name.sv"
 `include "exx_type.sv"
 `include "f_op.sv"

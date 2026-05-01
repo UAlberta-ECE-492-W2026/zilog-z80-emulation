@@ -1,13 +1,16 @@
-.PHONY: clean run_top
+.PHONY: clean run_sim
 
 #PROGRAM_PATH := zilog-z80-emulation-software/internal_programs/prime_printer/prime_printer
 #PROGRAM_PATH := zilog-z80-emulation-software/tests/z80test/src/z80doc
 PROGRAM_PATH := zilog-z80-emulation-software/external_programs/Advent/Almazar/almazar
 
-waveform.vcd: ./obj_dir/Vz80_top_for_testing
-	@./obj_dir/Vz80_top_for_testing
+run_sim: obj_dir/Vz80_top_for_testing ./out/sim
+	./$<
 
-./obj_dir/Vz80_top_for_testing: .stamp.verilate
+waveform.vcd: ./obj_dir/Vz80_top_for_testing
+	./obj_dir/Vz80_top_for_testing
+
+obj_dir/Vz80_top_for_testing: .stamp.verilate
 	make -C obj_dir -f Vz80_top_for_testing.mk Vz80_top_for_testing
 
 .stamp.verilate: ./src/hdl/z80_top_for_testing.sv ./src/sim/z80_top_tb_interactive.cpp ticks.txt
@@ -16,6 +19,9 @@ waveform.vcd: ./obj_dir/Vz80_top_for_testing
 
 ticks.txt: 
 	z88dk-ticks -x $(PROGRAM_PATH).map -end 47 -v -mz80 -d -trace -counter 1000000 $(PROGRAM_PATH).out > ticks.txt
+
+out/sim:
+	mkdir -p ./out/sim
 
 clean:
 	rm -rf ./obj_dir/ ./out .stamp* ticks.txt
